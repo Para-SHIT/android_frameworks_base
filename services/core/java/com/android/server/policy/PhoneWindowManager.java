@@ -1418,6 +1418,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mPowerKeyTriggered = true;
             mPowerKeyTime = event.getDownTime();
             interceptScreenshotChord();
+            interceptRegionScreenshotChord();
         }
 
         // Stop ringing or end call if configured to do so when power is pressed.
