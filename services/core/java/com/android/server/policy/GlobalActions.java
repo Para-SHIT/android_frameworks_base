@@ -78,6 +78,7 @@ import android.text.TextUtils;
 import android.util.ArraySet;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -274,19 +275,55 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
     private void handleShow() {
         awakenIfNecessary();
         prepareDialog();
+        WindowManager.LayoutParams attrs = mDialog.getWindow().getAttributes();
+        attrs.setTitle("GlobalActions");
 
-        // If we only have 1 item and it's a simple press action, just do this action.
-        if (mAdapter.getCount() == 1
-                && mAdapter.getItem(0) instanceof SinglePressAction
-                && !(mAdapter.getItem(0) instanceof LongPressAction)) {
-            ((SinglePressAction) mAdapter.getItem(0)).onPress();
-        } else {
-            WindowManager.LayoutParams attrs = mDialog.getWindow().getAttributes();
-            attrs.setTitle("GlobalActions");
-            mDialog.getWindow().setAttributes(attrs);
-            mDialog.show();
-            mDialog.getWindow().getDecorView().setSystemUiVisibility(View.STATUS_BAR_DISABLE_EXPAND);
+        boolean isPrimary = UserHandle.getCallingUserId() == UserHandle.USER_OWNER;
+        int powermenuAnimation = isPrimary ? getPowermenuAnimation() : 0;
+
+        if (powermenuAnimation == 0) {
+            // default AOSP action
+        } else if (powermenuAnimation == 1) {
+            attrs.windowAnimations = R.style.PowerMenuBottomAnimation;
+            attrs.gravity = Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL;
+        } else if (powermenuAnimation == 2) {
+            attrs.windowAnimations = R.style.PowerMenuTopAnimation;
+            attrs.gravity = Gravity.TOP|Gravity.CENTER_HORIZONTAL;
+        } else if (powermenuAnimation == 3) {
+            attrs.windowAnimations = R.style.PowerMenuRotateAnimation;
+            attrs.gravity = Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL;
+        } else if (powermenuAnimation == 4) {
+            attrs.windowAnimations = R.style.PowerMenuXylonAnimation;
+            attrs.gravity = Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL;
+        } else if (powermenuAnimation == 5) {
+            attrs.windowAnimations = R.style.PowerMenuTranslucentAnimation;
+            attrs.gravity = Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL;
+        } else if (powermenuAnimation == 6) {
+            attrs.windowAnimations = R.style.PowerMenuTnAnimation;
+            attrs.gravity = Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL;
+        } else if (powermenuAnimation == 7) {
+            attrs.windowAnimations = R.style.PowerMenuflyAnimation;
+            attrs.gravity = Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL;
+        } else if (powermenuAnimation == 8) {
+            attrs.windowAnimations = R.style.PowerMenuCardAnimation;
+            attrs.gravity = Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL;
+        } else if (powermenuAnimation == 9) {
+            attrs.windowAnimations = R.style.PowerMenuTranslucentAnimation;
+            attrs.gravity = Gravity.TOP|Gravity.CENTER_HORIZONTAL;
+        } else if (powermenuAnimation == 10) {
+            attrs.windowAnimations = R.style.PowerMenuTranslucentAnimation;
+            attrs.gravity = Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL;
         }
+
+        mDialog.getWindow().setAttributes(attrs);
+        mDialog.show();
+        mDialog.getWindow().getDecorView().setSystemUiVisibility(View.STATUS_BAR_DISABLE_EXPAND);
+
+    }
+
+    private int getPowermenuAnimation() {
+        return Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.POWER_MENU_ANIMATION, 0);
     }
 
     /**

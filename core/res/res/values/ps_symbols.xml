@@ -29,4 +29,14 @@
     <java-symbol type="anim" name="recent_screen_enter" />
     <java-symbol type="anim" name="recent_screen_enter_left" />
     <java-symbol type="anim" name="recent_screen_fade_out" />
+
+    <!-- Power menu animation  -->
+    <java-symbol type="style" name="PowerMenuBottomAnimation" />
+    <java-symbol type="style" name="PowerMenuTopAnimation" />
+    <java-symbol type="style" name="PowerMenuRotateAnimation" />
+    <java-symbol type="style" name="PowerMenuXylonAnimation" />
+    <java-symbol type="style" name="PowerMenuTranslucentAnimation" />
+    <java-symbol type="style" name="PowerMenuTnAnimation" />
+    <java-symbol type="style" name="PowerMenuflyAnimation" />
+    <java-symbol type="style" name="PowerMenuCardAnimation" />
 </resources>
