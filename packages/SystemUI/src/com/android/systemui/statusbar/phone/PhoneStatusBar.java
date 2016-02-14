@@ -686,9 +686,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.SHAKE_TO_CLEAN_NOTIFICATIONS),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_CUSTOM_HEADER_DEFAULT), 
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_NETWORK_ACTIVITY),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -807,9 +804,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.STATUS_BAR_TEMASEK_LOGO_STYLE))
                     || uri.equals(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_TEMASEK_LOGO_COLOR))) {
-                    DontStressOnRecreate();
-            } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_CUSTOM_HEADER_DEFAULT))) {
                     DontStressOnRecreate();
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.HEADS_UP_SNOOZE_TIME))) {
