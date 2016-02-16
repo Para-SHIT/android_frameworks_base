@@ -4084,14 +4084,10 @@ public final class Settings {
         public static final String STATUS_BAR_CUSTOM_HEADER_PROVIDER = "status_bar_custom_header_provider";
 
         /**
-         * Whether to use default custom header or poly hd
-         * 0 = default
-         * 1 = modern
-         * 2 = flat
-         * 3 = poly hd
+         * header image package to use for daylight header - package name - null if default
          * @hide
          */
-        public static final String STATUS_BAR_CUSTOM_HEADER_DEFAULT = "status_bar_custom_header_default";
+        public static final String STATUS_BAR_DAYLIGHT_HEADER_PACK = "status_bar_daylight_header_pack";
 
         /**
          * Three Finger Gesture from Oppo
