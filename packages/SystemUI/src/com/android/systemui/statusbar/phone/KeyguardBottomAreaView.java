@@ -36,6 +36,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
+import android.graphics.PorterDuff.Mode;
 import android.hardware.ITorchService;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -207,9 +208,9 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
         mLockIcon.setOnLongClickListener(this);
         mCameraImageView.setOnClickListener(this);
         mPhoneImageView.setOnClickListener(this);
-
         initAccessibility();
         updateCustomShortcuts();
+        updateIndicationTextColor();
     }
 
     private void updateCustomShortcuts() {
@@ -540,6 +541,10 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
                 icon = new IntrinsicSizeDrawable(icon, iconWidth, iconHeight);
             }
             mLockIcon.setImageDrawable(icon);
+            mCameraImageView.updateColorSettings();
+            mPhoneImageView.updateColorSettings();
+            mLockIcon.updateColorSettings();
+            updateIndicationTextColor();
         }
         boolean trustManaged = mUnlockMethodCache.isTrustManaged();
         mTrustDrawable.setTrustManaged(trustManaged);
@@ -652,6 +657,7 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
         }
     }
 
+
     public void startFinishDozeAnimation() {
         long delay = 0;
         if (mPhoneImageView.getVisibility() == View.VISIBLE) {
@@ -726,6 +732,22 @@ public class KeyguardBottomAreaView extends FrameLayout implements View.OnClickL
 
     public void cleanup() {
         mUnlockMethodCache.removeListener(this);
+    }
+
+    public void updateIconColor(int color) {
+         mCameraImageView.updateColorSettings(color);
+         mPhoneImageView.updateColorSettings(color);
+         mLockIcon.updateColorSettings(color);
+    }
+
+    public void updateIndicationTextColor() {
+        ContentResolver resolver = getContext().getContentResolver();
+        int color = Settings.System.getInt(resolver,
+                Settings.System.LOCKSCREEN_INDICATION_TEXT_COLOR, 0xFFFFFFFF);
+
+        if (mIndicationText != null) {
+            mIndicationText.setTextColor(color);
+        }
     }
 
     @Override
