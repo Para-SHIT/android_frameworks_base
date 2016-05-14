@@ -206,18 +206,6 @@ public class MusicTile extends QSTile<QSTile.BooleanState> {
         }
 
         @Override
-        public void onClientFolderInfoBrowsedPlayer(String stringUri) { }
-
-        @Override
-        public void onClientUpdateNowPlayingEntries(long[] playList) { }
-
-        @Override
-        public void onClientNowPlayingContentChange() { }
-
-        @Override
-        public void onClientPlayItemResponse(boolean success) { }
-
-        @Override
         public void onClientMetadataUpdate(RemoteController.MetadataEditor data) {
             mMetadata.trackTitle = data.getString(MediaMetadataRetriever.METADATA_KEY_TITLE,
                     mMetadata.trackTitle);
