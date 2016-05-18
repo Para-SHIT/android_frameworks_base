@@ -51,7 +51,7 @@ public class DaylightHeaderProvider implements
     private static final int DRAWABLE_SUNRISE = R.drawable.notifhead_sunrise;
     private static final int DRAWABLE_SUNRISE_1 = R.drawable.notifhead_sunrise_1;
     private static final int DRAWABLE_SUNRISE_HD = R.drawable.notifhead_sunrise_hd;
-    private static final int TIME_MORNING = 9;
+    private static final int TIME_MORNING = 8;
     private static final int DRAWABLE_MORNING = R.drawable.notifhead_morning;
     private static final int DRAWABLE_MORNING_1 = R.drawable.notifhead_morning_1;
     private static final int DRAWABLE_MORNING_HD = R.drawable.notifhead_morning_hd;
@@ -59,15 +59,15 @@ public class DaylightHeaderProvider implements
     private static final int DRAWABLE_NOON = R.drawable.notifhead_noon;
     private static final int DRAWABLE_NOON_1 = R.drawable.notifhead_noon_1;
     private static final int DRAWABLE_NOON_HD = R.drawable.notifhead_noon_hd;
-    private static final int TIME_AFTERNOON = 13;
+    private static final int TIME_AFTERNOON = 15;
     private static final int DRAWABLE_AFTERNOON = R.drawable.notifhead_afternoon;
     private static final int DRAWABLE_AFTERNOON_1 = R.drawable.notifhead_afternoon_1;
     private static final int DRAWABLE_AFTERNOON_HD = R.drawable.notifhead_afternoon_hd;
-    private static final int TIME_SUNSET = 19;
+    private static final int TIME_SUNSET = 17;
     private static final int DRAWABLE_SUNSET = R.drawable.notifhead_sunset;
     private static final int DRAWABLE_SUNSET_1 = R.drawable.notifhead_sunset_1;
     private static final int DRAWABLE_SUNSET_HD = R.drawable.notifhead_sunset_hd;
-    private static final int TIME_NIGHT = 21;
+    private static final int TIME_NIGHT = 19;
     private static final int DRAWABLE_NIGHT = R.drawable.notifhead_night;
     private static final int DRAWABLE_NIGHT_1 = R.drawable.notifhead_night_1;
     private static final int DRAWABLE_NIGHT_HD = R.drawable.notifhead_night_hd;
