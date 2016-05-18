@@ -24,7 +24,11 @@ public class BatteryBar extends RelativeLayout implements Animatable {
 
     private static final String TAG = BatteryBar.class.getSimpleName();
 
-    private static final int ANIM_DURATION = 1000;
+    // Total animation duration
+    private static final int ANIM_DURATION = 1000; // 5 seconds
+
+    // When to use the low battery color
+    private static final int BATTERY_LOW_VALUE = 15;
 
     private boolean mAttached = false;
     private int mBatteryLevel = 0;
@@ -32,6 +36,10 @@ public class BatteryBar extends RelativeLayout implements Animatable {
     private boolean mBatteryCharging = false;
     private boolean shouldAnimateCharging = true;
     private boolean isAnimating = false;
+
+    private int mColor = 0xFFFFFFFF;
+    private int mChargingColor = 0xFFFFFFFF;
+    private int mBatteryLowColor = 0xFFFFFFFF;
 
     private SettingsObserver mSettingsObserver;
 
@@ -47,6 +55,7 @@ public class BatteryBar extends RelativeLayout implements Animatable {
     boolean vertical = false;
 
     class SettingsObserver extends ContentObserver {
+
         public SettingsObserver(Handler handler) {
             super(handler);
         }
@@ -54,8 +63,16 @@ public class BatteryBar extends RelativeLayout implements Animatable {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(
-                    Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_BAR_COLOR),
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_BAR), false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_BAR_COLOR), false,
+                    this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_BAR_CHARGING_COLOR),
                     false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(
+                            Settings.System.STATUSBAR_BATTERY_BAR_BATTERY_LOW_COLOR), false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(Settings.System.STATUSBAR_BATTERY_BAR_ANIMATE),
                     false, this);
@@ -73,12 +90,14 @@ public class BatteryBar extends RelativeLayout implements Animatable {
 
     public BatteryBar(Context context, boolean isCharging, int currentCharge) {
         this(context, null);
+
         mBatteryLevel = currentCharge;
         mBatteryCharging = isCharging;
     }
 
     public BatteryBar(Context context, boolean isCharging, int currentCharge, boolean isVertical) {
         this(context, null);
+
         mBatteryLevel = currentCharge;
         mBatteryCharging = isCharging;
         vertical = isVertical;
@@ -110,6 +129,7 @@ public class BatteryBar extends RelativeLayout implements Animatable {
             float dp = 4f;
             int pixels = (int) (metrics.density * dp + 0.5f);
 
+            // charger
             mChargerLayout = new LinearLayout(mContext);
 
             if (vertical) {
@@ -174,7 +194,11 @@ public class BatteryBar extends RelativeLayout implements Animatable {
     private void updateSettings() {
         ContentResolver resolver = getContext().getContentResolver();
 
-        int color = Settings.System.getInt(resolver, Settings.System.STATUSBAR_BATTERY_BAR_COLOR,
+        mColor = Settings.System.getInt(resolver, Settings.System.STATUSBAR_BATTERY_BAR_COLOR,
+                0xFFFFFFFF);
+        mChargingColor = Settings.System.getInt(resolver, Settings.System.STATUSBAR_BATTERY_BAR_CHARGING_COLOR,
+                0xFFFFFFFF);
+        mBatteryLowColor = Settings.System.getInt(resolver, Settings.System.STATUSBAR_BATTERY_BAR_BATTERY_LOW_COLOR,
                 0xFFFFFFFF);
 
         shouldAnimateCharging = Settings.System.getInt(resolver,
@@ -186,8 +210,8 @@ public class BatteryBar extends RelativeLayout implements Animatable {
             stop();
         }
         setProgress(mBatteryLevel);
-        mBatteryBar.setBackgroundColor(color);
-        mCharger.setBackgroundColor(color);
+
+        mCharger.setBackgroundColor(mChargingColor);
     }
 
     private void setProgress(int n) {
@@ -197,6 +221,7 @@ public class BatteryBar extends RelativeLayout implements Animatable {
                     .getLayoutParams();
             params.height = w;
             mBatteryBarLayout.setLayoutParams(params);
+
         } else {
             int w = (int) (((getWidth() / 100.0) * n) + 0.5);
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mBatteryBarLayout
@@ -204,13 +229,17 @@ public class BatteryBar extends RelativeLayout implements Animatable {
             params.width = w;
             mBatteryBarLayout.setLayoutParams(params);
         }
+
+        // Update color
+        mBatteryBar.setBackgroundColor(mBatteryCharging ? mChargingColor :
+                (n > BATTERY_LOW_VALUE ? mColor : mBatteryLowColor));
+
     }
 
     @Override
     public void start() {
-        if (!shouldAnimateCharging) {
+        if (!shouldAnimateCharging)
             return;
-        }
 
         if (vertical) {
             TranslateAnimation a = new TranslateAnimation(getX(), getX(), getHeight(),
@@ -243,4 +272,5 @@ public class BatteryBar extends RelativeLayout implements Animatable {
     public boolean isRunning() {
         return isAnimating;
     }
+
 }
