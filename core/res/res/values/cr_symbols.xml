@@ -170,4 +170,6 @@
   <java-symbol type="drawable" name="ic_lock_onthego" />
   <java-symbol type="drawable" name="ic_lock_onthego_alpha" />
 
+  <java-symbol type="array" name="anim_controls_entries" />
+
 </resources>
