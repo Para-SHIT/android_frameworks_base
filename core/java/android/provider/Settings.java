@@ -3885,6 +3885,20 @@ public final class Settings {
         public static final String STATUS_BAR_SHOW_BATTERY_PERCENT = "status_bar_show_battery_percent";
 
         /**
+         * Shake to clean recents app screen
+         * @hide
+         *
+         */
+        public static final String SHAKE_TO_CLEAN_RECENTS = "shake_to_clean_recents";
+
+        /**
+         * Shake to clean notifications
+         * @hide
+         *
+         */
+        public static final String SHAKE_TO_CLEAN_NOTIFICATIONS = "shake_to_clean_notifications";
+
+        /**
          * Status bar weather temperature
          * 0: Hide the temperature
          * 1: Display the temperature with scale
@@ -5047,7 +5061,7 @@ public final class Settings {
          * @hide
          */
         public static final String DISABLE_TORCH_ON_SCREEN_OFF_DELAY = "disable_torch_on_screen_off_delay";
-        
+
         /**
          * Network stats Color style
          * @hide
@@ -5210,6 +5224,16 @@ public final class Settings {
          * @hide
          */
         public static final String WHEN_TO_MAKE_WIFI_CALLS = "when_to_make_wifi_calls";
+
+        /**
+         * Settings to reset on user request. They will fall back to their default value (0).
+         *
+         * @hide
+         */
+        public static final String[] SETTINGS_TO_RESET = {
+            SHAKE_TO_CLEAN_RECENTS,
+            SHAKE_TO_CLEAN_NOTIFICATIONS
+         };
 
         // Settings moved to Settings.Secure
 
