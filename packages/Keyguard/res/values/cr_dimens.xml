@@ -25,4 +25,26 @@
     <!-- Top margin for shortcuts. -->
     <dimen name="shortcut_margin_top">25dp</dimen>
 
+    <!-- Lock clock parameters -->
+    <dimen name="lock_clock_font_size_1">35dp</dimen>
+    <dimen name="lock_clock_font_size_2">40dp</dimen>
+    <dimen name="lock_clock_font_size_3">45dp</dimen>
+    <dimen name="lock_clock_font_size_4">50dp</dimen>
+    <dimen name="lock_clock_font_size_5">55dp</dimen>
+    <dimen name="lock_clock_font_size_6">60dp</dimen>
+    <dimen name="lock_clock_font_size_7">65dp</dimen>
+    <dimen name="lock_clock_font_size_8">70dp</dimen>
+    <dimen name="lock_clock_font_size_9">75dp</dimen>
+    <dimen name="lock_clock_font_size_10">80dp</dimen>
+    <dimen name="lock_clock_font_size_11">85dp</dimen>
+    <dimen name="lock_clock_font_size_12">90dp</dimen>
+    <dimen name="lock_clock_font_size_13">95dp</dimen>
+    <dimen name="lock_clock_font_size_14">100dp</dimen>
+    <dimen name="lock_clock_font_size_15">105dp</dimen>
+    <dimen name="lock_clock_font_size_16">110dp</dimen>
+    <dimen name="lock_clock_font_size_17">115dp</dimen>
+    <dimen name="lock_clock_font_size_18">120dp</dimen>
+    <dimen name="lock_clock_font_size_19">125dp</dimen>
+    <dimen name="lock_clock_font_size_20">130dp</dimen>
+
 </resources>
