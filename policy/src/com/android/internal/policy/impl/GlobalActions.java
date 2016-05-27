@@ -239,9 +239,37 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             WindowManager.LayoutParams attrs = mDialog.getWindow().getAttributes();
             attrs.setTitle("GlobalActions");
             mDialog.getWindow().setAttributes(attrs);
+
+            if (Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.TRANSPARENT_POWER_MENU, 100) != 100) {
+                attrs.alpha = setPowerMenuAlpha();
+            }
+
+            mDialog.getWindow().setAttributes(attrs);
+            if (Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.TRANSPARENT_POWER_DIALOG_DIM, 50) != 50) {
+                mDialog.getWindow().setDimAmount(setPowerMenuDialogDim());
+            }            
+
             mDialog.show();
             mDialog.getWindow().getDecorView().setSystemUiVisibility(View.STATUS_BAR_DISABLE_EXPAND);
         }
+    }
+
+    private float setPowerMenuAlpha() {
+        int mPowerMenuAlpha = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.TRANSPARENT_POWER_MENU, 100);
+        double dAlpha = mPowerMenuAlpha / 100.0;
+        float alpha = (float) dAlpha;
+        return alpha;
+    }
+
+    private float setPowerMenuDialogDim() {
+        int mPowerMenuDialogDim = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.TRANSPARENT_POWER_DIALOG_DIM, 50);
+        double dDim = mPowerMenuDialogDim / 100.0;
+        float dim = (float) dDim;
+        return dim;
     }
 
     private Context getUiContext() {
