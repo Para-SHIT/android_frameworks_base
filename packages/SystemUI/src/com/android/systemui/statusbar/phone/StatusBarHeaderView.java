@@ -24,12 +24,17 @@ import android.content.ContentUris;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Outline;
 import android.graphics.Rect;
 import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
@@ -78,6 +83,8 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         NextAlarmController.NextAlarmChangeCallback, WeatherController.Callback,
 		StatusBarHeaderMachine.IStatusBarHeaderMachineObserver {
     static final String TAG = "StatusBarHeaderView";
+
+    private static final int DEFAULT_ICON_COLOR = 0xffffffff;
 
     private boolean mExpanded;
     private boolean mListening;
@@ -163,6 +170,8 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
     private ImageView mBackgroundImage;
     private Drawable mCurrentBackground;
     private float mLastHeight;
+
+    private int mIconColor;
 
     // Font style
     public static final int FONT_NORMAL = 0;
@@ -305,6 +314,16 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         mClockCollapsedScaleFactor = (float) mClockCollapsedSize / (float) mClockExpandedSize;
         updateClockScale();
         updateClockCollapsedMargin();
+        setclockcolor();
+	setdetailcolor();
+	setweathercolor1();
+	setweathercolor2();	
+	setalarmtextcolor();
+	    
+	setbatterytextcolor();
+
+        updateIconColorSettings();
+
     }
 
     @Override
@@ -444,6 +463,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         if (mQSCSwitch) {
             updateBackgroundColor();
         }
+        updateIconColorSettings();
     }
 
     void setTaskManagerEnabled(boolean enabled) {
@@ -483,6 +503,86 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             mDockBatteryLevel.setVisibility(View.VISIBLE);
         }
     }
+
+    public void setclockcolor()
+	{
+	ContentResolver resolver = getContext().getContentResolver();
+	mTime = (TextView) findViewById(R.id.time_view);
+	mAmPm = (TextView) findViewById(R.id.am_pm_view);
+        int color = Settings.System.getInt(resolver,
+                Settings.System.HEADER_CLOCK_COLOR, 0xFFFFFFFF);
+
+        if (mTime != null) {
+            mTime.setTextColor(color);
+        }
+	 if (mAmPm != null) {
+            mAmPm.setTextColor(color);
+        }
+	}
+
+   public void setbatterytextcolor()
+	{
+	ContentResolver resolver = getContext().getContentResolver();
+	mBatteryLevel = (BatteryLevelTextView) findViewById(R.id.battery_level_text);
+        int color = Settings.System.getInt(resolver,
+                Settings.System.HEADER_BATTERY_TEXT_COLOR, 0xFFFFFFFF);
+
+        if (mBatteryLevel != null) {
+            mBatteryLevel.setTextColor(color);
+        	}
+	}
+
+   public void setalarmtextcolor()
+	{
+	ContentResolver resolver = getContext().getContentResolver();
+	mAlarmStatus = (TextView) findViewById(R.id.alarm_status);
+        int color = Settings.System.getInt(resolver,
+                Settings.System.HEADER_ALARM_TEXT_COLOR, 0xFFFFFFFF);
+
+        if (mAlarmStatus != null) {
+            mAlarmStatus.setTextColor(color);
+        	}
+	}
+ 
+  public void setdetailcolor()
+	{
+	ContentResolver resolver = getContext().getContentResolver();
+	mDateCollapsed = (TextView) findViewById(R.id.date_collapsed);
+        mDateExpanded = (TextView) findViewById(R.id.date_expanded);
+        int color = Settings.System.getInt(resolver,
+                Settings.System.HEADER_DETAIL_COLOR, 0xFFFFFFFF);
+
+        if (mDateCollapsed != null) {
+            mDateCollapsed.setTextColor(color);
+        }
+ 	if (mDateExpanded != null) {
+            mDateExpanded.setTextColor(color);
+        }
+	}
+
+  public void setweathercolor1()
+	{
+	ContentResolver resolver = getContext().getContentResolver();
+	mWeatherLine1 = (TextView) findViewById(R.id.weather_line_1);
+        int color = Settings.System.getInt(resolver,
+                Settings.System.HEADER_WEATHERONE_COLOR, 0xFFFFFFFF);
+
+        if (mWeatherLine1 != null) {
+            mWeatherLine1.setTextColor(color);
+        }
+	}
+
+   public void setweathercolor2()
+	{
+	ContentResolver resolver = getContext().getContentResolver();
+	mWeatherLine2 = (TextView) findViewById(R.id.weather_line_2);
+        int color = Settings.System.getInt(resolver,
+                Settings.System.HEADER_WEATHERTWO_COLOR, 0xFFFFFFFF);
+
+        if (mWeatherLine2 != null) {
+            mWeatherLine2.setTextColor(color);
+        }
+	}
 
     private void updateSignalClusterDetachment() {
         boolean detached = mExpanded;
@@ -1178,7 +1278,29 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
 
             updateVisibilities();
             requestCaptureValues();
+            setclockcolor();
+	    setdetailcolor();
+	    setweathercolor1();
+	    setweathercolor2();	
+	    setalarmtextcolor();
+	    setbatterytextcolor();
+            updateIconColorSettings();
         }
+    }
+
+    private void updateIconColorSettings() {
+        ContentResolver resolver = mContext.getContentResolver();
+        mIconColor = Settings.System.getInt(resolver,
+                Settings.System.HEADER_ICON_COLOR,
+                DEFAULT_ICON_COLOR);
+
+        ((ImageView)mSettingsButton).setColorFilter(mIconColor, Mode.MULTIPLY);
+        if (mTaskManagerButton != null) {
+            ((ImageView)mTaskManagerButton).setColorFilter(mIconColor, Mode.MULTIPLY);
+        }
+        Drawable alarmIcon = getResources().getDrawable(R.drawable.ic_access_alarms_small);
+        alarmIcon.setColorFilter(mIconColor, Mode.MULTIPLY);
+        mAlarmStatus.setCompoundDrawablesWithIntrinsicBounds(alarmIcon, null, null, null);
     }
 
     private void doUpdateStatusBarCustomHeader(final Drawable next, final boolean force) {

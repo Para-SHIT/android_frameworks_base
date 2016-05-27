@@ -5097,6 +5097,24 @@ public final class Settings {
         public static final String RECENT_APPS_CLEAR_ALL_ICON_COLOR = "recent_apps_clear_all_icon_color";
 
         /**
+         * Recents MemBar Text Color
+         * @hide
+         */
+        public static final String MEM_TEXT_COLOR= "mem_text_color";
+
+        /**
+         * Recents Clock Text Color
+         * @hide
+         */
+        public static final String RECENTS_CLOCK_COLOR= "recents_clock_color";
+
+        /**
+         * Recents Date Text Color
+         * @hide
+         */
+        public static final String RECENTS_DATE_COLOR= "recents_date_color";
+
+        /**
          * Enable built in CAF task manager
          * @hide
          */
@@ -5185,6 +5203,48 @@ public final class Settings {
          * @hide
          */
         public static final String RECENTS_FULL_SCREEN_DATE = "recents_full_screen_date";
+
+        /**
+         * Header Icon Color
+         * @hide
+         */
+        public static final String HEADER_ICON_COLOR = "header_icon_color";
+
+        /**
+         * Header Clock Color
+         * @hide
+         */
+        public static final String HEADER_CLOCK_COLOR = "header_clock_color";
+
+	/**
+         * Header Date Color
+         * @hide
+         */
+        public static final String HEADER_DETAIL_COLOR = "header_detail_color";
+
+	/**
+         * Header Weather Color
+         * @hide
+         */
+        public static final String HEADER_WEATHERONE_COLOR = "header_weatherone_color";
+
+	/**
+         * Header Weather Color
+         * @hide
+         */
+        public static final String HEADER_WEATHERTWO_COLOR = "header_weather2_color";
+
+        /**
+         * Header Battery Text Color
+         * @hide
+         */
+        public static final String HEADER_BATTERY_TEXT_COLOR = "header_battery_text_color";
+
+	/**
+         * Header alarm Color
+         * @hide
+         */
+        public static final String HEADER_ALARM_TEXT_COLOR = "header_alarm_text_color";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings

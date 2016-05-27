@@ -475,6 +475,9 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     private boolean showMemDisplay() {
         boolean enableMemDisplay = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.SYSTEMUI_RECENTS_MEM_DISPLAY, 0) == 1;
+        final Resources res = getContext().getResources();	
+	int mtextcolor = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.MEM_TEXT_COLOR, 0xFFFFFFFF);
 
         if (!enableMemDisplay) {
             mMemText.setVisibility(View.GONE);
@@ -485,6 +488,8 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         mMemBar.setVisibility(View.VISIBLE);
 
         updateMemoryStatus();
+        
+        mMemText.setTextColor(mtextcolor);
         return true;
     }
 
@@ -561,10 +566,16 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
                 Settings.System.RECENTS_FULL_SCREEN_DATE, 0, UserHandle.USER_CURRENT) != 0;
         boolean fullscreenEnabled = Settings.System.getIntForUser(mContext.getContentResolver(),
                 Settings.System.IMMERSIVE_RECENTS, 0, UserHandle.USER_CURRENT) != 0;
+        final Resources res = getContext().getResources();
+        int mClockcolor = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.RECENTS_CLOCK_COLOR, 0xFFFFFFFF);
+	int mDatecolor = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.RECENTS_DATE_COLOR, 0xFFFFFFFF);
 
         if (fullscreenEnabled) {
             if (showClock) {
                 mClock.setVisibility(View.VISIBLE);
+                mClock.setTextColor(mClockcolor);
             } else {
                 mClock.setVisibility(View.GONE);
             }
@@ -574,6 +585,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
                 String currentDateString =  dateFormat.format(dateStamp);
                 mDate.setText(currentDateString);
                 mDate.setVisibility(View.VISIBLE);
+                mDate.setTextColor(mDatecolor);
             } else {
                 mDate.setVisibility(View.GONE);
             }
