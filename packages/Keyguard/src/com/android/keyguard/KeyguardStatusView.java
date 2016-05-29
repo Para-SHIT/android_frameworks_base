@@ -333,6 +333,14 @@ public class KeyguardStatusView extends GridLayout implements
     private void  updateSettings(boolean forceHide) {
         final ContentResolver resolver = getContext().getContentResolver();
         final Resources res = getContext().getResources();
+        AlarmManager.AlarmClockInfo nextAlarm =
+                mLockPatternUtils.getNextAlarm();
+        boolean showAlarm = Settings.System.getIntForUser(resolver,
+                Settings.System.HIDE_LOCKSCREEN_ALARM, 1, UserHandle.USER_CURRENT) == 1;
+        boolean showClock = Settings.System.getIntForUser(resolver,
+                Settings.System.HIDE_LOCKSCREEN_CLOCK, 1, UserHandle.USER_CURRENT) == 1;
+        boolean showDate = Settings.System.getIntForUser(resolver,
+                Settings.System.HIDE_LOCKSCREEN_DATE, 1, UserHandle.USER_CURRENT) == 1;
         int  mClockFontSize = Settings.System.getIntForUser(resolver,
                 Settings.System.LOCKCLOCK_FONT_SIZE, 0,
                 UserHandle.USER_CURRENT);        
@@ -345,6 +353,28 @@ public class KeyguardStatusView extends GridLayout implements
                 
         int dateFont = Settings.System.getIntForUser(resolver,
                 Settings.System.LOCK_DATE_FONTS, 4, UserHandle.USER_CURRENT);
+
+        if (showClock) {
+            mClockView = (TextClock) findViewById(R.id.clock_view);
+            mClockView.setVisibility(View.VISIBLE);
+        } else {
+            mClockView = (TextClock) findViewById(R.id.clock_view);
+            mClockView.setVisibility(View.GONE);
+        }
+        if (showDate) {
+            mDateView = (TextClock) findViewById(R.id.date_view);
+            mDateView.setVisibility(View.VISIBLE);
+        } else {
+            mDateView = (TextClock) findViewById(R.id.date_view);
+            mDateView.setVisibility(View.GONE);
+        }
+        if (showAlarm && nextAlarm != null) {
+            mAlarmStatusView = (TextView) findViewById(R.id.alarm_status);
+            mAlarmStatusView.setVisibility(View.VISIBLE);
+        } else {
+            mAlarmStatusView = (TextView) findViewById(R.id.alarm_status);
+            mAlarmStatusView.setVisibility(View.GONE);
+        }
 
         if (lockClockFont == 0) {
             mClockView.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
@@ -642,6 +672,9 @@ public class KeyguardStatusView extends GridLayout implements
         static void update(Context context, boolean hasAlarm) {
             final Locale locale = Locale.getDefault();
             final Resources res = context.getResources();
+            final ContentResolver resolver = context.getContentResolver();
+            final boolean showAlarm = Settings.System.getIntForUser(resolver,
+                    Settings.System.HIDE_LOCKSCREEN_ALARM, 1, UserHandle.USER_CURRENT) == 1;
             final String dateViewSkel = res.getString(hasAlarm
                     ? R.string.abbrev_wday_month_day_no_year_alarm
                     : R.string.abbrev_wday_month_day_no_year);

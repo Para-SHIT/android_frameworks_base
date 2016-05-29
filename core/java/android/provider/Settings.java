@@ -4249,6 +4249,13 @@ public final class Settings {
         public static final String LOCKSCREEN_ALARM_COLOR = "lockscreen_alarm_color";
 
         /**
+         * Change the color of the lockscreen shortcuts icons
+         *
+         * @hide
+         */
+        public static final String LOCKSCREEN_SHORTCUT_ICON_COLOR = "lockscreen_shortcut_icon_color";
+
+        /**
          * Change the color of the lockscreen indication text
          *
          * @hide
@@ -5149,6 +5156,24 @@ public final class Settings {
          * @hide
          */
         public static final String NETWORK_TRAFFIC_HIDE_ARROW = "network_traffic_hide_arrow";
+
+        /**
+         * Hide lockscreen date
+         * @hide
+         */
+        public static final String HIDE_LOCKSCREEN_DATE = "hide_lockscreen_date";
+
+        /**
+         * Hide lockscreen clock
+         * @hide
+         */
+        public static final String HIDE_LOCKSCREEN_CLOCK = "hide_lockscreen_clock";
+
+        /**
+         * Hide lockscreen alarm
+         * @hide
+         */
+        public static final String HIDE_LOCKSCREEN_ALARM = "hide_lockscreen_alarm";
 
         /**
          * Option to launch slim actions in floating mode
