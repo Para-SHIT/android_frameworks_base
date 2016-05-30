@@ -69,7 +69,6 @@ public class QSPanel extends ViewGroup {
     private final TextView mDetailSettingsButton;
     private final TextView mDetailDoneButton;
     private final View mBrightnessView;
-    private final ImageView mBrightnessIcon;
     private final QSDetailClipper mClipper;
     private final H mHandler = new H();
 
@@ -130,8 +129,6 @@ public class QSPanel extends ViewGroup {
         mDetail.setClickable(true);
         mBrightnessView = LayoutInflater.from(context).inflate(
                 R.layout.quick_settings_brightness_dialog, this, false);
-        // enable the brightness icon
-        mBrightnessIcon = (ImageView) mBrightnessView.findViewById(R.id.brightness_icon);
         mFooter = new QSFooter(this, context);
         addView(mDetail);
         addView(mBrightnessView);
@@ -141,8 +138,12 @@ public class QSPanel extends ViewGroup {
         mSettingsObserver = new SettingsObserver(mHandler);
         updateResources();
 
+        boolean brightnessIconEnabled = Settings.System.getIntForUser(
+            mContext.getContentResolver(), Settings.System.BRIGHTNESS_ICON,
+                0, UserHandle.USER_CURRENT) == 1;
+
         mBrightnessController = new BrightnessController(getContext(),
-                mBrightnessIcon,
+                (ImageView) findViewById(R.id.brightness_icon),
                 (ToggleSlider) findViewById(R.id.brightness_slider));
 
         mDetailDoneButton.setOnClickListener(new OnClickListener() {
@@ -161,18 +162,44 @@ public class QSPanel extends ViewGroup {
         boolean brightnessSliderEnabled = CMSettings.Secure.getInt(
             mContext.getContentResolver(), CMSettings.Secure.QS_SHOW_BRIGHTNESS_SLIDER,
                 1) == 1;
+        boolean brightnessIconEnabled = Settings.System.getIntForUser(
+            mContext.getContentResolver(), Settings.System.BRIGHTNESS_ICON,
+                0, UserHandle.USER_CURRENT) == 1;
         ToggleSlider brightnessSlider = (ToggleSlider) findViewById(R.id.brightness_slider);
-        if (mBrightnessSliderEnabled) {
-            mBrightnessView.setVisibility(VISIBLE);
-            brightnessSlider.setVisibility(VISIBLE);
-            mBrightnessIcon.setVisibility(View.VISIBLE);
-        } else {
-            mBrightnessView.setVisibility(GONE);
-            brightnessSlider.setVisibility(GONE);
-            mBrightnessIcon.setVisibility(View.GONE);
+        ImageView brightnessIcon = (ImageView) findViewById(R.id.brightness_icon);
+        if(brightnessSlider!=null) {
+            if (mBrightnessSliderEnabled) {
+                 mBrightnessView.setVisibility(VISIBLE);
+                 brightnessSlider.setVisibility(VISIBLE);
+                         if(brightnessIcon!=null) {
+				  if (brightnessIconEnabled) {
+                                  brightnessIcon.setVisibility(VISIBLE);
+                                  } else {
+				  brightnessIcon.setVisibility(GONE);
+				  }
+			}
+                } else {
+                mBrightnessView.setVisibility(GONE);
+                brightnessSlider.setVisibility(GONE);
+                brightnessIcon.setVisibility(GONE);
+              }
         }
         updateResources();
+        updatecolors();
         return mBrightnessSliderEnabled;
+    }
+
+    public void updatecolors() {
+	ImageView brightnessIcon = (ImageView) findViewById(R.id.brightness_icon);
+        mQSCSwitch = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.QS_COLOR_SWITCH, 0) == 1;
+	int mIconColor = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.QS_BRIGHTNESS_ICON_COLOR, 0xFFFFFFFF);
+        if(brightnessIcon!=null) {        
+		if (mQSCSwitch) {	
+		brightnessIcon.setColorFilter(mIconColor, Mode.SRC_ATOP);
+		}
+	}	
     }
 
     /**
