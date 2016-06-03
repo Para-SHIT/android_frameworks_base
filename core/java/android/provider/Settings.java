@@ -4143,6 +4143,73 @@ public final class Settings {
         public static final String RECENTS_CLEAR_ALL_DISMISS_ALL = "recents_clear_all_dismiss_all";
 
         /**
+         * Change the number of columns displayed in the Settings dashboard
+         * @hide
+         */
+        public static final String DASHBOARD_COLUMNS = "dashboard_columns";
+
+        /**
+	 *
+         * Whether to show switches for wifi/cell/bt in the settings dashboard
+         * @hide
+         */
+        public static final String DASHBOARD_SWITCHES = "dashboard_switches";
+
+        /**
+         * Whether to display dashboard dividers
+         * @hide
+         */
+        public static final String DASHBOARD_TILEVIEW_DIVIDERS = "dashboard_tileview_dividers";
+
+        /**
+         * Whether to display dashboard tiles in a double line layout
+         * @hide
+         */
+        public static final String DASHBOARD_TILEVIEW_DOUBLE_LINES = "dashboard_tileview_double_lines";
+
+        /**
+         * Dashboard custom colors switch
+         * @hide
+         */
+        public static final String DASHBOARD_CUSTOM_COLORS = "db_custom_colors";
+
+	/**
+         * Dashboard icon colors
+         * @hide
+         */
+        public static final String DB_ICON_COLOR = "db_icon_color";
+
+	/**
+         * Dashboard text color
+         * @hide
+         */
+        public static final String DB_TEXT_COLOR = "db_text_color";
+        
+        /**
+         * Dashboard category text color
+         * @hide
+         */
+        public static final String SETTINGS_CATEGORY_TEXT_COLOR = "settings_category_text_color";
+        
+        /**
+        * Dashboard color
+        * @hide
+        */
+        public static final String SETTINGS_BG_COLOR = "settings_bg_color";
+
+        /**
+         * Dashboard title text size
+         * @hide
+         */
+        public static final String SETTINGS_TITLE_TEXT_SIZE = "settings_title_text_size";
+
+        /**
+         * Dashboard category text size
+         * @hide
+         */
+        public static final String SETTINGS_CATEGORY_TEXT_SIZE = "settings_category_text_size";
+
+        /**
          * Color temperature of the display during the day
          * @hide
          */
