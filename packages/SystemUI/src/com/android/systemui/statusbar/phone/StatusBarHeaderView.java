@@ -130,6 +130,12 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
 
     private int mClockCollapsedSize;
     private int mClockExpandedSize;
+ 
+    private int mStatusBarHeaderClockFont = FONT_NORMAL;
+    private int mStatusBarHeaderWeatherFont = FONT_NORMAL;
+    private int mStatusBarHeaderAlarmFont = FONT_NORMAL;
+    private int mStatusBarHeaderDateFont = FONT_NORMAL;	
+    private int mStatusBarHeaderDetailFont = FONT_NORMAL;
 
     // Task manager
     private boolean mShowTaskManager;
@@ -161,6 +167,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
 
     private SettingsObserver mSettingsObserver;
     private boolean mShowWeather;
+    private boolean mShowWeatherLocation;
     private boolean mShowBatteryTextExpanded;
 
     private UserInfoController mUserInfoController;
@@ -255,7 +262,6 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             updateBackgroundColor();
         }
         updateAvatarScale();
-        setStatusBarHeaderFontStyle(mStatusBarHeaderFontStyle);
         addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right,
@@ -464,6 +470,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             updateBackgroundColor();
         }
         updateIconColorSettings();
+        updateWeatherSettings();
     }
 
     void setTaskManagerEnabled(boolean enabled) {
@@ -488,7 +495,6 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         mDateExpanded.setVisibility(mExpanded && mAlarmShowing ? View.INVISIBLE : View.VISIBLE);
         mAlarmStatus.setVisibility(mExpanded && mAlarmShowing ? View.VISIBLE : View.INVISIBLE);
         mSettingsButton.setVisibility(mExpanded ? View.VISIBLE : View.INVISIBLE);
-        mWeatherContainer.setVisibility(mExpanded && mShowWeather ? View.VISIBLE : View.GONE);
         mQsDetailHeader.setVisibility(mExpanded && mShowingDetail ? View.VISIBLE : View.INVISIBLE);
         mTaskManagerButton.setVisibility(mExpanded && mShowTaskManager ? View.VISIBLE : View.GONE);
         mQsDetailHeader.setVisibility(mExpanded && mShowingDetail ? View.VISIBLE : View.GONE);
@@ -502,6 +508,12 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             mDockBatteryLevel.setForceShown(mExpanded && mShowBatteryTextExpanded);
             mDockBatteryLevel.setVisibility(View.VISIBLE);
         }
+        updateWeatherVisibility();
+    }
+
+    private void updateWeatherVisibility() {
+        mWeatherContainer.setVisibility(mExpanded && mShowWeather ? View.VISIBLE : View.GONE);
+        mWeatherLine2.setVisibility(mExpanded && mShowWeather && mShowWeatherLocation ? View.VISIBLE : View.GONE);
     }
 
     public void setclockcolor()
@@ -1210,7 +1222,11 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
 
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_SHOW_WEATHER), false, this, UserHandle.USER_ALL);
+                    Settings.System.STATUS_BAR_EXPANDED_HEADER_SHOW_WEATHER),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_EXPANDED_HEADER_SHOW_WEATHER_LOCATION),
+                    false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_BATTERY_STYLE), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -1219,8 +1235,6 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_COLOR_SWITCH), false, this,
                     UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_HEADER_FONT_STYLE), false, this, UserHandle.USER_ALL);
             update();
         }
 
@@ -1265,8 +1279,6 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             }
 
             mShowBatteryTextExpanded = showExpandedBatteryPercentage;
-            mShowWeather = Settings.System.getInt(
-                    resolver, Settings.System.STATUS_BAR_SHOW_WEATHER, 1) == 1;
 
             mQSCSwitch = Settings.System.getInt(
                     resolver, Settings.System.QS_COLOR_SWITCH, 0) == 1;
@@ -1274,8 +1286,28 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             mStatusBarHeaderFontStyle = Settings.System.getIntForUser(resolver,
                 Settings.System.STATUS_BAR_HEADER_FONT_STYLE, FONT_NORMAL,
                 UserHandle.USER_CURRENT);
-            setStatusBarHeaderFontStyle(mStatusBarHeaderFontStyle);
+	    mStatusBarHeaderWeatherFont = Settings.System.getIntForUser(resolver,
+                Settings.System.HEADER_WEATHER_FONT_STYLE , FONT_NORMAL,
+                UserHandle.USER_CURRENT);
+	    mStatusBarHeaderClockFont =Settings.System.getIntForUser(resolver,
+                Settings.System.HEADER_CLOCK_FONT_STYLE, FONT_NORMAL,
+                UserHandle.USER_CURRENT);
+	    mStatusBarHeaderAlarmFont =Settings.System.getIntForUser(resolver,
+                Settings.System.HEADER_ALARM_FONT_STYLE, FONT_NORMAL,
+                UserHandle.USER_CURRENT);
+	    mStatusBarHeaderDateFont =Settings.System.getIntForUser(resolver,
+                Settings.System.HEADER_DATE_FONT_STYLE, FONT_NORMAL,
+                UserHandle.USER_CURRENT);
+	    mStatusBarHeaderDetailFont =Settings.System.getIntForUser(resolver,
+                Settings.System.HEADER_DETAIL_FONT_STYLE, FONT_NORMAL,
+                UserHandle.USER_CURRENT);
 
+            setStatusBarHeaderFontStyle	(mStatusBarHeaderFontStyle);
+	    setStatusBarWeatherFontStyle(mStatusBarHeaderWeatherFont);
+	    setStatusBarClockFontStyle(mStatusBarHeaderClockFont);
+	    setStatusBarAlarmFontStyle(mStatusBarHeaderAlarmFont);
+	    setStatusBarDateFontStyle(mStatusBarHeaderDateFont);
+	    setStatusBarDetailFontStyle(mStatusBarHeaderDetailFont);
             updateVisibilities();
             requestCaptureValues();
             setclockcolor();
@@ -1285,7 +1317,21 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
 	    setalarmtextcolor();
 	    setbatterytextcolor();
             updateIconColorSettings();
+            updateWithUri(null);
         }
+    }
+
+    public void updateWithUri(Uri uri) {
+            ContentResolver resolver = mContext.getContentResolver();
+            boolean updateAll = (uri == null);
+
+            if (updateAll ||
+                uri.equals(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_EXPANDED_HEADER_SHOW_WEATHER))
+                || uri.equals(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_EXPANDED_HEADER_SHOW_WEATHER_LOCATION))) {
+                updateWeatherSettings();
+            }
     }
 
     private void updateIconColorSettings() {
@@ -1301,6 +1347,15 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         Drawable alarmIcon = getResources().getDrawable(R.drawable.ic_access_alarms_small);
         alarmIcon.setColorFilter(mIconColor, Mode.MULTIPLY);
         mAlarmStatus.setCompoundDrawablesWithIntrinsicBounds(alarmIcon, null, null, null);
+    }
+   
+    private void updateWeatherSettings() {
+        ContentResolver resolver = mContext.getContentResolver();
+        mShowWeather = Settings.System.getInt(resolver,
+                Settings.System.STATUS_BAR_EXPANDED_HEADER_SHOW_WEATHER, 0) == 1;
+        mShowWeatherLocation = Settings.System.getInt(resolver,
+                Settings.System.STATUS_BAR_EXPANDED_HEADER_SHOW_WEATHER_LOCATION, 1) == 1;
+        updateWeatherVisibility();
     }
 
     private void doUpdateStatusBarCustomHeader(final Drawable next, final boolean force) {
@@ -1385,283 +1440,571 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         mWeatherLine2.setShadowLayer(0, 0, 0, Color.BLACK);
     }
 
-    private void setStatusBarHeaderFontStyle(int font) {
+    private void setStatusBarDetailFontStyle(int font) {
+        switch (font) {
+            case FONT_NORMAL:
+            default:
+                mAmPm.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+                break;
+            case FONT_ITALIC:
+                mAmPm.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
+                break;
+            case FONT_BOLD:
+                mAmPm.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+                break;
+            case FONT_BOLD_ITALIC:
+                mAmPm.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
+                break;
+            case FONT_LIGHT:
+                mAmPm.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+                break;
+            case FONT_LIGHT_ITALIC:
+                mAmPm.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
+                break;
+            case FONT_THIN:
+                mAmPm.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+                break;
+            case FONT_THIN_ITALIC:
+                mAmPm.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
+                break;
+            case FONT_CONDENSED:
+                mAmPm.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
+                break;
+            case FONT_CONDENSED_ITALIC:
+                mAmPm.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
+                break;
+            case FONT_CONDENSED_LIGHT:
+                mAmPm.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
+                break;
+            case FONT_CONDENSED_LIGHT_ITALIC:
+                mAmPm.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
+                break;
+            case FONT_CONDENSED_BOLD:
+                mAmPm.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
+                break;
+            case FONT_CONDENSED_BOLD_ITALIC:
+                mAmPm.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
+                break;
+            case FONT_MEDIUM:
+                mAmPm.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+                break;
+            case FONT_MEDIUM_ITALIC:
+                mAmPm.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
+                break;
+            case FONT_BLACK:
+                mAmPm.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
+                break;
+            case FONT_BLACK_ITALIC:
+                mAmPm.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
+                break;
+            case FONT_DANCINGSCRIPT:
+                mAmPm.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
+                break;
+            case FONT_DANCINGSCRIPT_BOLD:
+                mAmPm.setTypeface(Typeface.create("cursive", Typeface.BOLD));
+                break;
+            case FONT_COMINGSOON:
+                mAmPm.setTypeface(Typeface.create("casual", Typeface.NORMAL));
+                break;
+            case FONT_NOTOSERIF:
+                mAmPm.setTypeface(Typeface.create("serif", Typeface.NORMAL));
+                break;
+            case FONT_NOTOSERIF_ITALIC:
+                mAmPm.setTypeface(Typeface.create("serif", Typeface.ITALIC));
+                break;
+            case FONT_NOTOSERIF_BOLD:
+                mAmPm.setTypeface(Typeface.create("serif", Typeface.BOLD));
+                break;
+            case FONT_NOTOSERIF_BOLD_ITALIC:
+                mAmPm.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
+                break;
+        }
+    }
+
+
+    private void setStatusBarDateFontStyle(int font) {
+        switch (font) {
+            case FONT_NORMAL:
+            default:
+                mDateCollapsed.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+                mDateExpanded.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+                break;
+            case FONT_ITALIC:
+                mDateCollapsed.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
+                mDateExpanded.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
+                break;
+            case FONT_BOLD:
+                mDateCollapsed.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+                mDateExpanded.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+                break;
+            case FONT_BOLD_ITALIC:
+                mDateCollapsed.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
+                mDateExpanded.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));       
+                mAlarmStatus.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
+                break;
+            case FONT_LIGHT:
+                mDateCollapsed.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+                mDateExpanded.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+                mAlarmStatus.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+                break;
+            case FONT_LIGHT_ITALIC:  
+                mDateCollapsed.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
+                mDateExpanded.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
+                break;
+            case FONT_THIN:
+                mDateCollapsed.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+                mDateExpanded.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+                break;
+            case FONT_THIN_ITALIC:
+                mDateCollapsed.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
+                mDateExpanded.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
+                break;
+            case FONT_CONDENSED:
+                mDateCollapsed.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
+                mDateExpanded.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
+                break;
+            case FONT_CONDENSED_ITALIC:
+                mDateCollapsed.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
+                mDateExpanded.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
+                break;
+            case FONT_CONDENSED_LIGHT:
+                mDateCollapsed.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
+                mDateExpanded.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
+                break;
+            case FONT_CONDENSED_LIGHT_ITALIC:
+                mDateCollapsed.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
+                mDateExpanded.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
+                break;
+            case FONT_CONDENSED_BOLD:
+                mDateCollapsed.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
+                mDateExpanded.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
+                break;
+            case FONT_CONDENSED_BOLD_ITALIC:
+                mDateCollapsed.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
+                mDateExpanded.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
+                break;
+            case FONT_MEDIUM:
+                mDateCollapsed.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+                mDateExpanded.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+                break;
+            case FONT_MEDIUM_ITALIC:
+                mTime.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
+                mDateCollapsed.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
+                mDateExpanded.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
+                mAlarmStatus.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
+                break;
+            case FONT_BLACK:
+                mDateCollapsed.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
+                mDateExpanded.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
+                break;
+            case FONT_BLACK_ITALIC:
+                mDateCollapsed.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
+                mDateExpanded.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
+                break;
+            case FONT_DANCINGSCRIPT:
+                mDateCollapsed.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
+                mDateExpanded.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
+                break;
+            case FONT_DANCINGSCRIPT_BOLD:
+                mDateCollapsed.setTypeface(Typeface.create("cursive", Typeface.BOLD));
+                mDateExpanded.setTypeface(Typeface.create("cursive", Typeface.BOLD));
+                break;
+            case FONT_COMINGSOON:
+                mDateCollapsed.setTypeface(Typeface.create("casual", Typeface.NORMAL));
+                mDateExpanded.setTypeface(Typeface.create("casual", Typeface.NORMAL));
+                break;
+            case FONT_NOTOSERIF:
+                mDateCollapsed.setTypeface(Typeface.create("serif", Typeface.NORMAL));
+                mDateExpanded.setTypeface(Typeface.create("serif", Typeface.NORMAL));
+                break;
+            case FONT_NOTOSERIF_ITALIC:
+                mDateCollapsed.setTypeface(Typeface.create("serif", Typeface.ITALIC));
+                mDateExpanded.setTypeface(Typeface.create("serif", Typeface.ITALIC));
+                break;
+            case FONT_NOTOSERIF_BOLD:
+                mDateCollapsed.setTypeface(Typeface.create("serif", Typeface.BOLD));
+                mDateExpanded.setTypeface(Typeface.create("serif", Typeface.BOLD));
+                break;
+            case FONT_NOTOSERIF_BOLD_ITALIC:
+                mDateCollapsed.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
+                mDateExpanded.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
+                break;
+        }
+    }
+
+
+    private void setStatusBarAlarmFontStyle(int font) {
+        switch (font) {
+            case FONT_NORMAL:
+            default:
+                mAlarmStatus.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+                break;
+            case FONT_ITALIC:
+                mAlarmStatus.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
+                break;
+            case FONT_BOLD:
+                mAlarmStatus.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+                break;
+            case FONT_BOLD_ITALIC:
+                mAlarmStatus.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
+                break;
+            case FONT_LIGHT:
+                mAlarmStatus.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+                break;
+            case FONT_LIGHT_ITALIC:
+               mAlarmStatus.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
+                break;
+            case FONT_THIN:
+               mAlarmStatus.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+                break;
+            case FONT_THIN_ITALIC:
+               mAlarmStatus.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
+                break;
+            case FONT_CONDENSED:
+               mAlarmStatus.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
+                break;
+            case FONT_CONDENSED_ITALIC:
+               mAlarmStatus.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
+                break;
+            case FONT_CONDENSED_LIGHT:
+               mAlarmStatus.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
+                break;
+            case FONT_CONDENSED_LIGHT_ITALIC:
+               mAlarmStatus.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
+                break;
+            case FONT_CONDENSED_BOLD:
+               mAlarmStatus.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
+                break;
+            case FONT_CONDENSED_BOLD_ITALIC:
+               mAlarmStatus.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
+                break;
+            case FONT_MEDIUM:
+               mAlarmStatus.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+                break;
+            case FONT_MEDIUM_ITALIC:
+               mAlarmStatus.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
+                break;
+            case FONT_BLACK:
+               mAlarmStatus.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
+                break;
+            case FONT_BLACK_ITALIC:
+               mAlarmStatus.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
+                break;
+            case FONT_DANCINGSCRIPT:
+               mAlarmStatus.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
+                break;
+            case FONT_DANCINGSCRIPT_BOLD:
+               mAlarmStatus.setTypeface(Typeface.create("cursive", Typeface.BOLD));
+                break;
+            case FONT_COMINGSOON:
+               mAlarmStatus.setTypeface(Typeface.create("casual", Typeface.NORMAL));
+                break;
+            case FONT_NOTOSERIF:
+              mAlarmStatus.setTypeface(Typeface.create("serif", Typeface.NORMAL));
+                break;
+            case FONT_NOTOSERIF_ITALIC:
+              mAlarmStatus.setTypeface(Typeface.create("serif", Typeface.ITALIC));
+                break;
+            case FONT_NOTOSERIF_BOLD:
+              mAlarmStatus.setTypeface(Typeface.create("serif", Typeface.BOLD));
+                break;
+            case FONT_NOTOSERIF_BOLD_ITALIC:
+              mAlarmStatus.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
+                break;
+        }
+    }
+
+    private void setStatusBarClockFontStyle(int font) {
         switch (font) {
             case FONT_NORMAL:
             default:
                 mTime.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
-                mAmPm.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
-                mDateCollapsed.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
-                mDateExpanded.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
-                mBatteryLevel.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
-                mAlarmStatus.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+                break;
+            case FONT_ITALIC:
+                mTime.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
+                break;
+            case FONT_BOLD:
+                mTime.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+                break;
+            case FONT_BOLD_ITALIC:
+                mTime.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
+                break;
+            case FONT_LIGHT:
+                mTime.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+                break;
+            case FONT_LIGHT_ITALIC:
+                mTime.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));   
+                break;
+            case FONT_THIN:
+                mTime.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+                break;
+            case FONT_THIN_ITALIC:
+                mTime.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
+                break;
+            case FONT_CONDENSED:
+                mTime.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
+                break;
+            case FONT_CONDENSED_ITALIC:
+                mTime.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
+                break;
+            case FONT_CONDENSED_LIGHT:
+                mTime.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));;
+                break;
+            case FONT_CONDENSED_LIGHT_ITALIC:
+                mTime.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
+                break;
+            case FONT_CONDENSED_BOLD:
+                mTime.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
+                break;
+            case FONT_CONDENSED_BOLD_ITALIC:
+                mTime.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
+                break;
+            case FONT_MEDIUM:
+                mTime.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+                break;
+            case FONT_MEDIUM_ITALIC:
+                mTime.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
+                break;
+            case FONT_BLACK:
+                mTime.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
+                break;
+            case FONT_BLACK_ITALIC:
+                mTime.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
+                break;
+            case FONT_DANCINGSCRIPT:
+                mTime.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
+                break;
+            case FONT_DANCINGSCRIPT_BOLD:
+                mTime.setTypeface(Typeface.create("cursive", Typeface.BOLD));
+                break;
+            case FONT_COMINGSOON:
+                mTime.setTypeface(Typeface.create("casual", Typeface.NORMAL));
+                break;
+            case FONT_NOTOSERIF:
+                mTime.setTypeface(Typeface.create("serif", Typeface.NORMAL));
+                break;
+            case FONT_NOTOSERIF_ITALIC:
+                mTime.setTypeface(Typeface.create("serif", Typeface.ITALIC));
+                break;
+            case FONT_NOTOSERIF_BOLD:
+                mTime.setTypeface(Typeface.create("serif", Typeface.BOLD));
+                break;
+            case FONT_NOTOSERIF_BOLD_ITALIC:
+                mTime.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
+                break;
+        }
+    }
+
+
+	private void setStatusBarWeatherFontStyle(int font) {
+        switch (font) {
+            case FONT_NORMAL:
+            default:
                 mWeatherLine1.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
                 mWeatherLine2.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
                 break;
             case FONT_ITALIC:
-                mTime.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
-                mAmPm.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
-                mDateCollapsed.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
-                mDateExpanded.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
-                mBatteryLevel.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
-                mAlarmStatus.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
                 mWeatherLine1.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
                 mWeatherLine2.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
                 break;
             case FONT_BOLD:
-                mTime.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
-                mAmPm.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
-                mDateCollapsed.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
-                mDateExpanded.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
-                mBatteryLevel.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
-                mAlarmStatus.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
                 mWeatherLine1.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
                 mWeatherLine2.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
                 break;
             case FONT_BOLD_ITALIC:
-                mTime.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
-                mAmPm.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
-                mDateCollapsed.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
-                mDateExpanded.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
-                mBatteryLevel.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
-                mAlarmStatus.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
                 mWeatherLine1.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
                 mWeatherLine2.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
                 break;
             case FONT_LIGHT:
-                mTime.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-                mAmPm.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-                mDateCollapsed.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-                mDateExpanded.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-                mBatteryLevel.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
-                mAlarmStatus.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
                 mWeatherLine1.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
                 mWeatherLine2.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
                 break;
             case FONT_LIGHT_ITALIC:
-                mTime.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
-                mAmPm.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
-                mDateCollapsed.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
-                mDateExpanded.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
-                mBatteryLevel.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
-                mAlarmStatus.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
                 mWeatherLine1.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
                 mWeatherLine2.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
                 break;
             case FONT_THIN:
-                mTime.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
-                mAmPm.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
-                mDateCollapsed.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
-                mDateExpanded.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
-                mBatteryLevel.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
-                mAlarmStatus.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
                 mWeatherLine1.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
-                mWeatherLine2.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+                mWeatherLine2.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));        
                 break;
             case FONT_THIN_ITALIC:
-                mTime.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
-                mAmPm.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
-                mDateCollapsed.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
-                mDateExpanded.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
-                mBatteryLevel.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
-                mAlarmStatus.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
                 mWeatherLine1.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
                 mWeatherLine2.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
                 break;
             case FONT_CONDENSED:
-                mTime.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
-                mAmPm.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
-                mDateCollapsed.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
-                mDateExpanded.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
-                mBatteryLevel.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
-                mAlarmStatus.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
                 mWeatherLine1.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
                 mWeatherLine2.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
                 break;
             case FONT_CONDENSED_ITALIC:
-                mTime.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
-                mAmPm.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
-                mDateCollapsed.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
-                mDateExpanded.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
-                mBatteryLevel.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
-                mAlarmStatus.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
                 mWeatherLine1.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
                 mWeatherLine2.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
                 break;
             case FONT_CONDENSED_LIGHT:
-                mTime.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
-                mAmPm.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
-                mDateCollapsed.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
-                mDateExpanded.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
-                mBatteryLevel.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
-                mAlarmStatus.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
                 mWeatherLine1.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
                 mWeatherLine2.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
                 break;
             case FONT_CONDENSED_LIGHT_ITALIC:
-                mTime.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
-                mAmPm.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
-                mDateCollapsed.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
-                mDateExpanded.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
-                mBatteryLevel.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
-                mAlarmStatus.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
                 mWeatherLine1.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
                 mWeatherLine2.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
                 break;
             case FONT_CONDENSED_BOLD:
-                mTime.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
-                mAmPm.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
-                mDateCollapsed.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
-                mDateExpanded.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
-                mBatteryLevel.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
-                mAlarmStatus.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
                 mWeatherLine1.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
                 mWeatherLine2.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
                 break;
             case FONT_CONDENSED_BOLD_ITALIC:
-                mTime.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
-                mAmPm.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
-                mDateCollapsed.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
-                mDateExpanded.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
-                mBatteryLevel.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
-                mAlarmStatus.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
                 mWeatherLine1.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
                 mWeatherLine2.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
                 break;
             case FONT_MEDIUM:
-                mTime.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-                mAmPm.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-                mDateCollapsed.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-                mDateExpanded.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-                mBatteryLevel.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
-                mAlarmStatus.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
                 mWeatherLine1.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
                 mWeatherLine2.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
                 break;
             case FONT_MEDIUM_ITALIC:
-                mTime.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
-                mAmPm.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
-                mDateCollapsed.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
-                mDateExpanded.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
-                mBatteryLevel.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
-                mAlarmStatus.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
                 mWeatherLine1.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
                 mWeatherLine2.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
+
                 break;
             case FONT_BLACK:
-                mTime.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
-                mAmPm.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
-                mDateCollapsed.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
-                mDateExpanded.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
-                mBatteryLevel.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
-                mAlarmStatus.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
                 mWeatherLine1.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
                 mWeatherLine2.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
                 break;
             case FONT_BLACK_ITALIC:
-                mTime.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
-                mAmPm.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
-                mDateCollapsed.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
-                mDateExpanded.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
-                mBatteryLevel.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
-                mAlarmStatus.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
                 mWeatherLine1.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
                 mWeatherLine2.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
                 break;
             case FONT_DANCINGSCRIPT:
-                mTime.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
-                mAmPm.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
-                mDateCollapsed.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
-                mDateExpanded.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
-                mBatteryLevel.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
-                mAlarmStatus.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
                 mWeatherLine1.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
                 mWeatherLine2.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
                 break;
             case FONT_DANCINGSCRIPT_BOLD:
-                mTime.setTypeface(Typeface.create("cursive", Typeface.BOLD));
-                mAmPm.setTypeface(Typeface.create("cursive", Typeface.BOLD));
-                mDateCollapsed.setTypeface(Typeface.create("cursive", Typeface.BOLD));
-                mDateExpanded.setTypeface(Typeface.create("cursive", Typeface.BOLD));
-                mBatteryLevel.setTypeface(Typeface.create("cursive", Typeface.BOLD));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("cursive", Typeface.BOLD));
-                mAlarmStatus.setTypeface(Typeface.create("cursive", Typeface.BOLD));
                 mWeatherLine1.setTypeface(Typeface.create("cursive", Typeface.BOLD));
                 mWeatherLine2.setTypeface(Typeface.create("cursive", Typeface.BOLD));
                 break;
             case FONT_COMINGSOON:
-                mTime.setTypeface(Typeface.create("casual", Typeface.NORMAL));
-                mAmPm.setTypeface(Typeface.create("casual", Typeface.NORMAL));
-                mDateCollapsed.setTypeface(Typeface.create("casual", Typeface.NORMAL));
-                mDateExpanded.setTypeface(Typeface.create("casual", Typeface.NORMAL));
-                mBatteryLevel.setTypeface(Typeface.create("casual", Typeface.NORMAL));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("casual", Typeface.NORMAL));
-                mAlarmStatus.setTypeface(Typeface.create("casual", Typeface.NORMAL));
                 mWeatherLine1.setTypeface(Typeface.create("casual", Typeface.NORMAL));
                 mWeatherLine2.setTypeface(Typeface.create("casual", Typeface.NORMAL));
                 break;
             case FONT_NOTOSERIF:
-                mTime.setTypeface(Typeface.create("serif", Typeface.NORMAL));
-                mAmPm.setTypeface(Typeface.create("serif", Typeface.NORMAL));
-                mDateCollapsed.setTypeface(Typeface.create("serif", Typeface.NORMAL));
-                mDateExpanded.setTypeface(Typeface.create("serif", Typeface.NORMAL));
-                mBatteryLevel.setTypeface(Typeface.create("serif", Typeface.NORMAL));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("serif", Typeface.NORMAL));
-                mAlarmStatus.setTypeface(Typeface.create("serif", Typeface.NORMAL));
                 mWeatherLine1.setTypeface(Typeface.create("serif", Typeface.NORMAL));
                 mWeatherLine2.setTypeface(Typeface.create("serif", Typeface.NORMAL));
                 break;
             case FONT_NOTOSERIF_ITALIC:
-                mTime.setTypeface(Typeface.create("serif", Typeface.ITALIC));
-                mAmPm.setTypeface(Typeface.create("serif", Typeface.ITALIC));
-                mDateCollapsed.setTypeface(Typeface.create("serif", Typeface.ITALIC));
-                mDateExpanded.setTypeface(Typeface.create("serif", Typeface.ITALIC));
-                mBatteryLevel.setTypeface(Typeface.create("serif", Typeface.ITALIC));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("serif", Typeface.ITALIC));
-                mAlarmStatus.setTypeface(Typeface.create("serif", Typeface.ITALIC));
                 mWeatherLine1.setTypeface(Typeface.create("serif", Typeface.ITALIC));
                 mWeatherLine2.setTypeface(Typeface.create("serif", Typeface.ITALIC));
                 break;
             case FONT_NOTOSERIF_BOLD:
-                mTime.setTypeface(Typeface.create("serif", Typeface.BOLD));
-                mAmPm.setTypeface(Typeface.create("serif", Typeface.BOLD));
-                mDateCollapsed.setTypeface(Typeface.create("serif", Typeface.BOLD));
-                mDateExpanded.setTypeface(Typeface.create("serif", Typeface.BOLD));
-                mBatteryLevel.setTypeface(Typeface.create("serif", Typeface.BOLD));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("serif", Typeface.BOLD));
-                mAlarmStatus.setTypeface(Typeface.create("serif", Typeface.BOLD));
                 mWeatherLine1.setTypeface(Typeface.create("serif", Typeface.BOLD));
                 mWeatherLine2.setTypeface(Typeface.create("serif", Typeface.BOLD));
                 break;
             case FONT_NOTOSERIF_BOLD_ITALIC:
-                mTime.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
-                mAmPm.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
-                mDateCollapsed.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
-                mDateExpanded.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
-                mBatteryLevel.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
-                mQsDetailHeaderTitle.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
-                mAlarmStatus.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
                 mWeatherLine1.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
                 mWeatherLine2.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
+                break;
+        }
+    }
+
+    private void setStatusBarHeaderFontStyle(int font) {
+        switch (font) {
+            case FONT_NORMAL:
+            default:
+                mBatteryLevel.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+                break;
+            case FONT_ITALIC:
+                mBatteryLevel.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
+                break;
+            case FONT_BOLD:
+                mBatteryLevel.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+                break;
+            case FONT_BOLD_ITALIC:
+                mBatteryLevel.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
+                break;
+            case FONT_LIGHT:
+                mBatteryLevel.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+                break;
+            case FONT_LIGHT_ITALIC:
+                mBatteryLevel.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
+                break;
+            case FONT_THIN:
+                mBatteryLevel.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+                break;
+            case FONT_THIN_ITALIC:
+                mBatteryLevel.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
+                break;
+            case FONT_CONDENSED:
+                mBatteryLevel.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
+                break;
+            case FONT_CONDENSED_ITALIC:
+                mBatteryLevel.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
+                break;
+            case FONT_CONDENSED_LIGHT:
+                mBatteryLevel.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
+                break;
+            case FONT_CONDENSED_LIGHT_ITALIC:
+                mBatteryLevel.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
+                break;
+            case FONT_CONDENSED_BOLD:
+                mBatteryLevel.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
+                break;
+            case FONT_CONDENSED_BOLD_ITALIC:
+                mBatteryLevel.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
+                break;
+            case FONT_MEDIUM:
+                mBatteryLevel.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+                break;
+            case FONT_MEDIUM_ITALIC:
+                mBatteryLevel.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
+                break;
+            case FONT_BLACK:
+                mBatteryLevel.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
+                break;
+            case FONT_BLACK_ITALIC:
+                mBatteryLevel.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
+                break;
+            case FONT_DANCINGSCRIPT:
+                mBatteryLevel.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
+                break;
+            case FONT_DANCINGSCRIPT_BOLD:
+                mBatteryLevel.setTypeface(Typeface.create("cursive", Typeface.BOLD));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("cursive", Typeface.BOLD));
+                break;
+            case FONT_COMINGSOON:
+                mBatteryLevel.setTypeface(Typeface.create("casual", Typeface.NORMAL));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("casual", Typeface.NORMAL));
+                break;
+            case FONT_NOTOSERIF:
+                mBatteryLevel.setTypeface(Typeface.create("serif", Typeface.NORMAL));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("serif", Typeface.NORMAL));
+                break;
+            case FONT_NOTOSERIF_ITALIC:
+                mBatteryLevel.setTypeface(Typeface.create("serif", Typeface.ITALIC));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("serif", Typeface.ITALIC));
+                break;
+            case FONT_NOTOSERIF_BOLD:
+                mBatteryLevel.setTypeface(Typeface.create("serif", Typeface.BOLD));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("serif", Typeface.BOLD));
+                break;
+            case FONT_NOTOSERIF_BOLD_ITALIC:
+                mBatteryLevel.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
+                mQsDetailHeaderTitle.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
                 break;
         }
     }

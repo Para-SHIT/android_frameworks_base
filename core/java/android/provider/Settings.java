@@ -4031,12 +4031,6 @@ public final class Settings {
         public static final String DOUBLE_TAP_SLEEP_ANYWHERE = "double_tap_sleep_anywhere";
 
         /**
-         * Boolean value on whether to show weather in the statusbar
-         * @hide
-         */
-        public static final String STATUS_BAR_SHOW_WEATHER = "status_bar_show_weather";
-
-        /**
          * show clear all recents button
          *  @hide
          */
@@ -5302,6 +5296,37 @@ public final class Settings {
         public static final String STATUS_BAR_HEADER_FONT_STYLE = "status_bar_header_font_style";
 
         /**
+         * Header Clock Font Style
+         * @hide
+         */
+        public static final String HEADER_CLOCK_FONT_STYLE = "header_clock_font_style";
+
+
+	/**
+         * Hide Weather Font Style
+         * @hide
+         */
+        public static final String HEADER_WEATHER_FONT_STYLE = "header_weather_font_style";
+
+	/**
+         * Hide AM/PM Font Style
+         * @hide
+         */
+        public static final String HEADER_DETAIL_FONT_STYLE = "header_detail_font_style";
+
+	/**
+         * Hide Date Font Style
+         * @hide
+         */
+        public static final String HEADER_DATE_FONT_STYLE = "header_date_font_style";
+
+	/**
+         * Hide Alarm Font Style
+         * @hide
+         */
+        public static final String HEADER_ALARM_FONT_STYLE = "header_alarm_font_style";
+
+        /**
          * Immersive recents options
          *
          * 0 = Default AOSP look
@@ -5409,6 +5434,18 @@ public final class Settings {
          * @hide
          */
         public static final String ANIM_TILE_INTERPOLATOR = "anim_tile_interpolator";
+
+        /**
+         * Boolean value on whether to show weather in the statusbar
+         * @hide
+         */
+        public static final String STATUS_BAR_EXPANDED_HEADER_SHOW_WEATHER = "status_bar_expanded_header_show_weather";
+
+        /**
+         * Whether to show the weather location on the header of the expanded status bar
+         * @hide
+         */
+        public static final String STATUS_BAR_EXPANDED_HEADER_SHOW_WEATHER_LOCATION = "status_bar_expanded_header_show_weather_location";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
