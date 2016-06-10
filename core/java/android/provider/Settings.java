@@ -5448,6 +5448,26 @@ public final class Settings {
         public static final String STATUS_BAR_EXPANDED_HEADER_SHOW_WEATHER_LOCATION = "status_bar_expanded_header_show_weather_location";
 
         /**
+         * Statusbar Temasek logo
+         * @hide
+         */
+        public static final String STATUS_BAR_TEMASEK_LOGO = "status_bar_temasek_logo";
+
+        /**
+         * Style of Status bar logo
+         * 0 - Left (default)
+         * 1 - Right
+         * @hide
+         */
+        public static final String STATUS_BAR_TEMASEK_LOGO_STYLE = "status_bar_temasek_logo_style";
+
+        /**
+         * Statusbar Temasek logo color setting
+         * @hide
+         */
+        public static final String STATUS_BAR_TEMASEK_LOGO_COLOR = "status_bar_temasek_logo_color";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *

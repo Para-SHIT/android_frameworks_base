@@ -66,4 +66,10 @@
     <color name="recents_full_screen_clock_text_color">@android:color/white</color>
     <color name="recents_full_screen_clock_date_color">@android:color/white</color>
 
+    <!-- No recents logo and text colors --> 
+    <color name="no_recents_one">#5affffff</color>
+    <color name="no_recents_two">#5affffff</color>
+    <color name="no_recents_three">#5affffff</color>
+    <color name="no_recents_text_color">#b2ffffff</color>
+
 </resources>

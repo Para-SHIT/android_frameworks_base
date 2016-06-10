@@ -63,6 +63,16 @@
                 android:layout_height="match_parent"
                 >
 
+                <ImageView
+                    android:id="@+id/left_temasek_logo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingEnd="2dip"
+                    android:src="@drawable/ic_status_bar_logo"
+                    android:scaleType="center"
+                    android:visibility="gone"
+                    />
+
                 <TextView
                     android:id="@+id/left_clock"
                     android:textAppearance="@style/TextAppearance.StatusBar.Clock"
@@ -117,7 +127,17 @@
             android:orientation="horizontal"
             >
 
- 	<com.android.systemui.statusbar.policy.NetworkTraffic
+             <ImageView
+                 android:id="@+id/before_icons_temasek_logo"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content"
+                 android:paddingEnd="2dip"
+                 android:src="@drawable/ic_status_bar_logo"
+                 android:scaleType="center"
+                 android:visibility="gone"
+                 />
+
+ 	     <com.android.systemui.statusbar.policy.NetworkTraffic
                 android:id="@+id/networkTraffic"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -167,6 +187,17 @@
                 android:gravity="center_vertical|start"
                 android:visibility="gone"
                 />
+
+            <ImageView
+                android:id="@+id/temasek_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingEnd="2dip"
+                android:src="@drawable/ic_status_bar_logo"
+                android:scaleType="center"
+                android:visibility="gone"
+                />
+
         </com.android.keyguard.AlphaOptimizedLinearLayout>
     </LinearLayout>
 
@@ -177,6 +208,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
+
+        <ImageView
+            android:id="@+id/center_temasek_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="2dip"
+            android:src="@drawable/ic_status_bar_logo"
+            android:scaleType="center"
+            android:visibility="gone"
+            />
 
         <TextView
             android:id="@+id/center_clock"
