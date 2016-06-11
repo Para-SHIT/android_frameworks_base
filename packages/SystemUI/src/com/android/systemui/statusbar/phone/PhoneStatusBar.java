@@ -211,7 +211,6 @@ import com.android.systemui.statusbar.policy.KeyButtonView;
 import com.android.systemui.statusbar.policy.KeyguardMonitor;
 import com.android.systemui.statusbar.policy.KeyguardUserSwitcher;
 import com.android.systemui.statusbar.policy.LocationControllerImpl;
-import com.android.systemui.statusbar.policy.NetworkController.NetworkSignalChangedCallback;
 import com.android.systemui.statusbar.policy.NetworkControllerImpl;
 import com.android.systemui.statusbar.policy.NextAlarmController;
 import com.android.systemui.statusbar.policy.PreviewInflater;
@@ -452,8 +451,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private ImageView temasekLogo;
     private int mTemasekLogoStyle;
 
-    private TextView mWifiSsidLabel;
-    private boolean mShowWifiSsidLabel;
+    // Custom Logos
+    private boolean mCustomlogo;
+    private ImageView mCLogo;
+    private int mCustomlogoColor;	
+    private int mCustomlogoStyle;
 
     private boolean mShowCarrierInPanel = false;
 
@@ -591,9 +593,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.NOTIFICATION_DRAWER_CLEAR_ALL_ICON_COLOR),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.Global.WIFI_STATUS_BAR_SSID),
-                    false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.ENABLE_TASK_MANAGER),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -620,6 +619,15 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_WEATHER_FONT_STYLE),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+		    Settings.System.SHOW_CUSTOM_LOGO),
+		    false, this, UserHandle.USER_ALL);
+	    resolver.registerContentObserver(Settings.System.getUriFor(
+		    Settings.System.CUSTOM_LOGO_COLOR),
+		    false, this, UserHandle.USER_ALL);
+	    resolver.registerContentObserver(Settings.System.getUriFor(
+		    Settings.System.CUSTOM_LOGO_STYLE),
+		    false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.QS_NUM_TILE_COLUMNS), false, this,
                     UserHandle.USER_ALL);
@@ -687,11 +695,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                             mContext.getContentResolver(),
                             Settings.System.QS_COLOR_SWITCH,
                             0, UserHandle.USER_CURRENT) == 1;
-                    recreateStatusBar();
-                    updateRowStates();
-                    updateSpeedbump();
-                    updateClearAll();
-                    updateEmptyShadeView();
+                    DontStressOnRecreate();
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.PIE_CONTROLS))) {
                     attachPieContainer(isPieEnabled());
@@ -715,11 +719,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                             mContext.getContentResolver(),
                             Settings.System.ENABLE_TASK_MANAGER,
                             0, UserHandle.USER_CURRENT) == 1;
-                    recreateStatusBar();
-                    updateRowStates();
-                    updateSpeedbump();
-                    updateClearAll();
-                    updateEmptyShadeView();
+                    DontStressOnRecreate();
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_WEATHER_TEMP_STYLE))
                     || uri.equals(Settings.System.getUriFor(
@@ -728,23 +728,21 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.STATUS_BAR_WEATHER_SIZE))
                     || uri.equals(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_WEATHER_FONT_STYLE))) {
-                    recreateStatusBar();
-                    updateRowStates();
-                    updateSpeedbump();
-                    updateClearAll();
-                    updateEmptyShadeView();
+                    DontStressOnRecreate();
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_TEMASEK_LOGO_STYLE))
                     || uri.equals(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_TEMASEK_LOGO_COLOR))) {
-                    recreateStatusBar();
+                    DontStressOnRecreate();
+            } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.SHOW_CUSTOM_LOGO))) {
+                    DontStressOnRecreate();
+	    } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.CUSTOM_LOGO_STYLE))) {
+                    DontStressOnRecreate();
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CUSTOM_HEADER_DEFAULT))) {
-                    recreateStatusBar();
-                    updateRowStates();
-                    updateSpeedbump();
-                    updateClearAll();
-                    updateEmptyShadeView();
+                    DontStressOnRecreate();
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.HEADS_UP_SNOOZE_TIME))) {
                 final int snoozeTime = Settings.System.getIntForUser(
@@ -838,9 +836,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             boolean navLeftInLandscape = Settings.System.getIntForUser(resolver,
                     Settings.System.NAVBAR_LEFT_IN_LANDSCAPE, 0, UserHandle.USER_CURRENT) == 1;
 
-            mShowWifiSsidLabel = Settings.Global.getInt(resolver,
-                Settings.Global.WIFI_STATUS_BAR_SSID, 0) == 1;
-
             mHeadsUpTouchOutside = Settings.System.getInt(
                     resolver, Settings.System.HEADS_UP_TOUCH_OUTSIDE, 0) == 1;
 
@@ -902,6 +897,93 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 		    temasekLogo = (ImageView) mStatusBarView.findViewById(R.id.before_icons_temasek_logo);
 		    } 
 		    showTemasekLogo(mTemasekLogo, mTemasekLogoColor,  mTemasekLogoStyle);
+
+            mCustomlogoStyle = Settings.System.getIntForUser(
+	    resolver, Settings.System.CUSTOM_LOGO_STYLE, 0,
+	    UserHandle.USER_CURRENT);
+	    mCustomlogo = Settings.System.getIntForUser(resolver,
+	    Settings.System.SHOW_CUSTOM_LOGO, 0, mCurrentUserId) == 1;
+	    mCustomlogoColor = Settings.System.getIntForUser(resolver,
+	    Settings.System.CUSTOM_LOGO_COLOR, 0xFFFFFFFF, mCurrentUserId);
+	    if ( mCustomlogoStyle == 0) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom);
+	    } else if ( mCustomlogoStyle == 1) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_1);
+	    } else if ( mCustomlogoStyle == 2) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_2);
+	    } else if ( mCustomlogoStyle == 3) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_3);
+	    } else if ( mCustomlogoStyle == 4) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_4);
+	    } else if ( mCustomlogoStyle == 5) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_5);
+	    } else if ( mCustomlogoStyle == 6) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_6);
+	    } else if ( mCustomlogoStyle == 7) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_7);
+	    } else if ( mCustomlogoStyle == 8) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_8);
+	    } else if ( mCustomlogoStyle == 9) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_9);
+	    } else if ( mCustomlogoStyle == 10) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_10);
+	    } else if ( mCustomlogoStyle == 11) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_11);
+	    } else if ( mCustomlogoStyle == 12) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_12);
+	    } else if ( mCustomlogoStyle == 13) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_13);
+	    } else if ( mCustomlogoStyle == 14) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_14);
+	    } else if ( mCustomlogoStyle == 15) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_15);
+	    } else if ( mCustomlogoStyle == 16) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_16);
+	    } else if ( mCustomlogoStyle == 17) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_17);
+	    } else if ( mCustomlogoStyle == 18) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_18);
+	    } else if ( mCustomlogoStyle == 19) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_19);
+	    } else if ( mCustomlogoStyle == 20) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_20);
+	    } else if ( mCustomlogoStyle == 21) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_21);
+	    } else if ( mCustomlogoStyle == 22) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_22);
+	    } else if ( mCustomlogoStyle == 23) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_23);
+	    } else if ( mCustomlogoStyle == 24) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_24);
+	    } else if ( mCustomlogoStyle == 25) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_25);
+	    } else if ( mCustomlogoStyle == 26) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_26);
+	    } else if ( mCustomlogoStyle == 27) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_27);
+	    } else if ( mCustomlogoStyle == 28) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_28);
+	    } else if ( mCustomlogoStyle == 29) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_29);
+	    } else if ( mCustomlogoStyle == 30) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_30);
+	    } else if ( mCustomlogoStyle == 31) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_31);
+	    } else if ( mCustomlogoStyle == 32) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_32);
+	    } else if ( mCustomlogoStyle == 33) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_33);
+	    } else if ( mCustomlogoStyle == 34) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_34);
+	    } else if ( mCustomlogoStyle == 35) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_35);
+	    } else if ( mCustomlogoStyle == 36) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_36);
+	    } else if ( mCustomlogoStyle == 37) {
+	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_37);
+	    }
+
+	    showmCustomlogo(mCustomlogo, mCustomlogoColor,  mCustomlogoStyle);
 
             if (mQSPanel != null) {
                 mQSPanel.updateNumColumns();
@@ -1614,11 +1696,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mSuController = new SuControllerImpl(mContext);
         }
 
-        mWifiSsidLabel = (TextView)mStatusBarView.findViewById(R.id.status_bar_wifi_label);
-        if (mWifiSsidLabel != null) {
-            mNetworkController.addNetworkSignalChangedCallback(mWifiCallback);
-        }
-
         mCarrierLabel = (TextView)mStatusBarWindowContent.findViewById(R.id.carrier_label);
         mShowCarrierInPanel = (mCarrierLabel != null);
         if (DEBUG) Log.v(TAG, "carrierlabel=" + mCarrierLabel + " show=" + mShowCarrierInPanel);
@@ -1653,7 +1730,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 });
             }
         }
-        updateClockSize();
 
         final SignalClusterView signalCluster =
             (SignalClusterView) mStatusBarView.findViewById(R.id.signal_cluster);
@@ -1721,6 +1797,92 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mTemasekLogoColor = Settings.System.getIntForUser(mContext.getContentResolver(),
                 Settings.System.STATUS_BAR_TEMASEK_LOGO_COLOR, 0xFFFFFFFF, mCurrentUserId);
         showTemasekLogo(mTemasekLogo, mTemasekLogoColor, mTemasekLogoStyle);
+
+        mCustomlogoStyle = Settings.System.getIntForUser(mContext.getContentResolver(), 
+		Settings.System.CUSTOM_LOGO_STYLE, 0,
+                UserHandle.USER_CURRENT);
+        mCustomlogo = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.SHOW_CUSTOM_LOGO, 0, mCurrentUserId) == 1;
+        mCustomlogoColor = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.CUSTOM_LOGO_COLOR, 0xFFFFFFFF, mCurrentUserId);
+	if ( mCustomlogoStyle == 0) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom);
+	    } else if ( mCustomlogoStyle == 1) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_1);
+	    } else if ( mCustomlogoStyle == 2) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_2);
+	    } else if ( mCustomlogoStyle == 3) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_3);
+	    } else if ( mCustomlogoStyle == 4) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_4);
+	    } else if ( mCustomlogoStyle == 5) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_5);
+	    } else if ( mCustomlogoStyle == 6) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_6);
+	    } else if ( mCustomlogoStyle == 7) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_7);
+	    } else if ( mCustomlogoStyle == 8) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_8);
+	    } else if ( mCustomlogoStyle == 9) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_9);
+	    } else if ( mCustomlogoStyle == 10) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_10);
+	    } else if ( mCustomlogoStyle == 11) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_11);
+	    } else if ( mCustomlogoStyle == 12) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_12);
+	    } else if ( mCustomlogoStyle == 13) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_13);
+	    } else if ( mCustomlogoStyle == 14) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_14);
+	    } else if ( mCustomlogoStyle == 15) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_15);
+	    } else if ( mCustomlogoStyle == 16) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_16);
+	    } else if ( mCustomlogoStyle == 17) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_17);
+	    } else if ( mCustomlogoStyle == 18) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_18);
+	    } else if ( mCustomlogoStyle == 19) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_19);
+	    } else if ( mCustomlogoStyle == 20) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_20);
+	    } else if ( mCustomlogoStyle == 21) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_21);
+	    } else if ( mCustomlogoStyle == 22) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_22);
+	    } else if ( mCustomlogoStyle == 23) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_23);
+	    } else if ( mCustomlogoStyle == 24) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_24);
+	    } else if ( mCustomlogoStyle == 25) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_25);
+	    } else if ( mCustomlogoStyle == 26) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_26);
+	    } else if ( mCustomlogoStyle == 27) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_27);
+	    } else if ( mCustomlogoStyle == 28) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_28);
+	    } else if ( mCustomlogoStyle == 29) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_29);
+	    } else if ( mCustomlogoStyle == 30) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_30);
+	    } else if ( mCustomlogoStyle == 31) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_31);
+	    } else if ( mCustomlogoStyle == 32) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_32);
+	    } else if ( mCustomlogoStyle == 33) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_33);
+	    } else if ( mCustomlogoStyle == 34) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_34);
+	    } else if ( mCustomlogoStyle == 35) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_35);
+	    } else if ( mCustomlogoStyle == 36) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_36);
+	    } else if ( mCustomlogoStyle == 37) {
+		mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_37);
+	}
+	showmCustomlogo(mCustomlogo, mCustomlogoColor,  mCustomlogoStyle);
 
         mKeyguardBottomArea.setPhoneStatusBar(this);
         if (mAccessibilityController == null) {
@@ -1849,40 +2011,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mStatusBarHeaderMachine.updateEnablement();
         return mStatusBarView;
     }
-
-    private final NetworkSignalChangedCallback mWifiCallback = new NetworkSignalChangedCallback() {
-        @Override
-        public void onWifiSignalChanged(boolean enabled, boolean connected, int wifiSignalIconId,
-                boolean activityIn, boolean activityOut,
-                String wifiSignalContentDescriptionId, String description) {
-            String ssid = mNetworkController.getConnectedWifiSsid();
-            showWifiSsidLabel(connected ? ssid : "");
-        }
-
-        @Override
-        public void onMobileDataSignalChanged(boolean enabled,
-                int mobileSignalIconId,
-                String mobileSignalContentDescriptionId, int dataTypeIconId,
-                boolean activityIn, boolean activityOut,
-                String dataTypeContentDescriptionId, String description,
-                boolean isDataTypeIconWide) {
-            // noop
-        }
-
-        public void onNoSimVisibleChanged(boolean noSims) {
-            // noop
-        }
-
-        @Override
-        public void onAirplaneModeChanged(boolean enabled) {
-            // noop
-        }
-
-        @Override
-        public void onMobileDataEnabled(boolean enabled) {
-            // noop
-        }
-    };
 
     private void clearAllNotifications() {
 
@@ -4568,27 +4696,132 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         temasekLogo.setVisibility(View.VISIBLE);
 	}
 
-    public void showWifiSsidLabel(String ssid) {
-        if (mStatusBarView == null || mContext == null
-            || mWifiSsidLabel == null || mNetworkController == null) {
+    public void showmCustomlogo(boolean show , int color , int style) { 
+
+	if (mStatusBarView == null) return;
+
+  	 if (!show) {
+            mCLogo.setVisibility(View.GONE);
             return;
         }
-        mShowWifiSsidLabel = Settings.Global.getInt(mContext.getContentResolver(),
-            Settings.Global.WIFI_STATUS_BAR_SSID, 0) == 1;
-        if (ssid != null) {
-            ssid = ssid.replace("\"", "");
-        }
-        boolean doShow = mShowWifiSsidLabel && !TextUtils.isEmpty(ssid);
-        if (doShow) {
-            int mCarrierColor = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.STATUS_BAR_CARRIER_COLOR, 0xffffffff);
-            mWifiSsidLabel.setText(ssid);
-            mWifiSsidLabel.setTextColor(mCarrierColor);
-            mWifiSsidLabel.setVisibility(View.VISIBLE);
-        } else {
-            mWifiSsidLabel.setText("");
-            mWifiSsidLabel.setVisibility(View.GONE);
-        }
+
+	mCLogo.setColorFilter(color, Mode.MULTIPLY);
+	if ( style == 0) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom);
+	} else if ( style == 1) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_1);
+	} else if ( style == 2) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_2);
+	} else if ( style == 3) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_3);
+	} else if ( style == 4) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_4);
+	} else if ( style == 5) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_5);
+	} else if ( style == 6) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_6);
+	} else if ( style == 7) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_7);
+	} else if ( style == 8) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_8);
+	} else if ( style == 9) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_9);
+	} else if ( style == 10) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_10);
+	} else if ( style == 11) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_11);
+	} else if ( style == 12) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_12);
+	} else if ( style == 13) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_13);
+	} else if ( style == 14) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_14);
+	} else if ( style  == 15) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_15);
+	} else if ( style  == 16) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_16);
+	} else if ( style  == 17) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_17);
+	} else if ( style  == 18) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_18);
+	} else if ( style  == 19) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_19);
+	} else if ( style  == 20) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_20);
+	} else if ( style  == 21) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_21);
+	} else if ( style  == 22) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_22);
+	} else if ( style  == 23) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_23);
+	} else if ( style  == 24) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_24);
+	} else if ( style  == 25) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_25);
+	} else if ( style  == 26) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_26);
+	} else if ( style  == 27) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_27);
+	} else if ( style == 28) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_28);
+	} else if ( style == 29) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_29);
+	} else if ( style == 30) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_30);
+	} else if ( style == 31) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_31);
+	} else if ( style == 32) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_32);
+	} else if ( style == 33) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_33);
+	} else if ( style == 34) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_34);
+	} else if ( style == 35) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_35);
+	} else if ( style == 36) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_36);
+	} else if ( style == 37) {
+	mCLogo.setVisibility(View.GONE);
+	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_37);
+	}
+	mCLogo.setVisibility(View.VISIBLE);
     }
 
     private void resetUserExpandedStates() {
@@ -4859,7 +5092,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         final boolean updateNavBar = shouldUpdateNavbar(mCurrentTheme, newTheme);
         if (newTheme != null) mCurrentTheme = (ThemeConfig) newTheme.clone();
         if (updateStatusBar) {
-            recreateStatusBar();
+            DontStressOnRecreate();
             attachPieContainer(isPieEnabled());
 
         } else {
@@ -4876,11 +5109,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         int uiThemeMode = res.getConfiguration().uiThemeMode;
         if (uiThemeMode != mCurrUiThemeMode) {
             mCurrUiThemeMode = uiThemeMode;
-            recreateStatusBar();
-            updateRowStates();
-            updateSpeedbump();
-            updateClearAll();
-            updateEmptyShadeView();
+            DontStressOnRecreate();
         } else {
             loadDimens();
         }
@@ -4903,6 +5132,19 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             updateSearchPanel();
             checkBarModes();
         }
+    }
+
+    private void DontStressOnRecreate() {
+        recreateStatusBar();
+        updateRowStates();
+        updateSpeedbump();
+        checkBarModes();
+        updateClearAll();
+        updateEmptyShadeView();
+        mStackScroller.setAnimationsEnabled(true);
+        mNotificationPanel.setTouchDisabled(false);
+        updateVisibleToUser();
+
     }
 
     /**
@@ -4953,10 +5195,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         TextView clock = (TextView) mStatusBarView.findViewById(R.id.clock);
         if (clock != null) {
             FontSizeUtils.updateFontSize(clock, R.dimen.status_bar_clock_size);
-        }
-        TextView wifi = (TextView) mStatusBarView.findViewById(R.id.status_bar_wifi_label);
-        if (wifi != null) {
-            FontSizeUtils.updateFontSize(wifi, R.dimen.status_bar_clock_size);
         }
     }
     protected void loadDimens() {

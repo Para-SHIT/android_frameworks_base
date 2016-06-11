@@ -5468,6 +5468,25 @@ public final class Settings {
         public static final String STATUS_BAR_TEMASEK_LOGO_COLOR = "status_bar_temasek_logo_color";
 
         /**
+         * Statusbar Custom logos
+         * @hide
+         */
+        public static final String SHOW_CUSTOM_LOGO = "show_custom_logo";
+
+	/**
+         * Statusbar Custom logos Color
+         * @hide
+         */
+
+	public static final String CUSTOM_LOGO_COLOR = "custom_logo_color";
+
+ 	 /**
+         * Take your Pick 
+         * @hide
+         */
+        public static final String CUSTOM_LOGO_STYLE = "custom_logo_style";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
@@ -9344,12 +9363,6 @@ public final class Settings {
         */
        public static final String WIFI_EPHEMERAL_OUT_OF_RANGE_TIMEOUT_MS =
                "wifi_ephemeral_out_of_range_timeout_ms";
-
-       /**
-         * Whether or not to show the Wi-Fi SSID of a connected AP
-         * @hide
-         */
-        public static final String WIFI_STATUS_BAR_SSID = "wifi_status_bar_ssid";
 
        /**
         * The number of milliseconds to delay when checking for data stalls during
