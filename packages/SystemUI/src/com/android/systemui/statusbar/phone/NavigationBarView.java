@@ -50,6 +50,7 @@ import android.view.*;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -160,6 +161,8 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
     private boolean mShowDpadArrowKeys;
 
     private GestureDetector mDoubleTapGesture;
+
+    private boolean mNavButtonsRotation;
 
     private class NavTransitionListener implements TransitionListener {
         private boolean mBackTransitioning;
@@ -979,8 +982,12 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
     }
 
     protected void updateButtonListeners() {
+        Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.rotate_around_center);
         View recentView = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_RECENT);
         if (recentView != null) {
+            if (mNavButtonsRotation) {
+                recentView.startAnimation(animation);
+            }
             recentView.setOnClickListener(mRecentsClickListener);
             recentView.setOnTouchListener(mRecentsPreloadListener);
             recentView.setLongClickable(true);
@@ -988,15 +995,24 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
         }
         View backView = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_BACK);
         if (backView != null) {
+            if (mNavButtonsRotation) {
+                backView.startAnimation(animation);
+            }
             backView.setLongClickable(true);
             backView.setOnLongClickListener(mRecentsBackListener);
         }
         View homeView = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_HOME);
         if (homeView != null) {
+            if (mNavButtonsRotation) {
+                homeView.startAnimation(animation);
+            }
             homeView.setOnTouchListener(mHomeSearchActionListener);
         }
         View powerView = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_POWER);
         if (powerView != null) {
+            if (mNavButtonsRotation) {
+                powerView.startAnimation(animation);
+            }
             powerView.setLongClickable(true);
             powerView.setOnLongClickListener(mPowerListener);
         }
@@ -1086,6 +1102,8 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
                     Settings.System.DIM_NAV_BUTTONS_TOUCH_ANYWHERE), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.DOUBLE_TAP_SLEEP_NAVBAR), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NAV_BUTTONS_ROTATION), false, this);
 
             // intialize mModlockDisabled
             onChange(false);
@@ -1123,6 +1141,9 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
                     UserHandle.USER_CURRENT) == 1);
             mDoubleTapToSleep = (Settings.System.getIntForUser(resolver,
                     Settings.System.DOUBLE_TAP_SLEEP_NAVBAR, 0,
+                    UserHandle.USER_CURRENT) == 1);
+            mNavButtonsRotation = (Settings.System.getIntForUser(resolver,
+                    Settings.System.NAV_BUTTONS_ROTATION, 1,
                     UserHandle.USER_CURRENT) == 1);
             // reset saved side button visibilities
             for (int i = 0; i < mSideButtonVisibilities.length; i++) {
