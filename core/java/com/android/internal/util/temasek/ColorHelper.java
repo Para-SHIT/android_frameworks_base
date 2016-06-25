@@ -31,6 +31,17 @@ import android.graphics.drawable.Drawable;
 
 public class ColorHelper {
 
+    public static int getBlendColor(int from, int to, float ratio) {
+        final float inverseRatio = 1f - ratio;
+
+        final float a = Color.alpha(to) * ratio + Color.alpha(from) * inverseRatio;
+        final float r = Color.red(to) * ratio + Color.red(from) * inverseRatio;
+        final float g = Color.green(to) * ratio + Color.green(from) * inverseRatio;
+        final float b = Color.blue(to) * ratio + Color.blue(from) * inverseRatio;
+
+        return Color.argb((int) a, (int) r, (int) g, (int) b);
+    }
+
     public static boolean isColorDark(int color) {
         double a = 1- (0.299 * Color.red(color)
                 + 0.587 * Color.green(color)
@@ -78,5 +89,50 @@ public class ColorHelper {
         });
         ColorMatrixColorFilter cf = new ColorMatrixColorFilter(cm);
         return cf;
+    }
+
+    public static Drawable getColoredDrawable(Drawable d, int color) {
+        if (d instanceof VectorDrawable) {
+            d.setTint(color);
+            return d;
+        }
+        Bitmap colorBitmap = ((BitmapDrawable) d).getBitmap();
+        Bitmap grayscaleBitmap = toGrayscale(colorBitmap);
+        Paint pp = new Paint();
+        PorterDuffColorFilter frontFilter =
+            new PorterDuffColorFilter(color, PorterDuff.Mode.MULTIPLY);
+        pp.setColorFilter(frontFilter);
+        Canvas cc = new Canvas(grayscaleBitmap);
+        cc.drawBitmap(grayscaleBitmap, 0, 0, pp);
+        return new BitmapDrawable(grayscaleBitmap);
+    }
+
+    public static Bitmap drawableToBitmap (Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(), Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
+    }
+
+    private static Bitmap toGrayscale(Bitmap bmpOriginal) {
+        int width, height;
+        height = bmpOriginal.getHeight();
+        width = bmpOriginal.getWidth();
+
+        Bitmap bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bmpGrayscale);
+        Paint paint = new Paint();
+        ColorMatrix cm = new ColorMatrix();
+        cm.setSaturation(0);
+
+        ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
+        paint.setColorFilter(f);
+        c.drawBitmap(bmpOriginal, 0, 0, paint);
+        return bmpGrayscale;
     }
 }

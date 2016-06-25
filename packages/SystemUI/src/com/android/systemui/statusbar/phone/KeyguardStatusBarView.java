@@ -94,6 +94,7 @@ public class KeyguardStatusBarView extends RelativeLayout {
 
     private int mShowCarrierLabel;
     private TextView mCarrierLabel;
+    private int mTextColor = 0xFFFFFF;
 
     private ContentObserver mObserver = new ContentObserver(new Handler()) {
         public void onChange(boolean selfChange, Uri uri) {
@@ -132,6 +133,15 @@ public class KeyguardStatusBarView extends RelativeLayout {
         updateVisibilities();
     }
 
+    public void updateTextColor(int color) {
+        mTextColor = color;
+        mCarrierLabel.setTextColor(mTextColor);
+        mBatteryLevel.setTextColor(mTextColor);
+        if (mDockBatteryLevel != null) {
+            mDockBatteryLevel.setTextColor(mTextColor);
+        }
+    }
+
     private void loadDimens() {
         mSystemIconsSwitcherHiddenExpandedMargin = getResources().getDimensionPixelSize(
                 R.dimen.system_icons_switcher_hidden_expanded_margin);
@@ -166,10 +176,9 @@ public class KeyguardStatusBarView extends RelativeLayout {
         mBatteryLevel.setVisibility(View.VISIBLE);
         if (mDockBatteryLevel != null) {
             mDockBatteryLevel.setVisibility(View.VISIBLE);
-            }
-            getFontStyle(mCarrierLabelFontStyle);
-
         }
+        getFontStyle(mCarrierLabelFontStyle);
+    }
 
     public void getFontStyle(int font) {
          switch (font) {

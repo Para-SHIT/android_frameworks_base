@@ -27,6 +27,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.graphics.Outline;
 import android.graphics.Rect;
@@ -470,6 +472,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             updateBackgroundColor();
         }
         updateIconColorSettings();
+        updateBatteryPercentageSettings();
         updateWeatherSettings();
     }
 
@@ -502,18 +505,22 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             updateSignalClusterDetachment();
         }
         mEmergencyCallsOnly.setVisibility(mExpanded && mShowEmergencyCallsOnly ? VISIBLE : GONE);
+        updateWeatherVisibility();
+        updateBatteryLevelVisibility();
+    }
+
+    private void updateWeatherVisibility() {
+        mWeatherContainer.setVisibility(mExpanded && mShowWeather ? View.VISIBLE : View.GONE);
+        mWeatherLine2.setVisibility(mExpanded && mShowWeather && mShowWeatherLocation ? View.VISIBLE : View.GONE);
+    }
+
+    private void updateBatteryLevelVisibility() {
         mBatteryLevel.setForceShown(mExpanded && mShowBatteryTextExpanded);
         mBatteryLevel.setVisibility(View.VISIBLE);
         if (mDockBatteryLevel != null) {
             mDockBatteryLevel.setForceShown(mExpanded && mShowBatteryTextExpanded);
             mDockBatteryLevel.setVisibility(View.VISIBLE);
         }
-        updateWeatherVisibility();
-    }
-
-    private void updateWeatherVisibility() {
-        mWeatherContainer.setVisibility(mExpanded && mShowWeather ? View.VISIBLE : View.GONE);
-        mWeatherLine2.setVisibility(mExpanded && mShowWeather && mShowWeatherLocation ? View.VISIBLE : View.GONE);
     }
 
     public void setclockcolor()
@@ -1261,24 +1268,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         }
 
         public void update() {
-
             ContentResolver resolver = mContext.getContentResolver();
-            int currentUserId = ActivityManager.getCurrentUser();
-            int batteryStyle = Settings.System.getIntForUser(resolver,
-                    Settings.System.STATUS_BAR_BATTERY_STYLE, 0, currentUserId);
-            boolean showExpandedBatteryPercentage = Settings.System.getIntForUser(resolver,
-                    Settings.System.STATUS_BAR_SHOW_BATTERY_PERCENT, 0, currentUserId) == 0;
-
-            switch (batteryStyle) {
-                case 4: //BATTERY_METER_GONE
-                case 6: //BATTERY_METER_TEXT
-                    showExpandedBatteryPercentage = false;
-                    break;
-                default:
-                    break;
-            }
-
-            mShowBatteryTextExpanded = showExpandedBatteryPercentage;
 
             mQSCSwitch = Settings.System.getInt(
                     resolver, Settings.System.QS_COLOR_SWITCH, 0) == 1;
@@ -1332,6 +1322,13 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
                     Settings.System.STATUS_BAR_EXPANDED_HEADER_SHOW_WEATHER_LOCATION))) {
                 updateWeatherSettings();
             }
+            if (updateAll ||
+                uri.equals(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_BATTERY_STYLE))
+                || uri.equals(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_SHOW_BATTERY_PERCENT))) {
+                updateBatteryPercentageSettings();
+            }
     }
 
     private void updateIconColorSettings() {
@@ -1347,6 +1344,27 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         Drawable alarmIcon = getResources().getDrawable(R.drawable.ic_access_alarms_small);
         alarmIcon.setColorFilter(mIconColor, Mode.MULTIPLY);
         mAlarmStatus.setCompoundDrawablesWithIntrinsicBounds(alarmIcon, null, null, null);
+    }
+
+    private void updateBatteryPercentageSettings() {
+        ContentResolver resolver = mContext.getContentResolver();
+        int currentUserId = ActivityManager.getCurrentUser();
+        int batteryStyle = Settings.System.getIntForUser(resolver,
+                Settings.System.STATUS_BAR_BATTERY_STYLE,
+                0, currentUserId);
+        mShowBatteryTextExpanded = Settings.System.getIntForUser(resolver,
+                Settings.System.STATUS_BAR_SHOW_BATTERY_PERCENT,
+                0, currentUserId) == 0;
+
+        switch (batteryStyle) {
+            case 4: //BATTERY_METER_GONE
+            case 6: //BATTERY_METER_TEXT
+                mShowBatteryTextExpanded = false;
+                break;
+            default:
+                break;
+        }
+        updateBatteryLevelVisibility();
     }
    
     private void updateWeatherSettings() {

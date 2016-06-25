@@ -445,6 +445,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private int mCarrierLabelHeight;
     private int mStatusBarHeaderHeight;
 
+    private boolean mShowCarrierInPanel = false;
+
     // Temasek logo
     private boolean mTemasekLogo;
     private int mTemasekLogoColor;
@@ -457,7 +459,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private int mCustomlogoColor;	
     private int mCustomlogoStyle;
 
-    private boolean mShowCarrierInPanel = false;
+    // battery
+    private BatteryMeterView mBatteryView;
+    private BatteryLevelTextView mBatteryLevel;
 
     private boolean mQSCSwitch;
 
@@ -605,6 +609,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.RECENT_CARD_TEXT_COLOR), false, this,
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_BATTERY_STATUS_TEXT_COLOR),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_SHOW_WEATHER_TEMP), 
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -720,6 +727,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                             Settings.System.ENABLE_TASK_MANAGER,
                             0, UserHandle.USER_CURRENT) == 1;
                     DontStressOnRecreate();
+            } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_BATTERY_STATUS_TEXT_COLOR))) {
+                    updateBatteryLevelTextColor();
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_WEATHER_TEMP_STYLE))
                     || uri.equals(Settings.System.getUriFor(
@@ -1528,6 +1538,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mMoreIcon = mStatusBarView.findViewById(R.id.moreIcon);
         mNotificationIcons.setOverflowIndicator(mMoreIcon);
         mStatusBarContents = (LinearLayout)mStatusBarView.findViewById(R.id.status_bar_contents);
+        mBatteryView = (BatteryMeterView) mStatusBarView.findViewById(R.id.battery);
+        mBatteryLevel = (BatteryLevelTextView) mStatusBarView.findViewById(R.id.battery_level_text);
 
         mClockView = (TextView) mStatusBarView.findViewById(R.id.clock);
         mClockLocation = Settings.System.getIntForUser(mContext.getContentResolver(),
@@ -1963,27 +1975,26 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mKeyguardStatusBar.setUserInfoController(mUserInfoController);
         mUserInfoController.reloadUserInfo();
 
-        mHeader.setBatteryController(mBatteryController);
+        mBatteryView.setBatteryController(mBatteryController);
         BatteryMeterView batteryMeterView =
                 ((BatteryMeterView) mStatusBarView.findViewById(R.id.battery));
         batteryMeterView.setBatteryStateRegistar(mBatteryController);
         batteryMeterView.setBatteryController(mBatteryController);
-        batteryMeterView.setAnimationsEnabled(false);
-        ((BatteryLevelTextView) mStatusBarView.findViewById(R.id.battery_level_text))
-                .setBatteryStateRegistar(mBatteryController);
+        mBatteryLevel.setBatteryStateRegistar(mBatteryController);
         mKeyguardStatusBar.setBatteryController(mBatteryController);
 
-        mHeader.setDockBatteryController(mDockBatteryController);
+        mHeader.setBatteryController(mBatteryController);
+        mKeyguardStatusBar.setBatteryController(mBatteryController);
+
+        mHeader.setBatteryController(mBatteryController);
         mKeyguardStatusBar.setDockBatteryController(mDockBatteryController);
+        DockBatteryMeterView dockBatteryMeterView =
+                (DockBatteryMeterView) mStatusBarView.findViewById(R.id.dock_battery);
         if (mDockBatteryController != null) {
-            DockBatteryMeterView dockBatteryMeterView =
-                    ((DockBatteryMeterView) mStatusBarView.findViewById(R.id.dock_battery));
+            mHeader.setDockBatteryController(mDockBatteryController);
             dockBatteryMeterView.setBatteryStateRegistar(mDockBatteryController);
-            ((BatteryLevelTextView) mStatusBarView.findViewById(R.id.dock_battery_level_text))
-                    .setBatteryStateRegistar(mDockBatteryController);
+            mBatteryLevel.setBatteryStateRegistar(mDockBatteryController);
         } else {
-            DockBatteryMeterView dockBatteryMeterView =
-                    (DockBatteryMeterView) mStatusBarView.findViewById(R.id.dock_battery);
             if (dockBatteryMeterView != null) {
                 mStatusBarView.removeView(dockBatteryMeterView);
             }
@@ -1993,6 +2004,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 mStatusBarView.removeView(dockBatteryLevel);
             }
         }
+        mBatteryLevel.updateVisibility();
 
         mVisualizerView.setKeyguardMonitor(mKeyguardMonitor);
 
@@ -2005,6 +2017,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         startGlyphRasterizeHack();
         setBottomIconsColors();
+        updateBatteryLevelTextColor();
         UpdateNotifDrawerClearAllIconColor();
         mStatusBarHeaderMachine = new StatusBarHeaderMachine(mContext);
         mStatusBarHeaderMachine.addObserver(mHeader);
@@ -3196,6 +3209,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 Settings.System.LOCKSCREEN_BOTTOM_ICONS_COLOR, 0xffffffff);
         if (mKeyguardBottomArea != null) {
             mKeyguardBottomArea.updateIconColor(iconColor);
+        }
+    }
+
+    private void updateBatteryLevelTextColor() {
+        if (mBatteryLevel != null) {
+            mBatteryLevel.setTextColor(false);
         }
     }
 
