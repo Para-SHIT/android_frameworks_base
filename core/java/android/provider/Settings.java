@@ -2357,13 +2357,6 @@ public final class Settings {
         public static final String HEADS_UP_DISMISS_ON_REMOVE = "heads_up_dismiss_on_remove";
 
         /**
-         * Whether to enable ticker animation
-         *
-         * @hide
-         */
-        public static final String TICKER_ENABLED = "ticker_enabled";
-
-        /**
          * Quick Settings Smart Pulldown
          *
          * @hide
@@ -2999,12 +2992,6 @@ public final class Settings {
          * @hide
          */
         public static final String USE_EDGE_SERVICE_FOR_GESTURES = "edge_service_for_gestures";
-
-        /**
-         * Show the pending notification counts as overlays on the status bar
-         * @hide
-         */
-        public static final String STATUS_BAR_NOTIF_COUNT = "status_bar_notif_count";
 
         /**
          * Control whether the accelerometer will be used to change lockscreen
@@ -4515,12 +4502,6 @@ public final class Settings {
         public static final String NETWORK_TRAFFIC_AUTOHIDE_THRESHOLD = "network_traffic_autohide_threshold";
 
         /**
-         * Show when WiFi or data mobile is sending/receiving data
-         * @hide
-         */
-        public static final String STATUS_BAR_NETWORK_ACTIVITY = "status_bar_network_activity";
-
-        /**
          * Network stats Color style
          * @hide
          */
@@ -5541,6 +5522,127 @@ public final class Settings {
          * @hide
          */
         public static final String NAV_BUTTONS_ROTATION = "nav_buttons_rotation";
+
+        /**
+         * Wether to show the ticker on the status bar
+         * @hide
+         */
+        public static final String STATUS_BAR_SHOW_TICKER = "status_bar_show_show_ticker";
+
+        /**
+         * Show the pending notification counts as overlays on the status bar
+         * @hide
+         */
+        public static final String STATUS_BAR_SHOW_NOTIF_COUNT = "status_bar_show_notif_count";
+
+        /**
+         * Show when WiFi or data mobile is sending/receiving data
+         * @hide
+         */
+        public static final String STATUS_BAR_SHOW_NETWORK_ACTIVITY = "status_bar_show_network_activity";
+
+        /**
+         * Wether to colorize the notification icons on the status bar
+         * @hide
+         */
+        public static final String STATUS_BAR_COLORIZE_NOTIF_ICONS = "status_bar_colorize_notif_icons";
+
+        /**
+         * Color of the status bar notification icons
+         * @hide
+         */
+        public static final String STATUS_BAR_NOTIF_SYSTEM_ICON_COLOR = "status_bar_notif_system_icon_color";
+
+        /**
+         * Color of the status bar notification text
+         * @hide
+         */
+        public static final String STATUS_BAR_NOTIF_TEXT_COLOR = "status_bar_notif_text_color";
+
+        /**
+         * Color of the status bar notification count icon
+         * @hide
+         */
+        public static final String STATUS_BAR_NOTIF_COUNT_ICON_COLOR = "status_bar_notif_count_icon_color";
+
+        /**
+         * Color of the status bar notification count text
+         * @hide
+         */
+        public static final String STATUS_BAR_NOTIF_COUNT_TEXT_COLOR = "status_bar_notif_count_text_color";
+
+        /**
+         * Color of the network icons on statusbar
+         * @hide
+         */
+        public static final String STATUS_BAR_NETWORK_ICONS_NORMAL_COLOR = "status_bar_network_icons_normal_color";
+
+        /**
+         * Color of the network icons on statusbar while fully connected
+         * @hide
+         */
+        public static final String STATUS_BAR_NETWORK_ICONS_FULLY_COLOR = "status_bar_network_icons_fully_color";
+
+        /**
+         * Color of the activity indicator on statusbar
+         * @hide
+         */
+        public static final String STATUS_BAR_NETWORK_ACTIVITY_ICONS_NORMAL_COLOR = "status_bar_network_activity_icons_normal_color";
+
+        /**
+         * Color of the activity indicator on statusbar while fully connected
+         * @hide
+         */
+        public static final String STATUS_BAR_NETWORK_ACTIVITY_ICONS_FULLY_COLOR = "status_bar_network_activity_icons_fully_color";
+
+        /**
+         * Color of the airplane mode icon on statusbar
+         * @hide
+         */
+        public static final String STATUS_BAR_AIRPLANE_MODE_ICON_COLOR = "status_bar_airplane_mode_icon_color";
+
+        /**
+         * Color of the vpn icon on statusbar
+         * @hide
+         */
+        public static final String STATUS_BAR_VPN_ICON_COLOR = "status_bar_vpn_icon_color";
+
+        /**
+         * Hide panel clock
+         * @hide
+         */
+        public static final String HIDE_PANEL_CLOCK = "hide_panel_clock";
+
+	/**
+         * Hide Date Of Header clock
+         * @hide
+         */
+        public static final String HIDE_PANEL_DATE = "hide_panel_date";
+
+	/**
+         * Hide panel clock
+         * @hide
+         */
+        public static final String HIDE_PANEL_CLOCKVALUE = "hide_panel_clockvalue";
+
+	/*
+         *  Hide Settings Battery Charging text in Panel
+         * @hide
+         */
+        public static final String HIDE_PANEL_BATTERY = "hide_panel_battery";
+
+
+	/**
+         * Hide panel icons
+         * @hide
+         */
+        public static final String HIDE_PANEL_ICONS = "hide_panel_icons";
+
+	/**
+         * Hide user icon in Panel
+         * @hide
+         */
+        public static final String HIDE_USER_ICON = "hide_user_icon";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings

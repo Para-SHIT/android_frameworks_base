@@ -523,6 +523,60 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         }
     }
 
+    public void hidepanelItems() {
+        if (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.HIDE_PANEL_CLOCK, 1) == 1) {
+       	    mTime = (TextView) findViewById(R.id.time_view);
+            mTime.setVisibility(View.VISIBLE);
+	    
+        } else {
+        mTime = (TextView) findViewById(R.id.time_view);
+        mAmPm = (TextView) findViewById(R.id.am_pm_view);
+            mTime.setVisibility(View.GONE);
+	    mAmPm.setVisibility(View.GONE);
+        	}
+        if (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.HIDE_PANEL_DATE, 1) == 1) {
+        mDateGroup = findViewById(R.id.date_group);
+	mDateGroup .setVisibility(View.VISIBLE);
+        } else {
+         mDateGroup = findViewById(R.id.date_group);
+	 mDateGroup.setVisibility(View.INVISIBLE);
+        }
+ 	if (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.HIDE_PANEL_CLOCKVALUE, 1) == 1) {
+	mAmPm = (TextView) findViewById(R.id.am_pm_view);
+	mAmPm.setVisibility(View.VISIBLE);
+	} else {
+        mAmPm = (TextView) findViewById(R.id.am_pm_view);
+	    mAmPm.setVisibility(View.GONE);
+		}
+	if (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.HIDE_PANEL_BATTERY, 1) == 1) {
+	mBatteryLevel = (BatteryLevelTextView) findViewById(R.id.battery_level_text);
+	mBatteryLevel.setVisibility(View.VISIBLE);
+	} else {
+       	mBatteryLevel = (BatteryLevelTextView) findViewById(R.id.battery_level_text);
+	    mBatteryLevel.setVisibility(View.INVISIBLE);
+		}
+	if (Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.HIDE_PANEL_ICONS, 1) == 1) {
+	mSystemIconsContainer = (ViewGroup) findViewById(R.id.system_icons_container);
+	mSystemIconsContainer.setVisibility(View.VISIBLE);
+        } else {
+       	mSystemIconsContainer = (ViewGroup) findViewById(R.id.system_icons_container);
+	mSystemIconsContainer.setVisibility(View.INVISIBLE);
+		}
+	if (Settings.System.getInt(mContext.getContentResolver(),
+              Settings.System.HIDE_USER_ICON, 1) == 1) {
+	mMultiUserSwitch = (MultiUserSwitch) findViewById(R.id.multi_user_switch);
+	mMultiUserSwitch.setVisibility(View.VISIBLE);
+	} else {
+	mMultiUserSwitch = (MultiUserSwitch) findViewById(R.id.multi_user_switch);
+	mMultiUserSwitch.setVisibility(View.INVISIBLE);
+  	 	}
+	}
+
     public void setclockcolor()
 	{
 	ContentResolver resolver = getContext().getContentResolver();
@@ -1307,6 +1361,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
 	    setalarmtextcolor();
 	    setbatterytextcolor();
             updateIconColorSettings();
+            hidepanelItems();
             updateWithUri(null);
         }
     }
