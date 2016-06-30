@@ -5613,36 +5613,51 @@ public final class Settings {
          */
         public static final String HIDE_PANEL_CLOCK = "hide_panel_clock";
 
-	/**
+		/**
          * Hide Date Of Header clock
          * @hide
          */
         public static final String HIDE_PANEL_DATE = "hide_panel_date";
 
-	/**
+		/**
          * Hide panel clock
          * @hide
          */
         public static final String HIDE_PANEL_CLOCKVALUE = "hide_panel_clockvalue";
 
-	/*
+		/**
          *  Hide Settings Battery Charging text in Panel
          * @hide
          */
         public static final String HIDE_PANEL_BATTERY = "hide_panel_battery";
 
 
-	/**
+		/**
          * Hide panel icons
          * @hide
          */
         public static final String HIDE_PANEL_ICONS = "hide_panel_icons";
 
-	/**
+		/**
          * Hide user icon in Panel
          * @hide
          */
         public static final String HIDE_USER_ICON = "hide_user_icon";
+
+        /**
+         *
+         * Whether to apply a shadow on  the text of header
+         * value is the radius of the shadow that is to be applied.
+         * @hide
+         */
+        public static final String STATUS_BAR_CUSTOM_HEADER_TEXT_SHADOW = "status_bar_custom_header_text_shadow";
+
+        /**
+         *
+         * Apply a custom color to the text shadow on the header
+         * @hide
+         */
+        public static final String STATUS_BAR_CUSTOM_HEADER_TEXT_SHADOW_COLOR = "status_bar_custom_header_text_shadow_color";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
