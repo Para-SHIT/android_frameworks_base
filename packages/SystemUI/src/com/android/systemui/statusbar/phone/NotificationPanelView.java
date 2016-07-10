@@ -2206,6 +2206,8 @@ public class NotificationPanelView extends PanelView implements
                     Settings.System.QS_TEXT_COLOR), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_TRANSPARENT_SHADE), false, this);
+            resolver.registerContentObserver(Settings.Secure.getUriFor(
+                    Settings.System.QS_RIPPLE_COLOR), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.DOUBLE_TAP_SLEEP_ANYWHERE), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.Secure.getUriFor(
@@ -2233,6 +2235,8 @@ public class NotificationPanelView extends PanelView implements
                     Settings.System.QS_COLOR_SWITCH))) {
                 if (uri.equals(Settings.System.getUriFor(
                         Settings.System.QS_BACKGROUND_COLOR))
+                    || uri.equals(Settings.System.getUriFor(
+                        Settings.System.QS_RIPPLE_COLOR))
                     || uri.equals(Settings.System.getUriFor(
                         Settings.System.QS_TRANSPARENT_SHADE))) {
                     mQSBackgroundColor = Settings.System.getInt(

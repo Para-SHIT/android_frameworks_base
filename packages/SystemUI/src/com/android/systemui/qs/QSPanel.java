@@ -52,6 +52,8 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.internal.util.temasek.QSColorHelper;
+
 import com.android.systemui.FontSizeUtils;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile.DetailAdapter;
@@ -395,6 +397,7 @@ public class QSPanel extends ViewGroup {
             if (mQSCSwitch) {
                 r.tileView.setLabelColor();
                 r.tileView.setIconColor();
+                r.tileView.setRippleColor();
             }
             r.tile.refreshState();
         }

@@ -63,6 +63,7 @@ import android.widget.TextView;
 
 import com.android.internal.util.cm.WeatherController;
 import com.android.internal.util.cm.WeatherControllerImpl;
+import com.android.internal.util.temasek.QSColorHelper;
 import com.android.keyguard.KeyguardStatusView;
 import com.android.systemui.BatteryMeterView;
 import com.android.systemui.BatteryLevelTextView;
@@ -215,6 +216,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
 
     public StatusBarHeaderView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mContext = context;
     }
 
     @Override
@@ -1236,7 +1238,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
                         Settings.System.QS_TEXT_COLOR, 0xffffffff);
                 mQsDetailHeaderTitle.setText(detail.getTitle());
                 if (mQSCSwitch) {
-                    mQsDetailHeaderTitle.setTextColor(color);
+                    mQsDetailHeaderTitle.setTextColor(QSColorHelper.getTextColor(mContext));
                 }
                 final Boolean toggleState = detail.getToggleState();
                 if (toggleState == null) {

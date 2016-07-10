@@ -18,6 +18,7 @@ package com.android.systemui.qs;
 
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
@@ -31,6 +32,7 @@ import android.graphics.PorterDuff.Mode;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.MathUtils;
 import android.util.TypedValue;
@@ -40,6 +42,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
+
+import com.android.internal.util.temasek.QSColorHelper;
 
 import com.android.systemui.FontSizeUtils;
 import com.android.systemui.R;
@@ -85,7 +89,7 @@ public class QSTileView extends ViewGroup {
         mTileSpacingPx = res.getDimensionPixelSize(R.dimen.qs_tile_spacing);
         mDualTileVerticalPaddingPx =
                 res.getDimensionPixelSize(R.dimen.qs_dual_tile_padding_vertical);
-        mTileBackground = newTileBackground();
+        mTileBackground = getTileBackground();
         recreateLabel();
         setClipChildren(false);
 
@@ -236,13 +240,9 @@ public class QSTileView extends ViewGroup {
     protected void updateColors() {
         final ContentResolver resolver = mContext.getContentResolver();
         mQSCSwitch = Settings.System.getInt(resolver,
-                Settings.System.QS_COLOR_SWITCH, 0) == 1;
-        if (mQSCSwitch) {
-            mLabelColor = Settings.System.getInt(resolver,
-                    Settings.System.QS_TEXT_COLOR, 0xffffffff);
-            mIconColor = Settings.System.getInt(resolver,
-                    Settings.System.QS_ICON_COLOR, 0xffffffff);
-        }
+            Settings.System.QS_COLOR_SWITCH, 0) == 1;
+        mIconColor = QSColorHelper.getIconColor(mContext);
+        mLabelColor = QSColorHelper.getTextColor(mContext);
     }
 
     public void setLabelColor() {
@@ -266,6 +266,30 @@ public class QSTileView extends ViewGroup {
     protected int getIconColor() {
 		return mIconColor;
 	}
+
+    public void setRippleColor() {
+        if (mTileBackground instanceof RippleDrawable) {
+            setRippleColor((RippleDrawable) mTileBackground);
+        }
+    }
+
+    private void setRippleColor(RippleDrawable rd) {
+        final int rippleColor = QSColorHelper.getRippleColor(mContext);
+
+        int states[][] = new int[][] {
+            new int[] {
+                com.android.internal.R.attr.state_enabled
+            }
+        };
+        int colors[] = new int[] {
+            rippleColor
+        };
+        ColorStateList color = new ColorStateList(states, colors);
+
+        if (rd instanceof RippleDrawable) {
+            rd.setColor(color);
+        }
+    }
 
     private void setRipple(RippleDrawable tileBackground) {
         mRipple = tileBackground;
@@ -292,11 +316,17 @@ public class QSTileView extends ViewGroup {
         return icon;
     }
 
-    private Drawable newTileBackground() {
+    private Drawable getTileBackground() {
         final int[] attrs = new int[] { android.R.attr.selectableItemBackgroundBorderless };
         final TypedArray ta = mContext.obtainStyledAttributes(attrs);
         final Drawable d = ta.getDrawable(0);
         ta.recycle();
+	return d;
+    }
+
+    private Drawable newTileBackground() {
+        final Drawable d = mContext.getDrawable(R.drawable.qs_ripple_drawable);
+        setRippleColor((RippleDrawable) d);
         return d;
     }
 
