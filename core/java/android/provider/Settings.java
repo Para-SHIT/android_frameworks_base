@@ -5693,6 +5693,12 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String STATUS_BAR_POWER_MENU = "status_bar_power_menu";
 
         /**
+         * Animation of panels during task manager/quick settings change
+         * @hide
+         */
+        public static final String QS_TASK_ANIMATION = "qs_task_animation";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
