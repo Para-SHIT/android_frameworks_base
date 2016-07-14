@@ -680,6 +680,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CUSTOM_HEADER_TEXT_SHADOW_COLOR),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_POWER_MENU),
+                    false, this);
             update();
         }
 
@@ -738,7 +741,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.NOTIFICATION_DRAWER_CLEAR_ALL_ICON_COLOR))) {
                     UpdateNotifDrawerClearAllIconColor();
             } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.ENABLE_TASK_MANAGER))) {
+                    Settings.System.ENABLE_TASK_MANAGER)) ||
+                    uri.equals(Settings.System.getUriFor(
+                        Settings.System.STATUS_BAR_POWER_MENU)) ) {
                     mShowTaskManager = Settings.System.getIntForUser(
                             mContext.getContentResolver(),
                             Settings.System.ENABLE_TASK_MANAGER,
