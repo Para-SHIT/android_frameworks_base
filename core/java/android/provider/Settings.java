@@ -5337,6 +5337,18 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String TASK_MANAGER_SLIDER_INACTIVE_COLOR = "task_manager_slider_inactive_color";
 
         /**
+         * Font style for task manager
+         * @hide
+         */
+        public static final String TASK_MANAGER_FONT_STYLE = "task_manager_font_style";
+
+        /**
+         * Thickness of the Task Manager Progressbar
+         * @hide
+         */
+        public static final String TASK_MANAGER_BAR_THICKNESS = "task_manager_bar_thickness";
+
+        /**
          * Whether to disable the torch when the screen turns off
          * @hide
          */
