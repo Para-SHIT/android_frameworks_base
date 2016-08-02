@@ -50,6 +50,7 @@ import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.internal.util.cm.LockscreenShortcutsHelper;
@@ -218,6 +219,12 @@ public class NotificationPanelView extends PanelView implements
     private boolean mTaskManagerShowing;
     private LinearLayout mTaskManagerPanel;
 
+    // QS panel logo
+    private ImageView mCMPanelLogo;
+    private int mQSPanelLogo;
+    private int mQSPanelLogoColor;
+    private int mQSPanelLogoAlpha;
+
     public NotificationPanelView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setWillNotDraw(!DEBUG);
@@ -248,6 +255,7 @@ public class NotificationPanelView extends PanelView implements
         mKeyguardStatusView = (KeyguardStatusView) findViewById(R.id.keyguard_status_view);
         mQsContainer = (QSContainer) findViewById(R.id.quick_settings_container);
         mQsPanel = (QSPanel) findViewById(R.id.quick_settings_panel);
+        mCMPanelLogo = (ImageView) findViewById(R.id.cm_panel_logo);
         mTaskManagerPanel = (LinearLayout) findViewById(R.id.task_manager_panel);
         mClockView = (TextView) findViewById(R.id.clock_view);
         mScrollView = (ObservableScrollView) findViewById(R.id.scroll_view);
@@ -288,6 +296,7 @@ public class NotificationPanelView extends PanelView implements
         if (mQSCSwitch) {
             setQSBackgroundColor();
         }
+        setQSPanelLogo();
     }
 
     @Override
@@ -2256,6 +2265,15 @@ public class NotificationPanelView extends PanelView implements
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.STATUS_BAR_LOCKED_ON_SECURE_KEYGUARD),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QS_PANEL_LOGO),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QS_PANEL_LOGO_COLOR),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QS_PANEL_LOGO_ALPHA),
+                    false, this, UserHandle.USER_ALL);
             update();
         }
 
@@ -2316,10 +2334,17 @@ public class NotificationPanelView extends PanelView implements
             mStatusBarLockedOnSecureKeyguard = Settings.Secure.getIntForUser(
                     resolver, Settings.Secure.STATUS_BAR_LOCKED_ON_SECURE_KEYGUARD, 0,
                     UserHandle.USER_CURRENT) == 1;
+            mQSPanelLogo = Settings.System.getInt(
+                    resolver, Settings.System.QS_PANEL_LOGO, 0);
+            mQSPanelLogoColor = Settings.System.getInt(
+                    resolver, Settings.System.QS_PANEL_LOGO_COLOR, mContext.getResources().getColor(R.color.system_accent_color));
+            mQSPanelLogoAlpha = Settings.System.getInt(
+                    resolver, Settings.System.QS_PANEL_LOGO_ALPHA, 51);
             if (mQSCSwitch) {
                 setQSBackgroundColor();
                 setQSColors();
             }
+            setQSPanelLogo();
         }
     }
 
@@ -2340,6 +2365,20 @@ public class NotificationPanelView extends PanelView implements
         }
         if (mQsPanel != null) {
             mQsPanel.setDetailBackgroundColor(mQSBackgroundColor);
+        }
+    }
+
+    private void setQSPanelLogo() {
+        if (mQSPanelLogo == 0) {
+            mCMPanelLogo.setVisibility(View.GONE);
+        } else if (mQSPanelLogo == 1) {
+            mCMPanelLogo.setImageAlpha(mQSPanelLogoAlpha);
+            mCMPanelLogo.setColorFilter(mContext.getResources().getColor(R.color.system_accent_color));
+            mCMPanelLogo.setVisibility(View.VISIBLE);
+        } else if (mQSPanelLogo == 2) {
+            mCMPanelLogo.setImageAlpha(mQSPanelLogoAlpha);
+            mCMPanelLogo.setColorFilter(mQSPanelLogoColor);
+            mCMPanelLogo.setVisibility(View.VISIBLE);
         }
     }
 

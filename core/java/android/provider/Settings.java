@@ -5777,6 +5777,27 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String QS_TASK_ANIMATION = "qs_task_animation";
 
         /**
+         * Quick settings RR logo
+         *
+         * @hide
+         */
+        public static final String QS_PANEL_LOGO = "qs_panel_logo";
+
+        /**
+         * Quick settings RR logo color
+         *
+         * @hide
+         */
+        public static final String QS_PANEL_LOGO_COLOR = "qs_panel_logo_color";
+
+        /**
+         * Quick settings RR logo alpha
+         *
+         * @hide
+         */
+        public static final String QS_PANEL_LOGO_ALPHA = "qs_panel_logo_alpha";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
