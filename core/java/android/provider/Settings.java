@@ -4890,6 +4890,20 @@ public final class Settings {
                 "recent_app_sidebar_open_simultaneously";
 
         /**
+         * Launch Appsidebar apps in floating window or not
+         *
+         * @hide
+         */
+        public static final String APPSIDEBAR_FLOATING = "appsidebar_floating";
+
+        /**
+         * Launch Appcirclebar apps in floating window or not
+         *
+         * @hide
+         */
+        public static final String APPCIRCLEBAR_FLOATING = "appcirclebar_floating";
+
+        /**
          * volume answer
          * @hide
          */

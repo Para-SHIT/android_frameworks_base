@@ -439,7 +439,9 @@ public class AppSidebar extends TriggerOverlayView {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        if (mFloatingWindow) {
+        if (mFloatingWindow &&
+            Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.APPSIDEBAR_FLOATING, 0) == 1) {
             intent.addFlags(Intent.FLAG_FLOATING_WINDOW);
             mFloatingWindow = false;
         }
@@ -450,7 +452,7 @@ public class AppSidebar extends TriggerOverlayView {
             Toast.makeText(mContext, R.string.toast_not_installed, Toast.LENGTH_SHORT).show();
         }
     }
-    
+
     private OnLongClickListener mItemLongClickedListener = new OnLongClickListener() {
         @Override
         public boolean onLongClick(View view) {
