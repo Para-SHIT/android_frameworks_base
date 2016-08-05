@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.ContentResolver;
 import android.content.res.Resources;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -399,6 +400,8 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
             }
         }
         showMemDisplay();
+        updateMemBarBgColor();
+        updateMemBarColor();
 
         
         updateTimeVisibility();
@@ -476,7 +479,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         boolean enableMemDisplay = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.SYSTEMUI_RECENTS_MEM_DISPLAY, 0) == 1;
         final Resources res = getContext().getResources();	
-	int mtextcolor = Settings.System.getInt(mContext.getContentResolver(),
+	    int mtextcolor = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.MEM_TEXT_COLOR, 0xFFFFFFFF);
 
         if (!enableMemDisplay) {
@@ -488,7 +491,8 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         mMemBar.setVisibility(View.VISIBLE);
 
         updateMemoryStatus();
-        
+        updateMemBarBgColor();
+        updateMemBarColor();
         mMemText.setTextColor(mtextcolor);
         return true;
     }
@@ -504,6 +508,8 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
             mMemText.setText("Free RAM: " + String.valueOf(available) + " MB");
             mMemBar.setMax(max);
             mMemBar.setProgress(available);
+            updateMemBarBgColor();
+            updateMemBarColor();
     }
 
     public long getTotalMemory() {
@@ -552,13 +558,35 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     
         updateMemoryStatus();
 
+        updateMemBarBgColor();
+        updateMemBarColor();
+
         mClock = (TextClock) ((View)getParent()).findViewById(R.id.recents_clock);
         mDate = (TextView) ((View)getParent()).findViewById(R.id.recents_date);
         updateTimeVisibility();
 	
     }
 
-    
+    private void updateMemBarBgColor() {
+        ContentResolver resolver = mContext.getContentResolver();
+        int color = Settings.System.getInt(resolver,
+                Settings.System.MEMORY_BAR_COLOR, 0xffffffff);
+
+        if (mMemBar != null) {
+            mMemBar.setProgressBackgroundTintList(ColorStateList.valueOf(color));
+        }
+    }
+
+    private void updateMemBarColor() {
+        ContentResolver resolver = mContext.getContentResolver();
+        int color = Settings.System.getInt(resolver,
+                Settings.System.MEMORY_BAR_USED_COLOR, 0xffffffff);
+
+        if (mMemBar != null) {
+            mMemBar.setProgressTintList(ColorStateList.valueOf(color));
+        }
+     }
+
     public void updateTimeVisibility() {
         boolean showClock = Settings.System.getIntForUser(mContext.getContentResolver(),
                 Settings.System.RECENTS_FULL_SCREEN_CLOCK, 0, UserHandle.USER_CURRENT) != 0;

@@ -5294,6 +5294,18 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String MEM_TEXT_COLOR= "mem_text_color";
 
         /**
+         *  Color of the memory bar
+         * @hide
+         */
+        public static final String MEMORY_BAR_COLOR = "memory_bar_color";
+
+        /**
+         *  Color of the used portion of the memory bar
+         * @hide
+         */
+        public static final String MEMORY_BAR_USED_COLOR = "memory_bar_used_color";
+
+        /**
          * Recents Clock Text Color
          * @hide
          */
