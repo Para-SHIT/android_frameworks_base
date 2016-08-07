@@ -19,11 +19,13 @@ package com.android.internal.widget;
 import android.animation.LayoutTransition;
 import android.app.ActionBar;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.provider.Settings;
 import android.text.Layout;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -254,6 +256,7 @@ public class ActionBarView extends AbsActionBarView implements DecorToolbar {
             }
             mTabScrollView.setAllowCollapse(true);
         }
+        updateTextColor();
     }
 
     /**
@@ -512,6 +515,7 @@ public class ActionBarView extends AbsActionBarView implements DecorToolbar {
             mLogoNavItem.setTitle(title);
         }
         updateHomeAccessibility(mUpGoerFive.isEnabled());
+        updateTextColor();
     }
 
     public CharSequence getSubtitle() {
@@ -530,6 +534,7 @@ public class ActionBarView extends AbsActionBarView implements DecorToolbar {
             mTitleLayout.setVisibility(visible ? VISIBLE : GONE);
         }
         updateHomeAccessibility(mUpGoerFive.isEnabled());
+        updateTextColor();
     }
 
     public void setHomeButtonEnabled(boolean enable) {
@@ -667,6 +672,7 @@ public class ActionBarView extends AbsActionBarView implements DecorToolbar {
 
         // Make sure the home button has an accurate content description for accessibility.
         updateHomeAccessibility(mUpGoerFive.isEnabled());
+        updateTextColor();
     }
 
     public void setIcon(Drawable icon) {
@@ -834,6 +840,7 @@ public class ActionBarView extends AbsActionBarView implements DecorToolbar {
                 mSubtitleView.setText(mSubtitle);
                 mSubtitleView.setVisibility(VISIBLE);
             }
+            updateTextColor();
         }
 
         ActionBarTransition.beginDelayedTransition(this);
@@ -1735,5 +1742,12 @@ public class ActionBarView extends AbsActionBarView implements DecorToolbar {
         @Override
         public void onRestoreInstanceState(Parcelable state) {
         }
+    }
+
+    public void updateTextColor() {
+        final int textColor = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.SETTINGS_TOOLBAR_TEXT_COLOR, 0xffffffff);
+        mTitleView.setTextColor(textColor);
+        mSubtitleView.setTextColor(textColor);
     }
 }

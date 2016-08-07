@@ -4210,13 +4210,13 @@ public final class Settings {
          */
         public static final String DASHBOARD_CUSTOM_COLORS = "db_custom_colors";
 
-	/**
+	    /**
          * Dashboard icon colors
          * @hide
          */
         public static final String DB_ICON_COLOR = "db_icon_color";
 
-	/**
+	    /**
          * Dashboard text color
          * @hide
          */
@@ -4233,6 +4233,30 @@ public final class Settings {
         * @hide
         */
         public static final String SETTINGS_BG_COLOR = "settings_bg_color";
+
+        /**
+          * Settings toolbar (header) text color
+          * @hide
+          */
+         public static final String SETTINGS_TOOLBAR_TEXT_COLOR = "settings_toolbar_text_color";
+ 
+         /**
+         * Color of the space between categories on Dashboard
+         * @hide
+         */
+        public static final String SETTINGS_CAT_SPACE_COLOR = "settings_cat_space_color";
+
+        /**
+         * Settings toolbar (header) background color
+         * @hide
+         */
+        public static final String SETTINGS_TOOLBAR_BG_COLOR = "settings_toolbar_bg_color";
+
+        /**
+         * Settings Dash Font Style
+         * @hide
+         */
+        public static final String DASHBOARD_FONT_STYLE = "dashboard_font_style";
 
         /**
          * Dashboard title text size

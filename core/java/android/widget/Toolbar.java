@@ -20,11 +20,13 @@ import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.app.ActionBar;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.provider.Settings;
 import android.text.Layout;
 import android.text.TextUtils;
 import android.util.AttributeSet;
@@ -583,6 +585,7 @@ public class Toolbar extends ViewGroup {
             mTitleTextView.setText(title);
         }
         mTitleText = title;
+        updateTextColor();
     }
 
     /**
@@ -648,6 +651,7 @@ public class Toolbar extends ViewGroup {
         if (mTitleTextView != null) {
             mTitleTextView.setTextAppearance(context, resId);
         }
+        updateTextColor();
     }
 
     /**
@@ -659,6 +663,7 @@ public class Toolbar extends ViewGroup {
         if (mSubtitleTextView != null) {
             mSubtitleTextView.setTextAppearance(context, resId);
         }
+        updateTextColor();
     }
 
     /**
@@ -1988,6 +1993,17 @@ public class Toolbar extends ViewGroup {
 
         @Override
         public void onRestoreInstanceState(Parcelable state) {
+        }
+    }
+
+    public void updateTextColor() {
+    final int textColor = Settings.System.getInt(mContext.getContentResolver(),
+            Settings.System.SETTINGS_TOOLBAR_TEXT_COLOR, 0xffffffff);
+        if (mTitleTextView != null) {
+            mTitleTextView.setTextColor(textColor);
+        }
+        if (mSubtitleTextView != null) {
+            mSubtitleTextView.setTextColor(textColor);
         }
     }
 }

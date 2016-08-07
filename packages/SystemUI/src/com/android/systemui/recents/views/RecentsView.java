@@ -478,9 +478,6 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     private boolean showMemDisplay() {
         boolean enableMemDisplay = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.SYSTEMUI_RECENTS_MEM_DISPLAY, 0) == 1;
-        final Resources res = getContext().getResources();	
-	    int mtextcolor = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.MEM_TEXT_COLOR, 0xFFFFFFFF);
 
         if (!enableMemDisplay) {
             mMemText.setVisibility(View.GONE);
@@ -491,9 +488,9 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         mMemBar.setVisibility(View.VISIBLE);
 
         updateMemoryStatus();
+        updateMemTextColor();
         updateMemBarBgColor();
         updateMemBarColor();
-        mMemText.setTextColor(mtextcolor);
         return true;
     }
 
@@ -508,6 +505,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
             mMemText.setText("Free RAM: " + String.valueOf(available) + " MB");
             mMemBar.setMax(max);
             mMemBar.setProgress(available);
+            updateMemTextColor();
             updateMemBarBgColor();
             updateMemBarColor();
     }
@@ -558,6 +556,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     
         updateMemoryStatus();
 
+        updateMemTextColor();
         updateMemBarBgColor();
         updateMemBarColor();
 
@@ -565,6 +564,16 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         mDate = (TextView) ((View)getParent()).findViewById(R.id.recents_date);
         updateTimeVisibility();
 	
+    }
+
+    private void updateMemTextColor() {
+        ContentResolver resolver = mContext.getContentResolver();
+        int color = Settings.System.getInt(resolver,
+                Settings.System.MEM_TEXT_COLOR, 0xffffffff);
+
+        if (mMemText != null) {
+            mMemText.setTextColor(color);
+        }
     }
 
     private void updateMemBarBgColor() {
