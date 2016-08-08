@@ -23,8 +23,10 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.DrawableContainer;
 import android.graphics.drawable.VectorDrawable;
+import android.graphics.Typeface;
 import android.graphics.PorterDuff.Mode;
 import android.os.Handler;
+import android.os.UserHandle;
 import android.provider.Settings;
 import android.service.notification.StatusBarNotification;
 import android.text.Layout.Alignment;
@@ -37,6 +39,7 @@ import android.widget.TextSwitcher;
 import android.widget.TextView;
 
 import com.android.internal.statusbar.StatusBarIcon;
+import com.android.internal.util.temasek.FontHelper;
 import com.android.internal.util.temasek.ImageHelper;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.StatusBarIconView;
@@ -55,6 +58,8 @@ public abstract class Ticker {
     private TextSwitcher mTextSwitcher;
     private float mIconScale;
     private int mNotifTextColor;
+    private int mTickerFontSize = 14;
+    private int mTickerFontStyle = FontHelper.FONT_NORMAL;
 
     public static boolean isGraphicOrEmoji(char c) {
         int gc = Character.getType(c);
@@ -185,6 +190,8 @@ public abstract class Ticker {
         TextView text = (TextView)mTextSwitcher.getChildAt(0);
         mPaint = text.getPaint();
         updateTextColor();
+        updateTickerSize();
+        updateTickerFontStyle();
     }
 
 
@@ -256,8 +263,11 @@ public abstract class Ticker {
             mTextSwitcher.setAnimateFirstView(false);
             mTextSwitcher.reset();
             mTextSwitcher.setText(seg.getText());
+            updateTickerSize();
             updateTextColor();
+            updateTickerFontStyle();
             mTextSwitcher.setTextColor(mNotifTextColor);
+            mTextSwitcher.setTextSize(mTickerFontSize);
 
             tickerStarting();
             scheduleAdvance();
@@ -298,8 +308,10 @@ public abstract class Ticker {
             Segment seg = mSegments.get(0);
             CharSequence text = seg.getText();
             mTextSwitcher.setCurrentText(text);
+            updateTickerSize();
             updateTextColor();
             mTextSwitcher.setTextColor(mNotifTextColor);
+            mTextSwitcher.setTextSize(mTickerFontSize);
         }
     }
 
@@ -320,8 +332,10 @@ public abstract class Ticker {
                     continue;
                 }
                 mTextSwitcher.setText(text);
+                updateTickerSize();
                 updateTextColor();
                 mTextSwitcher.setTextColor(mNotifTextColor);
+                mTextSwitcher.setTextSize(mTickerFontSize);
 
                 scheduleAdvance();
                 break;
@@ -339,6 +353,100 @@ public abstract class Ticker {
     public abstract void tickerStarting();
     public abstract void tickerDone();
     public abstract void tickerHalting();
+
+    private void updateTickerFontStyle() {
+        final int mTickerFontStyle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_TICKER_FONT_STYLE, FontHelper.FONT_NORMAL);
+
+        getFontStyle(mTickerFontStyle);
+    }
+
+    public void getFontStyle(int font) {
+        switch (font) {
+            case FontHelper.FONT_NORMAL:
+            default:
+                mTextSwitcher.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_ITALIC:
+                mTextSwitcher.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
+                break;
+            case FontHelper.FONT_BOLD:
+                mTextSwitcher.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+                break;
+            case FontHelper.FONT_BOLD_ITALIC:
+                mTextSwitcher.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
+                break;
+            case FontHelper.FONT_LIGHT:
+                mTextSwitcher.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_LIGHT_ITALIC:
+                mTextSwitcher.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
+                break;
+            case FontHelper.FONT_THIN:
+                mTextSwitcher.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_THIN_ITALIC:
+                mTextSwitcher.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
+                break;
+            case FontHelper.FONT_CONDENSED:
+                mTextSwitcher.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_CONDENSED_ITALIC:
+                mTextSwitcher.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
+                break;
+            case FontHelper.FONT_CONDENSED_LIGHT:
+                mTextSwitcher.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_CONDENSED_LIGHT_ITALIC:
+                mTextSwitcher.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
+                break;
+            case FontHelper.FONT_CONDENSED_BOLD:
+                mTextSwitcher.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
+                break;
+            case FontHelper.FONT_CONDENSED_BOLD_ITALIC:
+                mTextSwitcher.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
+                break;
+            case FontHelper.FONT_MEDIUM:
+                mTextSwitcher.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_MEDIUM_ITALIC:
+                mTextSwitcher.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
+                break;
+            case FontHelper.FONT_BLACK:
+                mTextSwitcher.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_BLACK_ITALIC:
+                mTextSwitcher.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
+                break;
+            case FontHelper.FONT_DANCINGSCRIPT:
+                mTextSwitcher.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_DANCINGSCRIPT_BOLD:
+                mTextSwitcher.setTypeface(Typeface.create("cursive", Typeface.BOLD));
+                break;
+            case FontHelper.FONT_COMINGSOON:
+                mTextSwitcher.setTypeface(Typeface.create("casual", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_NOTOSERIF:
+                mTextSwitcher.setTypeface(Typeface.create("serif", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_NOTOSERIF_ITALIC:
+                mTextSwitcher.setTypeface(Typeface.create("serif", Typeface.ITALIC));
+                break;
+            case FontHelper.FONT_NOTOSERIF_BOLD:
+                mTextSwitcher.setTypeface(Typeface.create("serif", Typeface.BOLD));
+                break;
+            case FontHelper.FONT_NOTOSERIF_BOLD_ITALIC:
+                mTextSwitcher.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
+                break;
+        }
+    }
+
+    private void updateTickerSize() {
+        mTickerFontSize = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_TICKER_FONT_SIZE, 14,
+                UserHandle.USER_CURRENT);
+    }
 
     public void updateTextColor() {
         ContentResolver resolver = mContext.getContentResolver();

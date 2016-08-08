@@ -5863,6 +5863,18 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String QS_PANEL_LOGO_ALPHA = "qs_panel_logo_alpha";
 
         /**
+         * Ticker Font Style
+         * @hide
+         */
+        public static final String STATUS_BAR_TICKER_FONT_STYLE = "status_bar_ticker_font_style";
+
+        /**
+         * Ticker Text Size
+         * @hide
+         */
+        public static final String STATUS_BAR_TICKER_FONT_SIZE = "status_bar_ticker_font_size";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *

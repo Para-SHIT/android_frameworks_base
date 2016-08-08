@@ -18,6 +18,7 @@ package android.widget;
 
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,6 +99,19 @@ public class TextSwitcher extends ViewSwitcher {
      */
     public void setTextColor(int color) {
         ((TextView)getCurrentView()).setTextColor(color);
+    }
+
+    /**
+     * Sets the size of the text view that is currently showing.
+     *
+     * @param set the text size to display
+     */
+    public void setTextSize(int size) {
+        ((TextView)getCurrentView()).setTextSize(size);
+    }
+
+    public void setTypeface(Typeface tf) {
+        ((TextView)getCurrentView()).setTypeface(tf);
     }
 
     @Override
