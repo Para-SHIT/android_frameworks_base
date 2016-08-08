@@ -579,7 +579,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     private void updateMemBarBgColor() {
         ContentResolver resolver = mContext.getContentResolver();
         int color = Settings.System.getInt(resolver,
-                Settings.System.MEMORY_BAR_COLOR, 0xffffffff);
+                Settings.System.MEMORY_BAR_COLOR, 0xff1b231d);
 
         if (mMemBar != null) {
             mMemBar.setProgressBackgroundTintList(ColorStateList.valueOf(color));
@@ -589,7 +589,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
     private void updateMemBarColor() {
         ContentResolver resolver = mContext.getContentResolver();
         int color = Settings.System.getInt(resolver,
-                Settings.System.MEMORY_BAR_USED_COLOR, 0xffffffff);
+                Settings.System.MEMORY_BAR_FREE_COLOR, 0xff82d989);
 
         if (mMemBar != null) {
             mMemBar.setProgressTintList(ColorStateList.valueOf(color));

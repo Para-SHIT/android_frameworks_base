@@ -26,10 +26,8 @@ import com.android.internal.util.NotificationColorUtil;
 public class TMColorHelper {
 
     private static final int WHITE = 0xffffffff;
-    private static final int BLACK = 0xff000000;
-    private static final int TEMASEK_BLUE = 0xff1976D2;
-    private static final int TEMASEK_GREEN = 0xff00ff00;
-    private static final int TRANSLUCENT_BLACK = 0x7a000000;
+    private static final int TEMASEK_GREEN = 0xff009688;
+    private static final int TEMASEK_RED = 0xfff44235;
 
     public static ColorStateList getSliderColorList(Context context) {
         return ColorStateList.valueOf(getSliderColor(context));
@@ -37,7 +35,7 @@ public class TMColorHelper {
 
     public static int getSliderColor(Context context) {
         return Settings.System.getInt(context.getContentResolver(),
-                Settings.System.TASK_MANAGER_SLIDER_COLOR, 0xffff0000);
+                Settings.System.TASK_MANAGER_SLIDER_COLOR, TEMASEK_GREEN);
     }
 
     public static ColorStateList getSliderInactiveColorList(Context context) {
@@ -46,7 +44,7 @@ public class TMColorHelper {
 
     public static int getSliderInactiveColor(Context context) {
         return Settings.System.getInt(context.getContentResolver(),
-                Settings.System.TASK_MANAGER_SLIDER_INACTIVE_COLOR, TEMASEK_GREEN);
+                Settings.System.TASK_MANAGER_SLIDER_INACTIVE_COLOR, TEMASEK_RED);
     }
 
     public static ColorStateList getTaskAppIconColorList(Context context) {
@@ -64,7 +62,7 @@ public class TMColorHelper {
 
     public static int getTaskKillIconColor(Context context) {
         return Settings.System.getInt(context.getContentResolver(),
-                Settings.System.TASK_MANAGER_TASK_KILL_BUTTON_COLOR, TEMASEK_BLUE);
+                Settings.System.TASK_MANAGER_TASK_KILL_BUTTON_COLOR, WHITE);
     }
 
     public static ColorStateList getKillAllTextColorList(Context context) {
@@ -73,7 +71,7 @@ public class TMColorHelper {
 
     public static int getKillAllTextColor(Context context) {
         return Settings.System.getInt(context.getContentResolver(),
-                Settings.System.TASK_MANAGER_TASK_KILL_ALL_COLOR, TEMASEK_BLUE);
+                Settings.System.TASK_MANAGER_TASK_KILL_ALL_COLOR, TEMASEK_RED);
     }
 
     public static ColorStateList getTaskMemoryTextColorList(Context context) {
