@@ -5547,6 +5547,18 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String RECENTS_FULL_SCREEN_DATE = "recents_full_screen_date";
 
         /**
+         * Font style of memory bar text, clock and date in full screen recents
+         * @hide
+         */
+        public static final String RECENTS_FONT_STYLE = "recents_font_style";
+
+        /**
+         * Font size of clock and date in full screen recents
+         * @hide
+         */
+        public static final String RECENTS_FULL_SCREEN_CLOCK_DATE_SIZE = "recents_full_screen_clock_date_size";
+
+        /**
          * Header Icon Color
          * @hide
          */
@@ -5558,19 +5570,19 @@ public static final String LISTVIEW_DURATION = "listview_duration";
          */
         public static final String HEADER_CLOCK_COLOR = "header_clock_color";
 
-	/**
+		/**
          * Header Date Color
          * @hide
          */
         public static final String HEADER_DETAIL_COLOR = "header_detail_color";
 
-	/**
+		/**
          * Header Weather Color
          * @hide
          */
         public static final String HEADER_WEATHERONE_COLOR = "header_weatherone_color";
 
-	/**
+		/**
          * Header Weather Color
          * @hide
          */

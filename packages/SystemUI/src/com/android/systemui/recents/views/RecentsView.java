@@ -31,6 +31,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.UserHandle;
 import android.provider.Settings;
@@ -47,6 +48,7 @@ import android.widget.TextClock;
 import android.widget.TextView;
 
 import com.android.internal.util.temasek.ColorHelper;
+import com.android.internal.util.temasek.FontHelper;
 
 import com.android.systemui.recents.Constants;
 import com.android.systemui.recents.RecentsConfiguration;
@@ -104,6 +106,9 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
 
     TextClock mClock;
     TextView mDate;
+
+    private int mRecentsFontStyle = FontHelper.FONT_NORMAL;
+    private int mRecentsFontSize = 14;
 
     public RecentsView(Context context) {
         super(context);
@@ -402,8 +407,8 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         showMemDisplay();
         updateMemBarBgColor();
         updateMemBarColor();
-
-        
+        updateRecentsFontStyle();
+        updateRecentsFontSize();
         updateTimeVisibility();
 
         boolean showClearAllRecents = Settings.System.getInt(resolver,
@@ -491,6 +496,8 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         updateMemTextColor();
         updateMemBarBgColor();
         updateMemBarColor();
+        updateRecentsFontStyle();
+        updateRecentsFontSize();
         return true;
     }
 
@@ -508,6 +515,8 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
             updateMemTextColor();
             updateMemBarBgColor();
             updateMemBarColor();
+            updateRecentsFontStyle();
+            updateRecentsFontSize();
     }
 
     public long getTotalMemory() {
@@ -553,17 +562,15 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         });
         mMemText = (TextView) ((View)getParent()).findViewById(R.id.recents_memory_text);
         mMemBar = (ProgressBar) ((View)getParent()).findViewById(R.id.recents_memory_bar);
-    
+        mClock = (TextClock) ((View)getParent()).findViewById(R.id.recents_clock);
+        mDate = (TextView) ((View)getParent()).findViewById(R.id.recents_date);
         updateMemoryStatus();
-
         updateMemTextColor();
         updateMemBarBgColor();
         updateMemBarColor();
-
-        mClock = (TextClock) ((View)getParent()).findViewById(R.id.recents_clock);
-        mDate = (TextView) ((View)getParent()).findViewById(R.id.recents_date);
+        updateRecentsFontStyle();
+        updateRecentsFontSize();
         updateTimeVisibility();
-	
     }
 
     private void updateMemTextColor() {
@@ -594,7 +601,157 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         if (mMemBar != null) {
             mMemBar.setProgressTintList(ColorStateList.valueOf(color));
         }
-     }
+    }
+
+    private void updateRecentsFontSize() {
+        ContentResolver resolver = mContext.getContentResolver();
+
+        mRecentsFontSize = Settings.System.getIntForUser(resolver,
+                Settings.System.RECENTS_FULL_SCREEN_CLOCK_DATE_SIZE, 14,
+                UserHandle.USER_CURRENT);
+
+        mClock.setTextSize(mRecentsFontSize);
+        mDate.setTextSize(mRecentsFontSize);
+        mMemText.setTextSize(mRecentsFontSize);
+    }
+
+    private void updateRecentsFontStyle() {
+        final int mRecentsFontStyle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.RECENTS_FONT_STYLE, FontHelper.FONT_NORMAL);
+
+        getFontStyle(mRecentsFontStyle);
+    }
+
+    public void getFontStyle(int font) {
+        switch (font) {
+            case FontHelper.FONT_NORMAL:
+            default:
+                mMemText.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+                mClock.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+                mDate.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_ITALIC:
+                mMemText.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
+                mClock.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
+                mDate.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
+                break;
+            case FontHelper.FONT_BOLD:
+                mMemText.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+                mClock.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+                mDate.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+                break;
+            case FontHelper.FONT_BOLD_ITALIC:
+                mMemText.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
+                mClock.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
+                mDate.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
+                break;
+            case FontHelper.FONT_LIGHT:
+                mMemText.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+                mClock.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+                mDate.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_LIGHT_ITALIC:
+                mMemText.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
+                mClock.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
+                mDate.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
+                break;
+            case FontHelper.FONT_THIN:
+                mMemText.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+                mClock.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+                mDate.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_THIN_ITALIC:
+                mMemText.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
+                mClock.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
+                mDate.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
+                break;
+            case FontHelper.FONT_CONDENSED:
+                mMemText.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
+                mClock.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
+                mDate.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_CONDENSED_ITALIC:
+                mMemText.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
+                mClock.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
+                mDate.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
+                break;
+            case FontHelper.FONT_CONDENSED_LIGHT:
+                mMemText.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
+                mClock.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
+                mDate.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_CONDENSED_LIGHT_ITALIC:
+                mMemText.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
+                mClock.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
+                mDate.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
+                break;
+            case FontHelper.FONT_CONDENSED_BOLD:
+                mMemText.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
+                mClock.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
+                mDate.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
+                break;
+            case FontHelper.FONT_CONDENSED_BOLD_ITALIC:
+                mMemText.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
+                mClock.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
+                mDate.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
+                break;
+            case FontHelper.FONT_MEDIUM:
+                mMemText.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+                mClock.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+                mDate.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_MEDIUM_ITALIC:
+                mMemText.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
+                mClock.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
+                mDate.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
+                break;
+            case FontHelper.FONT_BLACK:
+                mMemText.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
+                mClock.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
+                mDate.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_BLACK_ITALIC:
+                mMemText.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
+                mClock.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
+                mDate.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
+                break;
+            case FontHelper.FONT_DANCINGSCRIPT:
+                mMemText.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
+                mClock.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
+                mDate.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_DANCINGSCRIPT_BOLD:
+                mMemText.setTypeface(Typeface.create("cursive", Typeface.BOLD));
+                mClock.setTypeface(Typeface.create("cursive", Typeface.BOLD));
+                mDate.setTypeface(Typeface.create("cursive", Typeface.BOLD));
+                break;
+            case FontHelper.FONT_COMINGSOON:
+                mMemText.setTypeface(Typeface.create("casual", Typeface.NORMAL));
+                mClock.setTypeface(Typeface.create("casual", Typeface.NORMAL));
+                mDate.setTypeface(Typeface.create("casual", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_NOTOSERIF:
+                mMemText.setTypeface(Typeface.create("serif", Typeface.NORMAL));
+                mClock.setTypeface(Typeface.create("serif", Typeface.NORMAL));
+                mDate.setTypeface(Typeface.create("serif", Typeface.NORMAL));
+                break;
+            case FontHelper.FONT_NOTOSERIF_ITALIC:
+                mMemText.setTypeface(Typeface.create("serif", Typeface.ITALIC));
+                mClock.setTypeface(Typeface.create("serif", Typeface.ITALIC));
+                mDate.setTypeface(Typeface.create("serif", Typeface.ITALIC));
+                break;
+            case FontHelper.FONT_NOTOSERIF_BOLD:
+                mMemText.setTypeface(Typeface.create("serif", Typeface.BOLD));
+                mClock.setTypeface(Typeface.create("serif", Typeface.BOLD));
+                mDate.setTypeface(Typeface.create("serif", Typeface.BOLD));
+                break;
+            case FontHelper.FONT_NOTOSERIF_BOLD_ITALIC:
+                mMemText.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
+                mClock.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
+                mDate.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
+                break;
+        }
+    }
 
     public void updateTimeVisibility() {
         boolean showClock = Settings.System.getIntForUser(mContext.getContentResolver(),
@@ -606,7 +763,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         final Resources res = getContext().getResources();
         int mClockcolor = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.RECENTS_CLOCK_COLOR, 0xFFFFFFFF);
-	int mDatecolor = Settings.System.getInt(mContext.getContentResolver(),
+		int mDatecolor = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.RECENTS_DATE_COLOR, 0xFFFFFFFF);
 
         if (fullscreenEnabled) {
