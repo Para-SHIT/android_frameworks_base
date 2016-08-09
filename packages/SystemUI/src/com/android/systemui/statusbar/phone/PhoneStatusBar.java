@@ -156,6 +156,7 @@ import com.android.internal.util.cm.WeatherController;
 import com.android.internal.util.cm.WeatherControllerImpl;
 import com.android.internal.util.cm.WeatherController.WeatherInfo;
 import com.android.keyguard.KeyguardHostView.OnDismissAction;
+import com.android.keyguard.KeyguardStatusView;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.ViewMediatorCallback;
 import com.android.systemui.BatteryMeterView;
@@ -425,7 +426,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     // top bar
     StatusBarHeaderView mHeader;
     KeyguardStatusBarView mKeyguardStatusBar;
-    View mKeyguardStatusView;
+    KeyguardStatusView mKeyguardStatusView;
     KeyguardBottomAreaView mKeyguardBottomArea;
     boolean mLeaveOpenOnKeyguardHide;
     KeyguardIndicationController mKeyguardIndicationController;
@@ -1617,7 +1618,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mKeyguardStatusBar =
                 (KeyguardStatusBarView) mStatusBarWindowContent.findViewById(R.id.keyguard_header);
         mStatusIconsKeyguard = (LinearLayout) mKeyguardStatusBar.findViewById(R.id.statusIcons);
-        mKeyguardStatusView = mStatusBarWindowContent.findViewById(R.id.keyguard_status_view);
+        mKeyguardStatusView = (KeyguardStatusView) mStatusBarWindowContent.findViewById(R.id.keyguard_status_view);
         mKeyguardBottomArea = (KeyguardBottomAreaView) mStatusBarWindowContent.findViewById(
                 R.id.keyguard_bottom_area);
         mKeyguardBottomArea.setActivityStarter(this);
@@ -5775,6 +5776,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mScrimController.setDozing(mDozing);
         mVisualizerView.setDozing(mDozing);
         mDozeScrimController.setDozing(mDozing, animate);
+        mKeyguardStatusView.setDozing(mDozing);
     }
 
     public void updateStackScrollerState(boolean goingToFullShade) {
