@@ -5887,18 +5887,6 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String STATUS_BAR_TICKER_FONT_SIZE = "status_bar_ticker_font_size";
 
         /**
-         * Require double tap instead of simple tap to wake from Doze pulse screen
-         * @hide
-         */
-        public static final String DOZE_WAKEUP_DOUBLETAP = "doze_wakeup_doubletap";
-
-        /**
-         * Whether to show the battery status on ambient display
-         * @hide
-         */
-        public static final String AMBIENT_DISPLAY_SHOW_BATTERY = "ambient_display_show_battery";
-
-        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *

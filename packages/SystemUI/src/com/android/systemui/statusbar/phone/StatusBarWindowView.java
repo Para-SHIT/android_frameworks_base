@@ -65,10 +65,6 @@ public class StatusBarWindowView extends FrameLayout {
 
     private boolean mDoubleTapToSleepEnabled;
     private GestureDetector mDoubleTapGesture;
-
-    private boolean mDozeWakeupDoubleTap;
-    private GestureDetector mDozeWakeupDoubleTapGesture;
-
     private Handler mHandler = new Handler();
     private SettingsObserver mSettingsObserver;
     private PowerManager mPowerManager;
@@ -123,15 +119,6 @@ public class StatusBarWindowView extends FrameLayout {
                     Log.d(TAG, "getSystemService returned null PowerManager");
                 }
 
-                return true;
-            }
-        });
-
-        mDozeWakeupDoubleTapGesture = new GestureDetector(mContext,
-                new GestureDetector.SimpleOnGestureListener() {
-            @Override
-            public boolean onDoubleTap(MotionEvent e) {
-                mService.wakeUpIfDozing(e.getEventTime(), e);
                 return true;
             }
         });
@@ -222,16 +209,10 @@ public class StatusBarWindowView extends FrameLayout {
                 && mService.getBarState() == StatusBarState.KEYGUARD
                 && !mService.isQsExpanded()
                 && !mService.isBouncerShowing()) {
-            if (!mDozeWakeupDoubleTap || (mDozeWakeupDoubleTap && !mService.isDozing())) {
-                intercept = mDragDownHelper.onInterceptTouchEvent(ev);
-            }
+            intercept = mDragDownHelper.onInterceptTouchEvent(ev);
             // wake up on a touch down event, if dozing
-            if (mDozeWakeupDoubleTap) {
-                mDozeWakeupDoubleTapGesture.onTouchEvent(ev);
-            } else {
-                if (ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                    mService.wakeUpIfDozing(ev.getEventTime(), ev);
-                }
+            if (ev.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                mService.wakeUpIfDozing(ev.getEventTime(), ev);
             }
         }
         if (!intercept) {
@@ -327,8 +308,6 @@ public class StatusBarWindowView extends FrameLayout {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.DOUBLE_TAP_SLEEP_GESTURE), false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.DOZE_WAKEUP_DOUBLETAP), false, this, UserHandle.USER_ALL);
             update();
         }
 
@@ -343,8 +322,6 @@ public class StatusBarWindowView extends FrameLayout {
             ContentResolver resolver = mContext.getContentResolver();
             mDoubleTapToSleepEnabled = Settings.System.getIntForUser(resolver,
                     Settings.System.DOUBLE_TAP_SLEEP_GESTURE, 1, UserHandle.USER_CURRENT) == 1;
-            mDozeWakeupDoubleTap = Settings.System.getIntForUser(resolver,
-                    Settings.System.DOZE_WAKEUP_DOUBLETAP, 0, UserHandle.USER_CURRENT) == 1;
         }
     }
 }

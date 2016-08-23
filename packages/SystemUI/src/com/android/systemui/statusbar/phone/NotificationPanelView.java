@@ -47,7 +47,6 @@ import android.view.accessibility.AccessibilityEvent;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Interpolator;
-import android.view.GestureDetector;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -209,7 +208,6 @@ public class NotificationPanelView extends PanelView implements
     private boolean mDoubleTapToSleepEnabled;
     private boolean mDoubleTapToSleepAnywhere;
     private int mStatusBarHeaderHeight;
-    private boolean mDozeWakeupDoubleTap;
     private GestureDetector mDoubleTapGesture;
 
     private int mQSBackgroundColor;
@@ -763,10 +761,7 @@ public class NotificationPanelView extends PanelView implements
         resetDownStates(event);
         if ((!mIsExpanding || mHintAnimationRunning)
                 && !mQsExpanded
-                && mStatusBar.getBarState() != StatusBarState.SHADE
-                && !(mDozeWakeupDoubleTap
-                     && mStatusBarState == StatusBarState.KEYGUARD
-                     && mStatusBar.isDozing())) {
+                && mStatusBar.getBarState() != StatusBarState.SHADE) {
             mAfforanceHelper.onTouchEvent(event);
         }
         if (mOnlyAffordanceInThisMotion) {
@@ -2279,9 +2274,6 @@ public class NotificationPanelView extends PanelView implements
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_PANEL_LOGO_ALPHA),
                     false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.DOZE_WAKEUP_DOUBLETAP),
-                    false, this, UserHandle.USER_ALL);
             update();
         }
 
@@ -2348,9 +2340,6 @@ public class NotificationPanelView extends PanelView implements
                     resolver, Settings.System.QS_PANEL_LOGO_COLOR, mContext.getResources().getColor(R.color.system_accent_color));
             mQSPanelLogoAlpha = Settings.System.getInt(
                     resolver, Settings.System.QS_PANEL_LOGO_ALPHA, 51);
-            mDozeWakeupDoubleTap = Settings.System.getIntForUser(resolver,
-                    Settings.System.DOZE_WAKEUP_DOUBLETAP, 0,
-                    UserHandle.USER_CURRENT) == 1;
             if (mQSCSwitch) {
                 setQSBackgroundColor();
                 setQSColors();

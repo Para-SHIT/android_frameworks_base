@@ -663,10 +663,6 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
         }
     }
 
-    public BatteryStatus getBatteryStatus() {
-        return mBatteryStatus;
-    }
-
     public static class BatteryStatus {
         public final int status;
         public final int level;
