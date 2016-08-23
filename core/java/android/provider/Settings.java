@@ -5887,6 +5887,12 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String STATUS_BAR_TICKER_FONT_SIZE = "status_bar_ticker_font_size";
 
         /**
+         * Power menu font style
+         * @hide
+         */
+        public static final String PM_FONT_STYLES = "pm_font_styles";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *

@@ -48,6 +48,7 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.TorchManager;
@@ -99,6 +100,8 @@ import android.widget.ImageView.ScaleType;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.internal.util.temasek.FontHelper;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -115,6 +118,7 @@ import com.android.internal.util.nameless.NamelessActions;
 class GlobalActions implements DialogInterface.OnDismissListener, DialogInterface.OnClickListener {
 
     private static final String TAG = "GlobalActions";
+    public static Typeface mFontStyle;
 
     private static final boolean SHOW_SILENT_TOGGLE = true;
 
@@ -205,10 +209,12 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         if (mDialog != null && mUiContext == null) {
             mDialog.dismiss();
             mDialog = null;
+            updatePMFontStyle();
             mDialog = createDialog();
             // Show delayed, so that the dismiss of the previous dialog completes
             mHandler.sendEmptyMessage(MESSAGE_SHOW);
         } else {
+            updatePMFontStyle();
             mDialog = createDialog();
             handleShow();
         }
@@ -1145,6 +1151,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             final CharSequence status = getStatus();
             if (!TextUtils.isEmpty(status)) {
                 statusView.setText(status);
+                statusView.setTypeface(mFontStyle);
             } else {
                 statusView.setVisibility(View.GONE);
             }
@@ -1156,8 +1163,10 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             }
             if (mMessage != null) {
                 messageView.setText(mMessage);
+                messageView.setTypeface(mFontStyle);
             } else {
                 messageView.setText(mMessageResId);
+                messageView.setTypeface(mFontStyle);
             }
 
             return v;
@@ -1242,6 +1251,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
             if (messageView != null) {
                 messageView.setText(mMessageResId);
+                messageView.setTypeface(mFontStyle);
                 messageView.setEnabled(enabled);
             }
 
@@ -1255,6 +1265,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             if (statusView != null) {
                 statusView.setText(on ? mEnabledStatusMessageResId : mDisabledStatusMessageResId);
                 statusView.setVisibility(View.VISIBLE);
+                statusView.setTypeface(mFontStyle);
                 statusView.setEnabled(enabled);
             }
             v.setEnabled(enabled);
@@ -1459,6 +1470,94 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 Settings.Secure.POWER_MENU_ACTIONS, UserHandle.USER_CURRENT);
         mProfilesEnabled = Settings.System.getInt(resolver,
                 Settings.System.SYSTEM_PROFILES_ENABLED, 1) != 0;
+    }
+
+    private void updatePMFontStyle() {
+        final int mPMFontStyle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.PM_FONT_STYLES, FontHelper.FONT_NORMAL);
+
+        getFontStyle(mPMFontStyle);
+    }
+
+    public static void getFontStyle(int font) {
+        switch (font) {
+            case FontHelper.FONT_NORMAL:
+            default:
+                mFontStyle = FontHelper.NORMAL;
+                break;
+            case FontHelper.FONT_ITALIC:
+                mFontStyle = FontHelper.ITALIC;
+                break;
+            case FontHelper.FONT_BOLD:
+                mFontStyle = FontHelper.BOLD;
+                break;
+            case FontHelper.FONT_BOLD_ITALIC:
+                mFontStyle = FontHelper.BOLD_ITALIC;
+                break;
+            case FontHelper.FONT_LIGHT:
+                mFontStyle = FontHelper.LIGHT;
+                break;
+            case FontHelper.FONT_LIGHT_ITALIC:
+                mFontStyle = FontHelper.LIGHT_ITALIC;
+                break;
+            case FontHelper.FONT_THIN:
+                mFontStyle = FontHelper.THIN;
+                break;
+            case FontHelper.FONT_THIN_ITALIC:
+                mFontStyle = FontHelper.THIN_ITALIC;
+                break;
+            case FontHelper.FONT_CONDENSED:
+                mFontStyle = FontHelper.CONDENSED;
+                break;
+            case FontHelper.FONT_CONDENSED_ITALIC:
+                mFontStyle = FontHelper.CONDENSED_ITALIC;
+                break;
+            case FontHelper.FONT_CONDENSED_LIGHT:
+                mFontStyle = FontHelper.CONDENSED_LIGHT;
+                break;
+            case FontHelper.FONT_CONDENSED_LIGHT_ITALIC:
+                mFontStyle = FontHelper.CONDENSED_LIGHT_ITALIC;
+                break;
+            case FontHelper.FONT_CONDENSED_BOLD:
+                mFontStyle = FontHelper.CONDENSED_BOLD;
+                break;
+            case FontHelper.FONT_CONDENSED_BOLD_ITALIC:
+                mFontStyle = FontHelper.CONDENSED_BOLD_ITALIC;
+                break;
+            case FontHelper.FONT_MEDIUM:
+                mFontStyle = FontHelper.MEDIUM;
+                break;
+            case FontHelper.FONT_MEDIUM_ITALIC:
+                mFontStyle = FontHelper.MEDIUM_ITALIC;
+                break;
+            case FontHelper.FONT_BLACK:
+                mFontStyle = FontHelper.BLACK;
+                break;
+            case FontHelper.FONT_BLACK_ITALIC:
+                mFontStyle = FontHelper.BLACK_ITALIC;
+                break;
+            case FontHelper.FONT_DANCINGSCRIPT:
+                mFontStyle = FontHelper.DANCINGSCRIPT;
+                break;
+            case FontHelper.FONT_DANCINGSCRIPT_BOLD:
+                mFontStyle = FontHelper.DANCINGSCRIPT_BOLD;
+                break;
+            case FontHelper.FONT_COMINGSOON:
+                mFontStyle = FontHelper.COMINGSOON;
+                break;
+            case FontHelper.FONT_NOTOSERIF:
+                mFontStyle = FontHelper.NOTOSERIF;
+                break;
+            case FontHelper.FONT_NOTOSERIF_ITALIC:
+                mFontStyle = FontHelper.NOTOSERIF_ITALIC;
+                break;
+            case FontHelper.FONT_NOTOSERIF_BOLD:
+                mFontStyle = FontHelper.NOTOSERIF_BOLD;
+                break;
+            case FontHelper.FONT_NOTOSERIF_BOLD_ITALIC:
+                mFontStyle = FontHelper.NOTOSERIF_BOLD_ITALIC;
+                break;
+        }
     }
 
     private BroadcastReceiver mThemeChangeReceiver = new BroadcastReceiver() {

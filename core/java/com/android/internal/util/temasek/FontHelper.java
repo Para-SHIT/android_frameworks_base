@@ -1,5 +1,5 @@
 /*
-* Copyright (C) 2016 The VRToxin Project
+* Copyright (C) 2016 Temasek
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
 */
 
 package com.android.internal.util.temasek;
+
+import android.graphics.Typeface;
 
 public class FontHelper {
 
@@ -43,5 +45,31 @@ public class FontHelper {
     public static final int FONT_NOTOSERIF_ITALIC = 22;
     public static final int FONT_NOTOSERIF_BOLD = 23;
     public static final int FONT_NOTOSERIF_BOLD_ITALIC = 24;
+
+    public static final Typeface NORMAL = Typeface.create("sans-serif", Typeface.NORMAL);
+    public static final Typeface ITALIC = Typeface.create("sans-serif", Typeface.ITALIC);
+    public static final Typeface BOLD = Typeface.create("sans-serif", Typeface.BOLD);
+    public static final Typeface BOLD_ITALIC = Typeface.create("sans-serif", Typeface.BOLD_ITALIC);
+    public static final Typeface LIGHT = Typeface.create("sans-serif-light", Typeface.NORMAL);
+    public static final Typeface LIGHT_ITALIC = Typeface.create("sans-serif-light", Typeface.ITALIC);
+    public static final Typeface THIN = Typeface.create("sans-serif-thin", Typeface.NORMAL);
+    public static final Typeface THIN_ITALIC = Typeface.create("sans-serif-thin", Typeface.ITALIC);
+    public static final Typeface CONDENSED = Typeface.create("sans-serif-condensed", Typeface.NORMAL);
+    public static final Typeface CONDENSED_ITALIC = Typeface.create("sans-serif-condensed", Typeface.ITALIC);
+    public static final Typeface CONDENSED_LIGHT = Typeface.create("sans-serif-condensed-light", Typeface.NORMAL);
+    public static final Typeface CONDENSED_LIGHT_ITALIC = Typeface.create("sans-serif-condensed-light", Typeface.ITALIC);
+    public static final Typeface CONDENSED_BOLD = Typeface.create("sans-serif-condensed", Typeface.BOLD);
+    public static final Typeface CONDENSED_BOLD_ITALIC = Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC);
+    public static final Typeface MEDIUM = Typeface.create("sans-serif-medium", Typeface.NORMAL);
+    public static final Typeface MEDIUM_ITALIC = Typeface.create("sans-serif-medium", Typeface.ITALIC);
+    public static final Typeface BLACK = Typeface.create("sans-serif-black", Typeface.NORMAL);
+    public static final Typeface BLACK_ITALIC = Typeface.create("sans-serif-black", Typeface.ITALIC);
+    public static final Typeface DANCINGSCRIPT = Typeface.create("cursive", Typeface.NORMAL);
+    public static final Typeface DANCINGSCRIPT_BOLD = Typeface.create("cursive", Typeface.BOLD);
+    public static final Typeface COMINGSOON = Typeface.create("casual", Typeface.NORMAL);
+    public static final Typeface NOTOSERIF = Typeface.create("serif", Typeface.NORMAL);
+    public static final Typeface NOTOSERIF_ITALIC = Typeface.create("serif", Typeface.ITALIC);
+    public static final Typeface NOTOSERIF_BOLD = Typeface.create("serif", Typeface.BOLD);
+    public static final Typeface NOTOSERIF_BOLD_ITALIC = Typeface.create("serif", Typeface.BOLD_ITALIC);
 
 }
