@@ -406,7 +406,9 @@ public abstract class BaseStatusBar extends SystemUI implements
             if (uri.equals(Settings.System.getUriFor(
                     Settings.System.NOTIFICATION_MEDIA_BG_MODE))
                 || uri.equals(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_BG_COLOR))) {
+                    Settings.System.NOTIFICATION_BG_COLOR))
+                || uri.equals(Settings.System.getUriFor(
+                    Settings.System.NOTIFICATION_ALPHA))) {
                 UpdateNotificationOverflowBgColors();
             }
             ArrayList<Entry> activeNotifications = mNotificationData.getActiveNotifications();
@@ -417,7 +419,9 @@ public abstract class BaseStatusBar extends SystemUI implements
                     if (uri.equals(Settings.System.getUriFor(
                             Settings.System.NOTIFICATION_MEDIA_BG_MODE))
                         || uri.equals(Settings.System.getUriFor(
-                            Settings.System.NOTIFICATION_BG_COLOR))) {
+                            Settings.System.NOTIFICATION_BG_COLOR))
+                        || uri.equals(Settings.System.getUriFor(
+                            Settings.System.NOTIFICATION_ALPHA))) {
                         UpdateNotificationBgColors(entry);
                         UpdateNotificationIconColors(entry);
                     } else if (uri.equals(Settings.System.getUriFor(
@@ -724,6 +728,10 @@ public abstract class BaseStatusBar extends SystemUI implements
         mContext.getContentResolver().registerContentObserver(
                 Settings.System.getUriFor(Settings.System.NOTIFICATION_ICON_COLOR), false,
                 mNotificationColorSettingsObserver);
+        mContext.getContentResolver().registerContentObserver(
+                Settings.System.getUriFor(Settings.System.NOTIFICATION_ALPHA), false,
+                mNotificationColorSettingsObserver);
+        
 
         mBarService = IStatusBarService.Stub.asInterface(
                 ServiceManager.getService(Context.STATUS_BAR_SERVICE));
