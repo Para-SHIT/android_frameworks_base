@@ -2612,6 +2612,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             // voice interaction layer is almost immediately above apps.
             return 5;
         case TYPE_SYSTEM_DIALOG:
+        case TYPE_RECENTS_OVERLAY:
             return 6;
         case TYPE_TOAST:
             // toasts and the plugged-in battery thing
