@@ -37,6 +37,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.android.systemui.qs.QSPanel;
+
 /**
  * Displays one user in the {@link UserDetailView} view.
  */
@@ -124,8 +126,8 @@ public class UserDetailItemView extends LinearLayout {
     }
 
     private void updateTypeface() {
-        boolean activated = ArrayUtils.contains(getDrawableState(), android.R.attr.state_activated);
-        mName.setTypeface(activated ? mActivatedTypeface : mRegularTypeface);
+        //boolean activated = ArrayUtils.contains(getDrawableState(), android.R.attr.state_activated);
+        mName.setTypeface(QSPanel.mFontStyle);
     }
 
     public void setTextColor(boolean activated) {

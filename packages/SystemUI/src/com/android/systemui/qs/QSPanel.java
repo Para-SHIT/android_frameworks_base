@@ -29,6 +29,7 @@ import android.content.res.Resources;
 import android.graphics.Point;
 import android.net.Uri;
 import android.graphics.PorterDuff.Mode;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Process;
@@ -52,6 +53,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.internal.util.temasek.FontHelper;
 import com.android.internal.util.temasek.QSColorHelper;
 
 import com.android.systemui.FontSizeUtils;
@@ -71,6 +73,7 @@ import java.util.Collection;
 public class QSPanel extends ViewGroup {
     private static final float TILE_ASPECT = 1.2f;
     private static final float TILE_ASPECT_SMALL = 0.8f;
+    public static Typeface mFontStyle;
 
     private final Context mContext;
     private final ArrayList<TileRecord> mRecords = new ArrayList<TileRecord>();
@@ -245,6 +248,8 @@ public class QSPanel extends ViewGroup {
             mDetailDoneButton.setTextColor(textColor);
             mDetailSettingsButton.setTextColor(textColor);
         }
+        mDetailDoneButton.setTypeface(mFontStyle);
+        mDetailSettingsButton.setTypeface(mFontStyle);
     }
 
     public void setBrightnessMirror(BrightnessMirrorController c) {
@@ -926,6 +931,9 @@ public class QSPanel extends ViewGroup {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_COLOR_SWITCH),
                     false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QS_FONT_STYLES),
+                    false, this, UserHandle.USER_ALL);
             update();
         }
 
@@ -962,6 +970,95 @@ public class QSPanel extends ViewGroup {
             mQSCSwitch = Settings.System.getIntForUser(
             mContext.getContentResolver(), Settings.System.QS_COLOR_SWITCH,
                 0, UserHandle.USER_CURRENT) == 1;
+            updateQSFontStyle();
+        }
+    }
+
+    private void updateQSFontStyle() {
+        final int mQSFontStyle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.QS_FONT_STYLES, FontHelper.FONT_NORMAL);
+
+        getFontStyle(mQSFontStyle);
+    }
+
+    public static void getFontStyle(int font) {
+        switch (font) {
+            case FontHelper.FONT_NORMAL:
+            default:
+                mFontStyle = FontHelper.NORMAL;
+                break;
+            case FontHelper.FONT_ITALIC:
+                mFontStyle = FontHelper.ITALIC;
+                break;
+            case FontHelper.FONT_BOLD:
+                mFontStyle = FontHelper.BOLD;
+                break;
+            case FontHelper.FONT_BOLD_ITALIC:
+                mFontStyle = FontHelper.BOLD_ITALIC;
+                break;
+            case FontHelper.FONT_LIGHT:
+                mFontStyle = FontHelper.LIGHT;
+                break;
+            case FontHelper.FONT_LIGHT_ITALIC:
+                mFontStyle = FontHelper.LIGHT_ITALIC;
+                break;
+            case FontHelper.FONT_THIN:
+                mFontStyle = FontHelper.THIN;
+                break;
+            case FontHelper.FONT_THIN_ITALIC:
+                mFontStyle = FontHelper.THIN_ITALIC;
+                break;
+            case FontHelper.FONT_CONDENSED:
+                mFontStyle = FontHelper.CONDENSED;
+                break;
+            case FontHelper.FONT_CONDENSED_ITALIC:
+                mFontStyle = FontHelper.CONDENSED_ITALIC;
+                break;
+            case FontHelper.FONT_CONDENSED_LIGHT:
+                mFontStyle = FontHelper.CONDENSED_LIGHT;
+                break;
+            case FontHelper.FONT_CONDENSED_LIGHT_ITALIC:
+                mFontStyle = FontHelper.CONDENSED_LIGHT_ITALIC;
+                break;
+            case FontHelper.FONT_CONDENSED_BOLD:
+                mFontStyle = FontHelper.CONDENSED_BOLD;
+                break;
+            case FontHelper.FONT_CONDENSED_BOLD_ITALIC:
+                mFontStyle = FontHelper.CONDENSED_BOLD_ITALIC;
+                break;
+            case FontHelper.FONT_MEDIUM:
+                mFontStyle = FontHelper.MEDIUM;
+                break;
+            case FontHelper.FONT_MEDIUM_ITALIC:
+                mFontStyle = FontHelper.MEDIUM_ITALIC;
+                break;
+            case FontHelper.FONT_BLACK:
+                mFontStyle = FontHelper.BLACK;
+                break;
+            case FontHelper.FONT_BLACK_ITALIC:
+                mFontStyle = FontHelper.BLACK_ITALIC;
+                break;
+            case FontHelper.FONT_DANCINGSCRIPT:
+                mFontStyle = FontHelper.DANCINGSCRIPT;
+                break;
+            case FontHelper.FONT_DANCINGSCRIPT_BOLD:
+                mFontStyle = FontHelper.DANCINGSCRIPT_BOLD;
+                break;
+            case FontHelper.FONT_COMINGSOON:
+                mFontStyle = FontHelper.COMINGSOON;
+                break;
+            case FontHelper.FONT_NOTOSERIF:
+                mFontStyle = FontHelper.NOTOSERIF;
+                break;
+            case FontHelper.FONT_NOTOSERIF_ITALIC:
+                mFontStyle = FontHelper.NOTOSERIF_ITALIC;
+                break;
+            case FontHelper.FONT_NOTOSERIF_BOLD:
+                mFontStyle = FontHelper.NOTOSERIF_BOLD;
+                break;
+            case FontHelper.FONT_NOTOSERIF_BOLD_ITALIC:
+                mFontStyle = FontHelper.NOTOSERIF_BOLD_ITALIC;
+                break;
         }
     }
 }

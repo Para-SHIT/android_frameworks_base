@@ -5900,6 +5900,19 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String NOTIFICATION_ALPHA = "notification_alpha";
 
         /**
+         * Typeface for quick settings
+         * @hide
+         */
+        public static final String QS_FONT_STYLES = "qs_font_styles";
+
+        /**
+         * Notifications font style
+         *
+         * @hide
+         */
+        public static final String NOTIFICATION_FONT_STYLES = "notification_font_styles";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *

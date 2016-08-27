@@ -123,6 +123,7 @@ public class QSDetailItems extends FrameLayout {
             mEmptyIcon.setColorFilter(mIconColor, Mode.MULTIPLY);
             mEmptyText.setTextColor(mEmptyTextColor);
         }
+        mEmptyText.setTypeface(QSPanel.mFontStyle);
     }
 
     /**
@@ -209,11 +210,13 @@ public class QSDetailItems extends FrameLayout {
         if (mQSCSwitch) {
             title.setTextColor(mTextColor);
         }
+        title.setTypeface(QSPanel.mFontStyle);
         final TextView summary = (TextView) view.findViewById(android.R.id.summary);
         final boolean twoLines = !TextUtils.isEmpty(item.line2);
         title.setMaxLines(twoLines ? 1 : 2);
         summary.setVisibility(twoLines ? VISIBLE : GONE);
         summary.setText(twoLines ? item.line2 : null);
+        summary.setTypeface(QSPanel.mFontStyle);
         view.setMinimumHeight(mContext.getResources() .getDimensionPixelSize(
                 twoLines ? R.dimen.qs_detail_item_height_twoline : R.dimen.qs_detail_item_height));
         view.setOnClickListener(new OnClickListener() {

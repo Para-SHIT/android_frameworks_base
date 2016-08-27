@@ -76,6 +76,7 @@ public class QSDetailItemsList extends LinearLayout {
     public void setEmptyState(int icon, int text) {
         mEmptyIcon.setImageResource(icon);
         mEmptyText.setText(text);
+        mEmptyText.setTypeface(QSPanel.mFontStyle);
     }
 
     @Override
@@ -136,11 +137,13 @@ public class QSDetailItemsList extends LinearLayout {
             iv2.setVisibility(View.GONE);
             final TextView title = (TextView) view.findViewById(android.R.id.title);
             title.setText(item.itemTitle);
+            title.setTypeface(QSPanel.mFontStyle);
             final TextView summary = (TextView) view.findViewById(android.R.id.summary);
             final boolean twoLines = !TextUtils.isEmpty(item.itemSummary);
             title.setMaxLines(twoLines ? 1 : 2);
             summary.setVisibility(twoLines ? VISIBLE : GONE);
             summary.setText(twoLines ? item.itemSummary : null);
+            summary.setTypeface(QSPanel.mFontStyle);
             view.setMinimumHeight(getContext().getResources().getDimensionPixelSize(
                     twoLines ? R.dimen.qs_detail_item_height_twoline
                             : R.dimen.qs_detail_item_height));

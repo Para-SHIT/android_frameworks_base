@@ -52,6 +52,7 @@ import android.database.ContentObserver;
 import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuff.Mode;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.session.MediaController;
 import android.net.Uri;
@@ -113,6 +114,7 @@ import com.android.internal.util.cm.SpamFilter.SpamContract.PackageTable;
 import com.android.internal.util.NotificationColorUtil;
 import com.android.internal.util.omni.OmniSwitchConstants;
 import com.android.internal.util.temasek.ColorHelper;
+import com.android.internal.util.temasek.FontHelper;
 import com.android.internal.util.temasek.NotificationColorHelper;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.systemui.R;
@@ -147,6 +149,7 @@ public abstract class BaseStatusBar extends SystemUI implements
     public static final String TAG = "StatusBar";
     public static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
     public static final boolean MULTIUSER_DEBUG = false;
+    private static Typeface mFontStyle;
 
     // STOPSHIP disable once we resolve b/18102199
     private static final boolean NOTIFICATION_CLICK_DEBUG = true;
@@ -406,9 +409,7 @@ public abstract class BaseStatusBar extends SystemUI implements
             if (uri.equals(Settings.System.getUriFor(
                     Settings.System.NOTIFICATION_MEDIA_BG_MODE))
                 || uri.equals(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_BG_COLOR))
-                || uri.equals(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_ALPHA))) {
+                    Settings.System.NOTIFICATION_BG_COLOR))) {
                 UpdateNotificationOverflowBgColors();
             }
             ArrayList<Entry> activeNotifications = mNotificationData.getActiveNotifications();
@@ -419,9 +420,7 @@ public abstract class BaseStatusBar extends SystemUI implements
                     if (uri.equals(Settings.System.getUriFor(
                             Settings.System.NOTIFICATION_MEDIA_BG_MODE))
                         || uri.equals(Settings.System.getUriFor(
-                            Settings.System.NOTIFICATION_BG_COLOR))
-                        || uri.equals(Settings.System.getUriFor(
-                            Settings.System.NOTIFICATION_ALPHA))) {
+                            Settings.System.NOTIFICATION_BG_COLOR))) {
                         UpdateNotificationBgColors(entry);
                         UpdateNotificationIconColors(entry);
                     } else if (uri.equals(Settings.System.getUriFor(
@@ -436,6 +435,12 @@ public abstract class BaseStatusBar extends SystemUI implements
                         || uri.equals(Settings.System.getUriFor(
                             Settings.System.NOTIFICATION_APP_ICON_BG_COLOR))) {
                         UpdateNotificationIconColors(entry);
+                    } else if (uri.equals(Settings.System.getUriFor(
+                            Settings.System.NOTIFICATION_ALPHA))) {
+                        UpdateNotificationBgColors(entry);
+                    } else if (uri.equals(Settings.System.getUriFor(
+                            Settings.System.NOTIFICATION_FONT_STYLES))) {
+                        UpdateNotificationFontStyles(entry);
                     }
                 }
             }
@@ -730,6 +735,9 @@ public abstract class BaseStatusBar extends SystemUI implements
                 mNotificationColorSettingsObserver);
         mContext.getContentResolver().registerContentObserver(
                 Settings.System.getUriFor(Settings.System.NOTIFICATION_ALPHA), false,
+                mNotificationColorSettingsObserver);
+         mContext.getContentResolver().registerContentObserver(
+                Settings.System.getUriFor(Settings.System.NOTIFICATION_FONT_STYLES), false,
                 mNotificationColorSettingsObserver);
         
 
@@ -1984,6 +1992,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         UpdateNotificationBgColors(entry);
         UpdateNotificationTextColors(entry);
         UpdateNotificationIconColors(entry);
+        UpdateNotificationFontStyles(entry);
 
         // Restore previous flags.
         if (hasUserChangedExpansion) {
@@ -2130,6 +2139,177 @@ public abstract class BaseStatusBar extends SystemUI implements
                     return mIntent != null && mIntent.isActivity();
                 }
             }, afterKeyguardGone);
+        }
+    }
+
+    private void updateFontStyle() {
+        final int mNotifsFontStyle = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.NOTIFICATION_FONT_STYLES, FontHelper.FONT_NORMAL);
+
+        getFontStyle(mNotifsFontStyle);
+    }
+
+    public static void getFontStyle(int font) {
+        switch (font) {
+            case FontHelper.FONT_NORMAL:
+            default:
+                mFontStyle = FontHelper.NORMAL;
+                break;
+            case FontHelper.FONT_ITALIC:
+                mFontStyle = FontHelper.ITALIC;
+                break;
+            case FontHelper.FONT_BOLD:
+                mFontStyle = FontHelper.BOLD;
+                break;
+            case FontHelper.FONT_BOLD_ITALIC:
+                mFontStyle = FontHelper.BOLD_ITALIC;
+                break;
+            case FontHelper.FONT_LIGHT:
+                mFontStyle = FontHelper.LIGHT;
+                break;
+            case FontHelper.FONT_LIGHT_ITALIC:
+                mFontStyle = FontHelper.LIGHT_ITALIC;
+                break;
+            case FontHelper.FONT_THIN:
+                mFontStyle = FontHelper.THIN;
+                break;
+            case FontHelper.FONT_THIN_ITALIC:
+                mFontStyle = FontHelper.THIN_ITALIC;
+                break;
+            case FontHelper.FONT_CONDENSED:
+                mFontStyle = FontHelper.CONDENSED;
+                break;
+            case FontHelper.FONT_CONDENSED_ITALIC:
+                mFontStyle = FontHelper.CONDENSED_ITALIC;
+                break;
+            case FontHelper.FONT_CONDENSED_LIGHT:
+                mFontStyle = FontHelper.CONDENSED_LIGHT;
+                break;
+            case FontHelper.FONT_CONDENSED_LIGHT_ITALIC:
+                mFontStyle = FontHelper.CONDENSED_LIGHT_ITALIC;
+                break;
+            case FontHelper.FONT_CONDENSED_BOLD:
+                mFontStyle = FontHelper.CONDENSED_BOLD;
+                break;
+            case FontHelper.FONT_CONDENSED_BOLD_ITALIC:
+                mFontStyle = FontHelper.CONDENSED_BOLD_ITALIC;
+                break;
+            case FontHelper.FONT_MEDIUM:
+                mFontStyle = FontHelper.MEDIUM;
+                break;
+            case FontHelper.FONT_MEDIUM_ITALIC:
+                mFontStyle = FontHelper.MEDIUM_ITALIC;
+                break;
+            case FontHelper.FONT_BLACK:
+                mFontStyle = FontHelper.BLACK;
+                break;
+            case FontHelper.FONT_BLACK_ITALIC:
+                mFontStyle = FontHelper.BLACK_ITALIC;
+                break;
+            case FontHelper.FONT_DANCINGSCRIPT:
+                mFontStyle = FontHelper.DANCINGSCRIPT;
+                break;
+            case FontHelper.FONT_DANCINGSCRIPT_BOLD:
+                mFontStyle = FontHelper.DANCINGSCRIPT_BOLD;
+                break;
+            case FontHelper.FONT_COMINGSOON:
+                mFontStyle = FontHelper.COMINGSOON;
+                break;
+            case FontHelper.FONT_NOTOSERIF:
+                mFontStyle = FontHelper.NOTOSERIF;
+                break;
+            case FontHelper.FONT_NOTOSERIF_ITALIC:
+                mFontStyle = FontHelper.NOTOSERIF_ITALIC;
+                break;
+            case FontHelper.FONT_NOTOSERIF_BOLD:
+                mFontStyle = FontHelper.NOTOSERIF_BOLD;
+                break;
+            case FontHelper.FONT_NOTOSERIF_BOLD_ITALIC:
+                mFontStyle = FontHelper.NOTOSERIF_BOLD_ITALIC;
+                break;
+        }
+    }
+
+    private void UpdateNotificationFontStyles(NotificationData.Entry entry) {
+        final View expanded = entry.expanded;
+        final View expandedPublic = entry.getPublicContentView();
+        final View expandedBig = entry.getBigContentView();
+        updateFontStyle();
+
+
+        if (expanded != null) {
+            final TextView title = (TextView) expanded.findViewById(com.android.internal.R.id.title);
+            final TextView text = (TextView) expanded.findViewById(com.android.internal.R.id.text);
+            final TextView info = (TextView) expanded.findViewById(com.android.internal.R.id.info);
+            final TextView text2 = (TextView) expanded.findViewById(com.android.internal.R.id.text2);
+            final View chronometer = expanded.findViewById(com.android.internal.R.id.chronometer);
+            final View time = expanded.findViewById(com.android.internal.R.id.time);
+            setNotificationTypeface(title, mFontStyle);
+            setNotificationTypeface(text, mFontStyle);
+            setNotificationTypeface(info, mFontStyle);
+            setNotificationTypeface(text2, mFontStyle);
+            if (chronometer instanceof Chronometer) {
+                setNotificationTypeface((TextView) chronometer, mFontStyle);
+            }
+            if (time instanceof DateTimeView) {
+                setNotificationTypeface((TextView) time, mFontStyle);
+            }
+        }
+        if (expandedPublic != null) {
+            final TextView publicTitle = (TextView) expandedPublic.findViewById(R.id.title);
+            final TextView publicText = (TextView) expandedPublic.findViewById(R.id.text);
+            final View publicTime = expandedPublic.findViewById(R.id.time);
+            setNotificationTypeface(publicTitle, mFontStyle);
+            setNotificationTypeface(publicText, mFontStyle);
+            if (publicTime instanceof DateTimeView) {
+                setNotificationTypeface((TextView) publicTime, mFontStyle);
+            }
+        }
+        if (expandedBig != null) {
+            final TextView bigTitle = (TextView) expandedBig.findViewById(com.android.internal.R.id.title);
+            final TextView bigText = (TextView) expandedBig.findViewById(com.android.internal.R.id.text);
+            final TextView bigInfo = (TextView) expandedBig.findViewById(com.android.internal.R.id.info);
+            final TextView bigText2 = (TextView) expandedBig.findViewById(com.android.internal.R.id.text2);
+            final View bigChronometer = expandedBig.findViewById(com.android.internal.R.id.chronometer);
+            final View bigTime = expandedBig.findViewById(com.android.internal.R.id.time);
+            final TextView bigBigText = (TextView) expandedBig.findViewById(com.android.internal.R.id.big_text);
+            final TextView inboxText0 = (TextView) expandedBig.findViewById(com.android.internal.R.id.inbox_text0);
+            final TextView inboxText1 = (TextView) expandedBig.findViewById(com.android.internal.R.id.inbox_text1);
+            final TextView inboxText2 = (TextView) expandedBig.findViewById(com.android.internal.R.id.inbox_text2);
+            final TextView inboxText3 = (TextView) expandedBig.findViewById(com.android.internal.R.id.inbox_text3);
+            final TextView inboxText4 = (TextView) expandedBig.findViewById(com.android.internal.R.id.inbox_text4);
+            final TextView inboxText5 = (TextView) expandedBig.findViewById(com.android.internal.R.id.inbox_text5);
+            final TextView inboxText6 = (TextView) expandedBig.findViewById(com.android.internal.R.id.inbox_text6);
+            final TextView inboxMore = (TextView) expandedBig.findViewById(com.android.internal.R.id.inbox_more);
+            final LinearLayout actions = (LinearLayout) expandedBig.findViewById(com.android.internal.R.id.actions);
+            setNotificationTypeface(bigTitle, mFontStyle);
+            setNotificationTypeface(bigText, mFontStyle);
+            setNotificationTypeface(bigInfo, mFontStyle);
+            setNotificationTypeface(bigText2, mFontStyle);
+            if (bigChronometer instanceof Chronometer) {
+                setNotificationTypeface((TextView) bigChronometer, mFontStyle);
+            }
+            if (bigTime instanceof DateTimeView) {
+                setNotificationTypeface((TextView) bigTime, mFontStyle);
+            }
+            setNotificationTypeface(bigBigText, mFontStyle);
+            setNotificationTypeface(inboxText0, mFontStyle);
+            setNotificationTypeface(inboxText1, mFontStyle);
+            setNotificationTypeface(inboxText2, mFontStyle);
+            setNotificationTypeface(inboxText3, mFontStyle);
+            setNotificationTypeface(inboxText4, mFontStyle);
+            setNotificationTypeface(inboxText5, mFontStyle);
+            setNotificationTypeface(inboxText6, mFontStyle);
+            setNotificationTypeface(inboxMore, mFontStyle);
+            if (actions != null) {
+                final int actionsCount = actions.getChildCount();
+                for (int index=0; index<actionsCount; index++) {
+                    final TextView action =  (TextView) actions.getChildAt(index);
+                    if (action != null) {
+                        setNotificationTypeface(action, mFontStyle);
+                    }
+                }
+            }
         }
     }
 
@@ -2328,6 +2508,16 @@ public abstract class BaseStatusBar extends SystemUI implements
                 tv.setText(mNotificationColorUtil.processCharSequenceColors(textColor, text));
             }
             tv.setTextColor(textColor);
+        }
+    }
+
+    private void setNotificationTypeface(TextView tv, Typeface tf) {
+        if (tv != null) {
+            if (tv.getText() instanceof Spanned) {
+                String s = ((Spanned) tv.getText()).toString();
+                tv.setText(s);
+            } 
+            tv.setTypeface(mFontStyle);
         }
     }
 
@@ -2817,6 +3007,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         updateExpandedViewPos(EXPANDED_LEAVE_ALONE);
         UpdateNotificationTextColors(oldEntry);
         UpdateNotificationIconColors(oldEntry);
+        UpdateNotificationFontStyles(oldEntry);
     }
 
     private void updateNotificationViews(NotificationData.Entry entry,

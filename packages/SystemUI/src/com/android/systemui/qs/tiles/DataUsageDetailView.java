@@ -32,6 +32,7 @@ import com.android.internal.util.temasek.QSColorHelper;
 
 import com.android.systemui.FontSizeUtils;
 import com.android.systemui.R;
+import com.android.systemui.qs.QSPanel;
 import com.android.systemui.qs.DataUsageGraph;
 import com.android.systemui.qs.QSTile;
 import com.android.systemui.statusbar.policy.NetworkController;
@@ -112,9 +113,11 @@ public class DataUsageDetailView extends LinearLayout {
         if (mQSCSwitch) {
             title.setTextColor(textColor);
         }
+        title.setTypeface(QSPanel.mFontStyle);
         final TextView usage = (TextView) findViewById(R.id.usage_text);
         usage.setText(formatBytes(bytes));
         usage.setTextColor(res.getColor(usageColor));
+        usage.setTypeface(QSPanel.mFontStyle);
         final DataUsageGraph graph = (DataUsageGraph) findViewById(R.id.usage_graph);
         graph.setLevels(info.limitLevel, info.warningLevel, info.usageLevel);
         final Button carrier = (Button) findViewById(R.id.usage_carrier_text);
@@ -137,6 +140,7 @@ public class DataUsageDetailView extends LinearLayout {
             final TextView period = (TextView) findViewById(R.id.usage_period_text);
             period.setText(info.period);
         }
+        carrier.setTypeface(QSPanel.mFontStyle);
         final TextView infoTop = (TextView) findViewById(R.id.usage_info_top_text);
         infoTop.setVisibility(top != null ? View.VISIBLE : View.GONE);
         infoTop.setText(top);
@@ -145,13 +149,16 @@ public class DataUsageDetailView extends LinearLayout {
             final TextView period = (TextView) findViewById(R.id.usage_period_text);
             period.setText(info.period);
             period.setTextColor(secondaryTextColor);
+            period.setTypeface(QSPanel.mFontStyle);
         }
+        infoTop.setTypeface(QSPanel.mFontStyle);
         final TextView infoBottom = (TextView) findViewById(R.id.usage_info_bottom_text);
         infoBottom.setVisibility(bottom != null ? View.VISIBLE : View.GONE);
         infoBottom.setText(bottom);
         if (mQSCSwitch) {
             infoBottom.setTextColor(secondaryTextColor);
         }
+        infoBottom.setTypeface(QSPanel.mFontStyle);
     }
 
     private String formatBytes(long bytes) {

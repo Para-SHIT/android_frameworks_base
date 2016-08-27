@@ -16,6 +16,7 @@
 package com.android.systemui.qs;
 
 import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
@@ -36,6 +37,8 @@ import com.android.systemui.statusbar.phone.QSTileHost;
 import com.android.systemui.statusbar.phone.SystemUIDialog;
 import com.android.systemui.statusbar.policy.SecurityController;
 
+import com.android.internal.util.temasek.QSColorHelper;
+
 public class QSFooter implements OnClickListener, DialogInterface.OnClickListener {
     protected static final String TAG = "QSFooter";
     protected static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
@@ -55,6 +58,7 @@ public class QSFooter implements OnClickListener, DialogInterface.OnClickListene
     private boolean mIsVisible;
     private boolean mIsIconVisible;
     private int mFooterTextId;
+    private int mTextColor;
 
     public QSFooter(QSPanel qsPanel, Context context) {
         mRootView = LayoutInflater.from(context)
@@ -64,6 +68,7 @@ public class QSFooter implements OnClickListener, DialogInterface.OnClickListene
         mFooterIcon = (ImageView) mRootView.findViewById(R.id.footer_icon);
         mContext = context;
         mMainHandler = new Handler();
+        updateTextColor();
     }
 
     public void setHost(QSTileHost host) {
@@ -242,11 +247,18 @@ public class QSFooter implements OnClickListener, DialogInterface.OnClickListene
         public void run() {
             if (mFooterTextId != 0) {
                 mFooterText.setText(mFooterTextId);
+                mFooterText.setTextColor(mTextColor);
+                mFooterText.setTypeface(QSPanel.mFontStyle);
             }
             mRootView.setVisibility(mIsVisible ? View.VISIBLE : View.GONE);
             mFooterIcon.setVisibility(mIsIconVisible ? View.VISIBLE : View.INVISIBLE);
         }
     };
+
+    private void updateTextColor() {
+        final ContentResolver resolver = mContext.getContentResolver();
+        mTextColor = QSColorHelper.getTextColor(mContext);
+    }
 
     private class Callback implements SecurityController.SecurityControllerCallback {
         @Override

@@ -1372,6 +1372,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
                 if (mQSCSwitch) {
                     mQsDetailHeaderTitle.setTextColor(QSColorHelper.getTextColor(mContext));
                 }
+                mQsDetailHeaderTitle.setTypeface(QSPanel.mFontStyle);
                 final Boolean toggleState = detail.getToggleState();
                 if (toggleState == null) {
                     mQsDetailHeaderSwitch.setVisibility(INVISIBLE);
