@@ -400,6 +400,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     // the icons themselves
     IconMerger mNotificationIcons;
     View mNotificationIconArea;
+    TextView mGreetingText;
 
     // [+>
     View mMoreIcon;
@@ -419,6 +420,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     View mFlipSettingsView;
     private QSPanel mQSPanel;
     private QSTileHost mQSTileHost;
+
+    String mGreeting = "";
 
     // task manager
     private TaskManager mTaskManager;
@@ -453,6 +456,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private int mStatusBarHeaderHeight;
 
     private boolean mShowCarrierInPanel = false;
+    private boolean mShowGreeting;
+    private int mShowGreetingTimeout = 1000;
 
     // Temasek logo
     private boolean mTemasekLogo;
@@ -575,6 +580,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_SHOW_TICKER),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_GREETING),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_GREETING_TIMEOUT),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SCREEN_BRIGHTNESS_MODE), false, this, UserHandle.USER_ALL);
@@ -776,7 +787,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.SHOW_CUSTOM_LOGO))) {
                     DontStressOnRecreate();
-	    } else if (uri.equals(Settings.System.getUriFor(
+	    	} else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.CUSTOM_LOGO_STYLE))) {
                     DontStressOnRecreate();
             } else if (uri.equals(Settings.System.getUriFor(
@@ -938,91 +949,108 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 		    showTemasekLogo(mTemasekLogo, mTemasekLogoColor,  mTemasekLogoStyle);
 
             mCustomlogoStyle = Settings.System.getIntForUser(
-	    resolver, Settings.System.CUSTOM_LOGO_STYLE, 0,
-	    UserHandle.USER_CURRENT);
-	    mCustomlogo = Settings.System.getIntForUser(resolver,
-	    Settings.System.SHOW_CUSTOM_LOGO, 0, mCurrentUserId) == 1;
-	    mCustomlogoColor = Settings.System.getIntForUser(resolver,
-	    Settings.System.CUSTOM_LOGO_COLOR, 0xFFFFFFFF, mCurrentUserId);
-	    if ( mCustomlogoStyle == 0) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom);
-	    } else if ( mCustomlogoStyle == 1) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_1);
-	    } else if ( mCustomlogoStyle == 2) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_2);
-	    } else if ( mCustomlogoStyle == 3) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_3);
-	    } else if ( mCustomlogoStyle == 4) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_4);
-	    } else if ( mCustomlogoStyle == 5) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_5);
-	    } else if ( mCustomlogoStyle == 6) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_6);
-	    } else if ( mCustomlogoStyle == 7) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_7);
-	    } else if ( mCustomlogoStyle == 8) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_8);
-	    } else if ( mCustomlogoStyle == 9) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_9);
-	    } else if ( mCustomlogoStyle == 10) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_10);
-	    } else if ( mCustomlogoStyle == 11) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_11);
-	    } else if ( mCustomlogoStyle == 12) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_12);
-	    } else if ( mCustomlogoStyle == 13) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_13);
-	    } else if ( mCustomlogoStyle == 14) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_14);
-	    } else if ( mCustomlogoStyle == 15) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_15);
-	    } else if ( mCustomlogoStyle == 16) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_16);
-	    } else if ( mCustomlogoStyle == 17) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_17);
-	    } else if ( mCustomlogoStyle == 18) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_18);
-	    } else if ( mCustomlogoStyle == 19) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_19);
-	    } else if ( mCustomlogoStyle == 20) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_20);
-	    } else if ( mCustomlogoStyle == 21) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_21);
-	    } else if ( mCustomlogoStyle == 22) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_22);
-	    } else if ( mCustomlogoStyle == 23) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_23);
-	    } else if ( mCustomlogoStyle == 24) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_24);
-	    } else if ( mCustomlogoStyle == 25) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_25);
-	    } else if ( mCustomlogoStyle == 26) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_26);
-	    } else if ( mCustomlogoStyle == 27) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_27);
-	    } else if ( mCustomlogoStyle == 28) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_28);
-	    } else if ( mCustomlogoStyle == 29) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_29);
-	    } else if ( mCustomlogoStyle == 30) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_30);
-	    } else if ( mCustomlogoStyle == 31) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_31);
-	    } else if ( mCustomlogoStyle == 32) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_32);
-	    } else if ( mCustomlogoStyle == 33) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_33);
-	    } else if ( mCustomlogoStyle == 34) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_34);
-	    } else if ( mCustomlogoStyle == 35) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_35);
-	    } else if ( mCustomlogoStyle == 36) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_36);
-	    } else if ( mCustomlogoStyle == 37) {
-	    mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_37);
-	    }
+	    	resolver, Settings.System.CUSTOM_LOGO_STYLE, 0,
+	    	UserHandle.USER_CURRENT);
+	    	mCustomlogo = Settings.System.getIntForUser(resolver,
+	    	Settings.System.SHOW_CUSTOM_LOGO, 0, mCurrentUserId) == 1;
+	    	mCustomlogoColor = Settings.System.getIntForUser(resolver,
+	    	Settings.System.CUSTOM_LOGO_COLOR, 0xFFFFFFFF, mCurrentUserId);
+	    	if ( mCustomlogoStyle == 0) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom);
+	    	} else if ( mCustomlogoStyle == 1) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_1);
+	    	} else if ( mCustomlogoStyle == 2) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_2);
+	    	} else if ( mCustomlogoStyle == 3) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_3);
+	    	} else if ( mCustomlogoStyle == 4) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_4);
+	    	} else if ( mCustomlogoStyle == 5) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_5);
+	    	} else if ( mCustomlogoStyle == 6) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_6);
+	    	} else if ( mCustomlogoStyle == 7) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_7);
+	    	} else if ( mCustomlogoStyle == 8) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_8);
+	    	} else if ( mCustomlogoStyle == 9) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_9);
+	    	} else if ( mCustomlogoStyle == 10) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_10);
+	    	} else if ( mCustomlogoStyle == 11) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_11);
+	    	} else if ( mCustomlogoStyle == 12) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_12);
+	    	} else if ( mCustomlogoStyle == 13) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_13);
+	    	} else if ( mCustomlogoStyle == 14) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_14);
+	    	} else if ( mCustomlogoStyle == 15) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_15);
+	    	} else if ( mCustomlogoStyle == 16) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_16);
+	    	} else if ( mCustomlogoStyle == 17) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_17);
+	    	} else if ( mCustomlogoStyle == 18) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_18);
+	    	} else if ( mCustomlogoStyle == 19) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_19);
+	    	} else if ( mCustomlogoStyle == 20) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_20);
+	    	} else if ( mCustomlogoStyle == 21) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_21);
+	    	} else if ( mCustomlogoStyle == 22) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_22);
+	    	} else if ( mCustomlogoStyle == 23) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_23);
+	    	} else if ( mCustomlogoStyle == 24) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_24);
+	    	} else if ( mCustomlogoStyle == 25) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_25);
+	    	} else if ( mCustomlogoStyle == 26) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_26);
+	    	} else if ( mCustomlogoStyle == 27) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_27);
+	    	} else if ( mCustomlogoStyle == 28) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_28);
+	    	} else if ( mCustomlogoStyle == 29) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_29);
+	    	} else if ( mCustomlogoStyle == 30) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_30);
+	    	} else if ( mCustomlogoStyle == 31) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_31);
+	    	} else if ( mCustomlogoStyle == 32) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_32);
+	    	} else if ( mCustomlogoStyle == 33) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_33);
+	    	} else if ( mCustomlogoStyle == 34) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_34);
+	    	} else if ( mCustomlogoStyle == 35) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_35);
+	    	} else if ( mCustomlogoStyle == 36) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_36);
+	    	} else if ( mCustomlogoStyle == 37) {
+	    	mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom_37);
+	    	}
 
-	    showmCustomlogo(mCustomlogo, mCustomlogoColor,  mCustomlogoStyle);
+	    	showmCustomlogo(mCustomlogo, mCustomlogoColor,  mCustomlogoStyle);
+
+            mGreeting = Settings.System.getStringForUser(resolver,
+                    Settings.System.STATUS_BAR_GREETING,
+                    mCurrentUserId);
+            if (mGreetingText != null) {
+                if (mGreeting != null && !TextUtils.isEmpty(mGreeting)) {
+                    mGreetingText.setText(mGreeting);
+                } else {
+                    mGreetingText.setText("");
+                }
+            }
+            mShowGreetingTimeout = Settings.System.getIntForUser(resolver,
+                    Settings.System.STATUS_BAR_GREETING_TIMEOUT,
+                    1000, mCurrentUserId);
+            if (mShowGreetingTimeout < 100) {
+                mShowGreetingTimeout = 100;
+            }
 
             if (mQSPanel != null) {
                 mQSPanel.updateNumColumns();
@@ -1586,6 +1614,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mNotificationIconArea = mStatusBarView.findViewById(R.id.notification_icon_area_inner);
         mNotificationIcons = (IconMerger)mStatusBarView.findViewById(R.id.notificationIcons);
         mMoreIcon = mStatusBarView.findViewById(R.id.moreIcon);
+        mGreetingText = (TextView)mStatusBarView.findViewById(R.id.statusbar_greeting);
         mNotificationIcons.setOverflowIndicator(mMoreIcon);
         mStatusBarContents = (LinearLayout)mStatusBarView.findViewById(R.id.status_bar_contents);
         mBatteryView = (BatteryMeterView) mStatusBarView.findViewById(R.id.battery);
@@ -3298,7 +3327,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     /**
      * State is one or more of the DISABLE constants from StatusBarManager.
      */
-    public void disable(int state, boolean animate) {
+    public void disable(int state, final boolean animate) {
         mDisabledUnmodified = state;
         state = adjustDisableFlags(state);
         final int old = mDisabled;
@@ -3381,7 +3410,29 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 }
                 animateStatusBarHide(mNotificationIconArea, animate);
             } else {
-                animateStatusBarShow(mNotificationIconArea, animate);
+                if (mGreeting != null && mGreetingText != null
+                    && !TextUtils.isEmpty(mGreeting) && mShowGreeting) {
+                    if (animate) {
+                        mGreetingText.setVisibility(View.VISIBLE);
+                        mGreetingText.animate().cancel();
+                        mGreetingText.animate()
+                                .alpha(1f)
+                                .setDuration(mShowGreetingTimeout)
+                                .setInterpolator(ALPHA_IN)
+                                .setStartDelay(50)
+                                .withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                labelAnimatorFadeOut(animate);
+                            }
+                        });
+                    } else {
+                        labelAnimatorFadeOut(animate);
+                    }
+                    mShowGreeting = false;
+                } else {
+                    animateStatusBarShow(mNotificationIconArea, animate);
+                }
             }
         }
 
@@ -3456,6 +3507,25 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     .setStartDelay(mKeyguardFadingAwayDelay)
                     .start();
         }
+    }
+
+    protected void labelAnimatorFadeOut(final boolean animate) {
+        if (mGreetingText == null) {
+            return;
+        }
+        mGreetingText.animate().cancel();
+        mGreetingText.animate()
+                .alpha(0f)
+                .setDuration(200)
+                .setStartDelay(1200)
+                .setInterpolator(ALPHA_OUT)
+                .withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                mGreetingText.setVisibility(View.GONE);
+                animateStatusBarShow(mNotificationIconArea, animate);
+            }
+        });
     }
 
     @Override
@@ -4676,6 +4746,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             }
             else if (Intent.ACTION_SCREEN_OFF.equals(action)) {
                 mScreenOn = false;
+                mShowGreeting = true;
                 notifyNavigationBarScreenOn(false);
                 notifyHeadsUpScreenOn(false);
                 finishBarAnimations();

@@ -5913,6 +5913,18 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String NOTIFICATION_FONT_STYLES = "notification_font_styles";
 
         /**
+         * Status bar greeting
+         * @hide
+         */
+        public static final String STATUS_BAR_GREETING = "status_bar_greeting";
+
+        /**
+         * Status bar greeting timeout
+         * @hide
+         */
+        public static final String STATUS_BAR_GREETING_TIMEOUT = "status_bar_greeting_timeout";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
