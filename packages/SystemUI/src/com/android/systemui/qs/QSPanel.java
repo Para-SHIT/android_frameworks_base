@@ -239,14 +239,12 @@ public class QSPanel extends ViewGroup {
     private void updateDetailText() {
         mQSCSwitch = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.QS_COLOR_SWITCH, 0) == 1;
-        int textColor = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.QS_TEXT_COLOR, 0xffffffff);
         mDetailDoneButton.setText(R.string.quick_settings_done);
         mDetailSettingsButton.setText(R.string.status_bar_settings_settings_button);
         mDetailRemoveButton.setText(R.string.quick_settings_remove);
         if (mQSCSwitch) {
-            mDetailDoneButton.setTextColor(textColor);
-            mDetailSettingsButton.setTextColor(textColor);
+            mDetailDoneButton.setTextColor(QSColorHelper.getTextColor(mContext));
+            mDetailSettingsButton.setTextColor(QSColorHelper.getTextColor(mContext));
         }
         mDetailDoneButton.setTypeface(mFontStyle);
         mDetailSettingsButton.setTypeface(mFontStyle);
@@ -841,6 +839,7 @@ public class QSPanel extends ViewGroup {
 
     public void setColors() {
         refreshAllTiles();
+        mBrightnessController.setToggleSliderColors();
     }
 
     private class H extends Handler {

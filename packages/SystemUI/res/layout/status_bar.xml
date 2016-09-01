@@ -53,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:paddingStart="6dp"
+            android:paddingStart="3dp"
             android:visibility="gone"
             android:text="@string/greeting_label"
             android:textAppearance="@style/TextAppearance.StatusBar.Clock" />
