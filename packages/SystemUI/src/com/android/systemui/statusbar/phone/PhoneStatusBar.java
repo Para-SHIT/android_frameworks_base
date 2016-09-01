@@ -585,6 +585,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.STATUS_BAR_GREETING),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_GREETING_COLOR),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_GREETING_TIMEOUT),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -1054,6 +1057,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             if (mGreetingText != null) {
                 if (mGreeting != null && !TextUtils.isEmpty(mGreeting)) {
                     mGreetingText.setText(mGreeting);
+                    mGreetingText.setTextColor(Settings.System.getInt(resolver,
+                        Settings.System.STATUS_BAR_GREETING_COLOR, 0xffffffff));
                 } else {
                     mGreetingText.setText("");
                 }
