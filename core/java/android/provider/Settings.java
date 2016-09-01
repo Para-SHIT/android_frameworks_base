@@ -4056,6 +4056,25 @@ public final class Settings {
         public static final String STATUS_BAR_WEATHER_FONT_STYLE = "status_bar_weather_font_style";
 
         /**
+         * Wether to hide the weather temp on the status bar when the custom number of notifications is reached
+         * @hide
+         */
+        public static final String STATUS_BAR_WEATHER_HIDE_WEATHER = "status_bar_weather_hide_weather";
+
+        /**
+         * Hide the Weather temp on the status bar when the notification icons will reach this number
+         * 1: 1 notification icon (always)
+         * 2: 2 notification icons
+         * 3: 3 notification icons
+         * 4: 4 notification icons
+         * 5: 5 notification icons
+         * 6: 6 notification icons
+         * default: 1
+         * @hide
+         */
+        public static final String STATUS_BAR_WEATHER_NUMBER_OF_NOTIFICATION_ICONS = "status_bar_weather_number_of_notification_icons";
+
+        /**
          * Disable FC Notifications
          * @hide
          */
@@ -5683,14 +5702,14 @@ public static final String LISTVIEW_DURATION = "listview_duration";
          */
         public static final String SHOW_CUSTOM_LOGO = "show_custom_logo";
 
-	/**
+	    /**
          * Statusbar Custom logos Color
          * @hide
          */
 
-	public static final String CUSTOM_LOGO_COLOR = "custom_logo_color";
+	    public static final String CUSTOM_LOGO_COLOR = "custom_logo_color";
 
- 	 /**
+ 	    /**
          * Take your Pick 
          * @hide
          */
