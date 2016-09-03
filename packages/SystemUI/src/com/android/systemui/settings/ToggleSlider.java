@@ -20,7 +20,9 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.drawable.RippleDrawable;
 import android.graphics.PorterDuff.Mode;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -163,16 +165,34 @@ public class ToggleSlider extends RelativeLayout {
     }
 
     public void setColors() {
-        final int iconColor = QSColorHelper.getIconColor(mContext);
-        final int progressBarBgColor = (179 << 24) | (iconColor & 0x00ffffff); // Icon color with a transparency of 70%
-        mSlider.getThumb().setColorFilter(iconColor, Mode.MULTIPLY);
-        mSlider.setProgressBackgroundTintList(
-                ColorStateList.valueOf(progressBarBgColor));
-        if (mMirror != null) {
-            mMirror.mSlider.getThumb().setColorFilter(iconColor, Mode.MULTIPLY);
-            mMirror.mSlider.setProgressBackgroundTintList(
-                    ColorStateList.valueOf(progressBarBgColor));
+        int mQSCSwitch = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.QS_COLOR_SWITCH, 0);
+        final int rippleColor = QSColorHelper.getRippleColor(mContext);
+        final int sliderColor = QSColorHelper.getBrightnessSliderColor(mContext);
+        final int sliderEmptyColor = QSColorHelper.getBrightnessSliderEmptyColor(mContext);
+        final int sliderIconColor = QSColorHelper.getBrightnessSliderIconColor(mContext);
+        if (mQSCSwitch !=0) {
+        	mSlider.getThumb().setColorFilter(sliderIconColor, Mode.MULTIPLY);
+        	mSlider.setProgressBackgroundTintList(ColorStateList.valueOf(sliderEmptyColor));
+            mSlider.setProgressTintList(ColorStateList.valueOf(sliderColor));
+            updateRippleColor(rippleColor);
         }
+    }
+
+    private void updateRippleColor(int rippleColor) {
+        RippleDrawable sliderRipple = (RippleDrawable) mContext.getDrawable(R.drawable.ripple_drawable);
+
+        int states[][] = new int[][] {
+            new int[] {
+                com.android.internal.R.attr.state_enabled
+            }
+        };
+        int colors[] = new int[] {
+            rippleColor
+        };
+        ColorStateList color = new ColorStateList(states, colors);
+        sliderRipple.setColor(color);
+        mSlider.setBackground(sliderRipple);
     }
 
     private final OnCheckedChangeListener mCheckListener = new OnCheckedChangeListener() {

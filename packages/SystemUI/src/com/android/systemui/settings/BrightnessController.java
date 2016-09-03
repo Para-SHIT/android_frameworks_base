@@ -273,7 +273,7 @@ public class BrightnessController implements ToggleSlider.Listener {
         }
     }
 
-    public void setToggleSliderColors() {
+    public void setColors() {
         mControl.setColors();
     }
 

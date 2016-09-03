@@ -22,6 +22,22 @@ import android.provider.Settings;
 public class QSColorHelper {
 
     private static int WHITE = 0xffffffff;
+    private static int DEFAULT_SLIDER_COLOR = 0xff80cbc4;
+
+    public static int getBrightnessSliderColor(Context context) {
+        return Settings.System.getInt(context.getContentResolver(),
+                Settings.System.QS_BRIGHTNESS_SLIDER_COLOR, DEFAULT_SLIDER_COLOR);
+    }
+
+    public static int getBrightnessSliderEmptyColor(Context context) {
+        return Settings.System.getInt(context.getContentResolver(),
+                Settings.System.QS_BRIGHTNESS_SLIDER_BG_COLOR, WHITE);
+    }
+
+    public static int getBrightnessSliderIconColor(Context context) {
+        return Settings.System.getInt(context.getContentResolver(),
+                Settings.System.QS_BRIGHTNESS_SLIDER_ICON_COLOR, WHITE);
+    }
 
     public static int getIconColor(Context context) {
         return Settings.System.getInt(context.getContentResolver(),

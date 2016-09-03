@@ -1864,7 +1864,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
 
         mWeatherTempColor = Settings.System.getIntForUser(mContext.getContentResolver(),
-                    Settings.System.STATUS_BAR_WEATHER_COLOR, 0xFFFFFFFF, mCurrentUserId);
+                    Settings.System.STATUS_BAR_WEATHER_COLOR, 0xffffffff, mCurrentUserId);
         mWeatherTempFontStyle = Settings.System.getIntForUser(mContext.getContentResolver(),
                     Settings.System.STATUS_BAR_WEATHER_FONT_STYLE, FONT_NORMAL, mCurrentUserId);
         mWeatherTempSize = Settings.System.getIntForUser(mContext.getContentResolver(),
@@ -1898,7 +1898,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mTemasekLogo = Settings.System.getIntForUser(mContext.getContentResolver(),
                 Settings.System.STATUS_BAR_TEMASEK_LOGO, 0, mCurrentUserId) == 1;
         mTemasekLogoColor = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.STATUS_BAR_TEMASEK_LOGO_COLOR, 0xFFFFFFFF, mCurrentUserId);
+                Settings.System.STATUS_BAR_TEMASEK_LOGO_COLOR, 0xffffffff, mCurrentUserId);
         showTemasekLogo(mTemasekLogo, mTemasekLogoColor, mTemasekLogoStyle);
 
         mCustomlogoStyle = Settings.System.getIntForUser(mContext.getContentResolver(), 
@@ -1907,7 +1907,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mCustomlogo = Settings.System.getIntForUser(mContext.getContentResolver(),
                 Settings.System.SHOW_CUSTOM_LOGO, 0, mCurrentUserId) == 1;
         mCustomlogoColor = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.CUSTOM_LOGO_COLOR, 0xFFFFFFFF, mCurrentUserId);
+                Settings.System.CUSTOM_LOGO_COLOR, 0xffffffff, mCurrentUserId);
 		if ( mCustomlogoStyle == 0) {
 			mCLogo = (ImageView) mStatusBarView.findViewById(R.id.custom);
 	    	} else if ( mCustomlogoStyle == 1) {
@@ -2019,9 +2019,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             }
             mQSPanel.setHost(mQSTileHost);
             mQSPanel.setTiles(mQSTileHost.getTiles());
-            mBrightnessMirrorController =
-                    new BrightnessMirrorController(mContext, mStatusBarWindowContent);
-            mQSPanel.setBrightnessMirror(mBrightnessMirrorController);
             mHeader.setQSPanel(mQSPanel);
             mQSTileHost.setCallback(new QSTileHost.Callback() {
                 @Override

@@ -2259,9 +2259,20 @@ public class NotificationPanelView extends PanelView implements
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.QS_TRANSPARENT_SHADE), false, this);
             resolver.registerContentObserver(Settings.Secure.getUriFor(
-                    Settings.System.QS_RIPPLE_COLOR), false, this);
+                    Settings.System.QS_RIPPLE_COLOR),
+                    false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.DOUBLE_TAP_SLEEP_ANYWHERE), false, this, UserHandle.USER_ALL);
+                    Settings.System.QS_BRIGHTNESS_SLIDER_COLOR),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QS_BRIGHTNESS_SLIDER_BG_COLOR),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.QS_BRIGHTNESS_SLIDER_ICON_COLOR),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.DOUBLE_TAP_SLEEP_ANYWHERE),
+                    false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.STATUS_BAR_LOCKED_ON_SECURE_KEYGUARD),
                     false, this, UserHandle.USER_ALL);
@@ -2297,9 +2308,15 @@ public class NotificationPanelView extends PanelView implements
                 if (uri.equals(Settings.System.getUriFor(
                         Settings.System.QS_BACKGROUND_COLOR))
                     || uri.equals(Settings.System.getUriFor(
+                        Settings.System.QS_TRANSPARENT_SHADE))
+                    || uri.equals(Settings.System.getUriFor(
                         Settings.System.QS_RIPPLE_COLOR))
                     || uri.equals(Settings.System.getUriFor(
-                        Settings.System.QS_TRANSPARENT_SHADE))) {
+                        Settings.System.QS_BRIGHTNESS_SLIDER_COLOR))
+                    || uri.equals(Settings.System.getUriFor(
+                        Settings.System.QS_BRIGHTNESS_SLIDER_BG_COLOR))
+                    || uri.equals(Settings.System.getUriFor(
+                        Settings.System.QS_BRIGHTNESS_SLIDER_ICON_COLOR))) {
                     mQSBackgroundColor = Settings.System.getInt(
                             resolver, Settings.System.QS_BACKGROUND_COLOR, 0xff263238);
                     mQSShadeTransparency = Settings.System.getInt(
@@ -2337,9 +2354,9 @@ public class NotificationPanelView extends PanelView implements
             mQSPanelLogo = Settings.System.getInt(
                     resolver, Settings.System.QS_PANEL_LOGO, 0);
             mQSPanelLogoColor = Settings.System.getInt(
-                    resolver, Settings.System.QS_PANEL_LOGO_COLOR, mContext.getResources().getColor(R.color.system_accent_color));
+                    resolver, Settings.System.QS_PANEL_LOGO_COLOR, 0xff33b5e5);
             mQSPanelLogoAlpha = Settings.System.getInt(
-                    resolver, Settings.System.QS_PANEL_LOGO_ALPHA, 51);
+                    resolver, Settings.System.QS_PANEL_LOGO_ALPHA, 50);
             if (mQSCSwitch) {
                 setQSBackgroundColor();
                 setQSColors();

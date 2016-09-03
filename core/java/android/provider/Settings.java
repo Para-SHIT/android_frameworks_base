@@ -5950,6 +5950,24 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String STATUS_BAR_GREETING_TIMEOUT = "status_bar_greeting_timeout";
 
         /**
+         *  Color of the qs brightness slider icon
+         * @hide
+         */
+        public static final String QS_BRIGHTNESS_SLIDER_ICON_COLOR = "qs_brightness_slider_icon_color";
+
+        /**
+         *  Color of the used portion of the qs brightness slider
+         * @hide
+         */
+        public static final String QS_BRIGHTNESS_SLIDER_COLOR = "qs_brightness_slider_color";
+
+        /**
+         *  Color of the unused portion of the qs brightness slider
+         * @hide
+         */
+        public static final String QS_BRIGHTNESS_SLIDER_BG_COLOR = "qs_brightness_slider_bg_color";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *

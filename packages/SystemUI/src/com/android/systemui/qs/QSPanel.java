@@ -204,16 +204,18 @@ public class QSPanel extends ViewGroup {
     }
 
     public void updatecolors() {
-	ImageView brightnessIcon = (ImageView) findViewById(R.id.brightness_icon);
+	    ImageView brightnessIcon = (ImageView) findViewById(R.id.brightness_icon);
         mQSCSwitch = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.QS_COLOR_SWITCH, 0) == 1;
-	int mIconColor = Settings.System.getInt(mContext.getContentResolver(),
+	    int mIconColor = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.QS_BRIGHTNESS_ICON_COLOR, 0xFFFFFFFF);
         if(brightnessIcon!=null) {        
-		if (mQSCSwitch) {	
-		brightnessIcon.setColorFilter(mIconColor, Mode.SRC_ATOP);
-		}
-	}	
+		   if (mQSCSwitch) {	
+		       brightnessIcon.setColorFilter(mIconColor, Mode.SRC_ATOP);
+		   }
+	    }
+		mBrightnessController.setColors();
+	    refreshAllTiles();
     }
 
     /**
@@ -839,7 +841,6 @@ public class QSPanel extends ViewGroup {
 
     public void setColors() {
         refreshAllTiles();
-        mBrightnessController.setToggleSliderColors();
     }
 
     private class H extends Handler {
