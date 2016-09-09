@@ -3799,6 +3799,16 @@ public final class Settings {
         public static final String STATUS_BAR_CUSTOM_HEADER_IMAGE = "status_bar_custom_header_image";
 
         /**
+         * Immersive recents options
+         * 0 = Default AOSP look
+         * 1 = Fullscreen
+         * 2 = Statusbar only
+         * 3 = Navbar only
+         * @hide
+         */
+        public static final String IMMERSIVE_RECENTS = "immersive_recents";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
