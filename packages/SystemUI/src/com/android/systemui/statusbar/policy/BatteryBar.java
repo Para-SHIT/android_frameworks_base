@@ -56,12 +56,12 @@ public class BatteryBar extends RelativeLayout implements Animatable {
     private boolean shouldAnimateCharging = true;
     private boolean isAnimating = false;
 
-    private int mColor = 0xFFFFFFFF;
-    private int mChargingColor = 0xFFFFFFFF;
-    private int mBatteryLowColorWarning = 0xFFFFFFFF;
+    private int mColor = 0xffffffff;
+    private int mBatteryLowColorWarning = 0xffff0000;
+    private int mChargingColor = 0xffffff00;
 
-    private int mLowColor = 0xFFFF0000;
-    private int mHighColor = 0xFF00FF00;
+    private int mLowColor = 0xffff4444;
+    private int mHighColor = 0xff99cc00;
     private int mAnimOffset;
     GradientDrawable mBarGradient;
     int[] mGradientColors;
@@ -94,11 +94,11 @@ public class BatteryBar extends RelativeLayout implements Animatable {
                     false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(
-                    Settings.System.STATUSBAR_BATTERY_BAR_COLOR),
+                    Settings.System.STATUSBAR_BATTERY_BAR_ANIMATE),
                     false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(
-                    Settings.System.STATUSBAR_BATTERY_BAR_CHARGING_COLOR),
+                    Settings.System.STATUSBAR_BATTERY_BAR_COLOR),
                     false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(
@@ -106,7 +106,11 @@ public class BatteryBar extends RelativeLayout implements Animatable {
                     false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(
-                    Settings.System.STATUSBAR_BATTERY_BAR_ANIMATE),
+                    Settings.System.STATUSBAR_BATTERY_BAR_CHARGING_COLOR),
+                    false, this);
+            resolver.registerContentObserver(
+                    Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_BATTERY_BAR_USE_GRADIENT_COLOR),
                     false, this);
             resolver.registerContentObserver(
                     Settings.System.getUriFor(
@@ -115,10 +119,6 @@ public class BatteryBar extends RelativeLayout implements Animatable {
             resolver.registerContentObserver(
                     Settings.System.getUriFor(
                     Settings.System.STATUSBAR_BATTERY_BAR_LOW_COLOR),
-                    false, this);
-            resolver.registerContentObserver(
-                    Settings.System.getUriFor(
-                    Settings.System.STATUSBAR_BATTERY_BAR_USE_GRADIENT_COLOR),
                     false, this);
         }
 
@@ -248,27 +248,26 @@ public class BatteryBar extends RelativeLayout implements Animatable {
 
         mColor = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_BATTERY_BAR_COLOR,
-                0xFFFFFFFF);
-
-        mChargingColor = Settings.System.getInt(resolver,
-                Settings.System.STATUSBAR_BATTERY_BAR_CHARGING_COLOR,
-                0xFFFFFFFF);
+                0xffffffff);
 
         mBatteryLowColorWarning = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_BATTERY_BAR_BATTERY_LOW_COLOR_WARNING,
-                0xFFFFFFFF);
+                0xffff0000);
+
+        mChargingColor = Settings.System.getInt(resolver,
+                Settings.System.STATUSBAR_BATTERY_BAR_CHARGING_COLOR,
+                0xffffff00);
 
         mLowColor = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_BATTERY_BAR_LOW_COLOR,
-                0xFFFF4444);
+                0xffff4444);
 
         mHighColor = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_BATTERY_BAR_HIGH_COLOR,
-                0xFF99CC00);
+                0xff99cc00);
 
         shouldAnimateCharging = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_BATTERY_BAR_ANIMATE, 0) == 1;
-
 
         useGradientColor = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_BATTERY_BAR_USE_GRADIENT_COLOR, 0) == 1;
