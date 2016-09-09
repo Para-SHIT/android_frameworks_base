@@ -71,6 +71,7 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
     }
 
     public ObjectAnimator animateTransitionTo(View v, float toAlpha) {
+        if (v == null) return null;
         return ObjectAnimator.ofFloat(v, "alpha", v.getAlpha(), toAlpha);
     }
 
@@ -87,7 +88,8 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
 
     private boolean isOpaque(int mode) {
         return !(mode == MODE_SEMI_TRANSPARENT || mode == MODE_TRANSLUCENT
-                || mode == MODE_TRANSPARENT || mode == MODE_LIGHTS_OUT_TRANSPARENT);
+                || mode == MODE_TRANSPARENT || mode == MODE_LIGHTS_OUT_TRANSPARENT
+                || mode == MODE_LIGHTS_OUT_TRANSLUCENT);
     }
 
     @Override
@@ -123,16 +125,16 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
             anims.start();
             mCurrentAnimation = anims;
         } else {
-            mLeftSide.setAlpha(newAlpha);
-            mStatusIcons.setAlpha(newAlpha);
-            mSignalCluster.setAlpha(newAlpha);
-            mNetworkTraffic.setAlpha(newAlpha);
-            mWeatherTextView.setAlpha(newAlpha);
-            mLeftWeatherTextView.setAlpha(newAlpha);
-            mBattery.setAlpha(newAlphaBC);
-            mClock.setAlpha(newAlphaBC);
-            mTemasekLogo.setAlpha(newAlphaBC);
-	    mCLogo.setAlpha(newAlphaBC);
+            if (mLeftSide != null) mLeftSide.setAlpha(newAlpha);
+            if (mStatusIcons != null) mStatusIcons.setAlpha(newAlpha);
+            if (mSignalCluster != null) mSignalCluster.setAlpha(newAlpha);
+            if (mNetworkTraffic != null) mNetworkTraffic.setAlpha(newAlpha);
+            if (mWeatherTextView != null) mWeatherTextView.setAlpha(newAlpha);
+            if (mLeftWeatherTextView != null) mLeftWeatherTextView.setAlpha(newAlpha);
+            if (mBattery != null) mBattery.setAlpha(newAlphaBC);
+            if (mClock != null) mClock.setAlpha(newAlphaBC);
+            if (mTemasekLogo != null) mTemasekLogo.setAlpha(newAlphaBC);
+	    if (mCLogo != null) mCLogo.setAlpha(newAlphaBC);
         }
     }
 	protected static class PhoneStatusBarBackgroundDrawable

@@ -396,11 +396,7 @@ public class SignalClusterView
 				mWifi.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
 			}
             mWifiActivity.setImageResource(mWifiActivityId);
-			if(!BarBackgroundUpdater.mStatusEnabled){
-            	mWifiActivity.setColorFilter(mNetworkActivityColor, Mode.MULTIPLY);
-			} else {
-				mWifiActivity.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
-			}
+            mWifiActivity.setColorFilter(mNetworkActivityColor, Mode.MULTIPLY);
             mWifiGroup.setContentDescription(mWifiDescription);
             mWifiGroup.setVisibility(View.VISIBLE);
         } else {
@@ -494,11 +490,7 @@ public class SignalClusterView
 			}
         }
         if (mWifiActivity != null) {
-			if(!BarBackgroundUpdater.mStatusEnabled){
-            	mWifiActivity.setColorFilter(mNetworkActivityColor, Mode.MULTIPLY);
-			}else{
-				mWifiActivity.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
-			}
+            mWifiActivity.setColorFilter(mNetworkActivityColor, Mode.MULTIPLY);
         }
         for (PhoneState state : mPhoneStates) {
             if (state.mMobile != null) {
@@ -509,11 +501,7 @@ public class SignalClusterView
 				}
             }
             if (state.mMobileActivity != null) {
-				if(!BarBackgroundUpdater.mStatusEnabled){
-                	state.mMobileActivity.setColorFilter(mNetworkActivityColor, Mode.MULTIPLY);
-				}else{
-					state.mMobileActivity.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
-				}
+                state.mMobileActivity.setColorFilter(mNetworkActivityColor, Mode.MULTIPLY);
             }
             if (state.mMobileType != null) {
 				if(!BarBackgroundUpdater.mStatusEnabled){
