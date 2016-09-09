@@ -26,7 +26,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"/>
 
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -62,7 +62,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_5"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
                     android:visibility="gone"
                     />
 
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_6"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -90,7 +90,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_7"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -99,7 +99,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -108,7 +108,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_9"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -117,7 +117,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_10"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -126,7 +126,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_11"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -135,7 +135,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_12"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -144,7 +144,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />                
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_13"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -153,7 +153,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_14"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -162,7 +162,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_15"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -171,7 +171,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_16"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -180,7 +180,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_17"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -189,7 +189,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_18"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -198,7 +198,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_19"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -208,7 +208,7 @@
                     android:visibility="gone"
                     />
 
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_20"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -217,7 +217,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_21"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -226,7 +226,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_22"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -235,7 +235,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_23"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -244,7 +244,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_24"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -253,7 +253,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_25"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -262,7 +262,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_26"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -271,7 +271,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_27"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -280,7 +280,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_28"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -289,7 +289,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_29"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -298,7 +298,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_30"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -307,7 +307,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_31"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -316,7 +316,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_32"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -326,7 +326,7 @@
                     android:visibility="gone"
                     />
 
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_33"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -335,7 +335,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_34"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -344,7 +344,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <ImageView
+                <com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_35"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -353,7 +353,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-		<ImageView
+		<com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_36"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -362,7 +362,7 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-		<ImageView
+		<com.android.systemui.statusbar.phone.DsbImage
                     android:id="@+id/custom_37"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

@@ -131,7 +131,7 @@ public class NotificationPanelView extends PanelView implements
     private boolean mQsExpanded;
     private boolean mQsExpandedWhenExpandingStarted;
     private boolean mQsFullyExpanded;
-    private boolean mKeyguardShowing;
+    public static  boolean mKeyguardShowing;
     private boolean mDozing;
     private int mStatusBarState;
     private float mInitialHeightOnTouch;

@@ -49,7 +49,7 @@ import com.android.systemui.statusbar.policy.SecurityController;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 // Intimately tied to the design of res/layout/signal_cluster_view.xml
 public class SignalClusterView
         extends LinearLayout
@@ -82,7 +82,10 @@ public class SignalClusterView
     View mWifiAirplaneSpacer;
     View mWifiSignalSpacer;
     LinearLayout mMobileSignalGroup;
-
+    
+    private int mPreviousOverrideIconColor = 0;
+    private int mOverrideIconColor = 0;
+	
     private int mWideTypeIconStartPadding;
     private int mSecondaryTelephonyPadding;
 
@@ -140,11 +143,32 @@ public class SignalClusterView
 
     public SignalClusterView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        mHandler = new Handler();
+		mObserver = new SettingsObserver(mHandler);
 
         ContentResolver resolver = mContext.getContentResolver();
 
-        mHandler = new Handler();
-        mObserver = new SettingsObserver(mHandler);
+		BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+
+				@Override
+				public void onUpdateStatusBarIconColor(final int previousIconColor,
+													   final int iconColor) {
+					mPreviousOverrideIconColor = previousIconColor;
+					mOverrideIconColor = iconColor;
+
+					mHandler.post(new Runnable() {
+
+							@Override
+							public void run() {
+								apply();
+								updateSettings();
+							}
+					});
+
+				}
+
+		});
+
         mAirplaneModeColor = Settings.System.getIntForUser(resolver,
                 Settings.System.STATUS_BAR_AIRPLANE_MODE_ICON_COLOR,
                 DEFAULT_COLOR, UserHandle.USER_CURRENT);
@@ -366,9 +390,17 @@ public class SignalClusterView
         if (DEBUG) Log.d(TAG, String.format("vpn: %s", mVpnVisible ? "VISIBLE" : "GONE"));
         if (mWifiVisible) {
             mWifi.setImageResource(mWifiStrengthId);
-            mWifi.setColorFilter(mNetworkColor, Mode.MULTIPLY);
+			if(!BarBackgroundUpdater.mStatusEnabled){
+            	mWifi.setColorFilter(mNetworkColor, Mode.MULTIPLY);
+			} else {
+				mWifi.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
+			}
             mWifiActivity.setImageResource(mWifiActivityId);
-            mWifiActivity.setColorFilter(mNetworkActivityColor, Mode.MULTIPLY);
+			if(!BarBackgroundUpdater.mStatusEnabled){
+            	mWifiActivity.setColorFilter(mNetworkActivityColor, Mode.MULTIPLY);
+			} else {
+				mWifiActivity.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
+			}
             mWifiGroup.setContentDescription(mWifiDescription);
             mWifiGroup.setVisibility(View.VISIBLE);
         } else {
@@ -393,7 +425,11 @@ public class SignalClusterView
 
         if (mIsAirplaneMode) {
             mAirplane.setImageResource(mAirplaneIconId);
-            mAirplane.setColorFilter(mAirplaneModeColor, Mode.MULTIPLY);
+			if(!BarBackgroundUpdater.mStatusEnabled){
+            	mAirplane.setColorFilter(mAirplaneModeColor, Mode.MULTIPLY);
+			} else {
+				mAirplane.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
+			}
             mAirplane.setContentDescription(mAirplaneContentDescription != 0 ?
                     mContext.getString(mAirplaneContentDescription) : null);
             mAirplane.setVisibility(View.VISIBLE);
@@ -402,7 +438,11 @@ public class SignalClusterView
         }
 
         if (mVpnVisible) {
-            mVpn.setColorFilter(mVpnColor, Mode.MULTIPLY);
+			if(!BarBackgroundUpdater.mStatusEnabled){
+            	mVpn.setColorFilter(mVpnColor, Mode.MULTIPLY);
+			} else {
+				mVpn.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
+			}
         } else {
             mVpn.setVisibility(View.GONE);
         }
@@ -447,27 +487,55 @@ public class SignalClusterView
                 mInetCondition == 0 ? networkActivityNormalColor : networkActivityFullyColor;
 
         if (mWifi != null) {
-            mWifi.setColorFilter(mNetworkColor, Mode.MULTIPLY);
+			if(!BarBackgroundUpdater.mStatusEnabled){
+            	mWifi.setColorFilter(mNetworkColor, Mode.MULTIPLY);
+			}else{
+				mWifi.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
+			}
         }
         if (mWifiActivity != null) {
-            mWifiActivity.setColorFilter(mNetworkActivityColor, Mode.MULTIPLY);
+			if(!BarBackgroundUpdater.mStatusEnabled){
+            	mWifiActivity.setColorFilter(mNetworkActivityColor, Mode.MULTIPLY);
+			}else{
+				mWifiActivity.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
+			}
         }
         for (PhoneState state : mPhoneStates) {
             if (state.mMobile != null) {
-                state.mMobile.setColorFilter(mNetworkColor, Mode.MULTIPLY);
+				if(!BarBackgroundUpdater.mStatusEnabled){
+                	state.mMobile.setColorFilter(mNetworkColor, Mode.MULTIPLY);
+				}else{
+					state.mMobile.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
+				}
             }
             if (state.mMobileActivity != null) {
-                state.mMobileActivity.setColorFilter(mNetworkActivityColor, Mode.MULTIPLY);
+				if(!BarBackgroundUpdater.mStatusEnabled){
+                	state.mMobileActivity.setColorFilter(mNetworkActivityColor, Mode.MULTIPLY);
+				}else{
+					state.mMobileActivity.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
+				}
             }
             if (state.mMobileType != null) {
-                state.mMobileType.setColorFilter(mNetworkColor, Mode.MULTIPLY);
+				if(!BarBackgroundUpdater.mStatusEnabled){
+                	state.mMobileType.setColorFilter(mNetworkColor, Mode.MULTIPLY);
+				}else{
+					state.mMobileType.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
+				}
             }
         }
         if(mAirplane != null) {
-            mAirplane.setColorFilter(mAirplaneModeColor, Mode.MULTIPLY);
+			if(!BarBackgroundUpdater.mStatusEnabled){
+            	mAirplane.setColorFilter(mAirplaneModeColor, Mode.MULTIPLY);
+			}else{
+				mAirplane.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
+			}
         }
         if(mNoSims != null) {
-            mNoSims.setColorFilter(networkNormalColor, Mode.MULTIPLY);
+			if(!BarBackgroundUpdater.mStatusEnabled){
+            	mNoSims.setColorFilter(networkNormalColor, Mode.MULTIPLY);
+			}else{
+				mNoSims.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
+			}
         }
     }
 

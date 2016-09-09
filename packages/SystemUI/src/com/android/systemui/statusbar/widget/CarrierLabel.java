@@ -41,6 +41,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import com.android.systemui.R;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 
 public class CarrierLabel extends TextView {
 
@@ -50,7 +51,8 @@ public class CarrierLabel extends TextView {
     private int mCarrierFontSize = 14;
 
     protected int mCarrierColor = getResources().getColor(R.color.kg_carrier_text);
-    Handler mHandler;
+    public final Handler mHandler;
+    private int mOverrideIconColor = 0;
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -89,6 +91,22 @@ public class CarrierLabel extends TextView {
         settingsObserver.observe();
         updateColor();
         updateSize();
+        BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+
+			@Override
+			public void onUpdateStatusBarIconColor(final int previousIconColor,
+														   final int iconColor) {
+				mOverrideIconColor = iconColor;
+				mHandler.post(new Runnable() {
+                                        
+					@Override
+					public void run() {
+						updateColor();
+					}
+				});
+			}
+
+		});
     }
 
     @Override
@@ -178,7 +196,11 @@ public class CarrierLabel extends TextView {
         if  (mCarrierColor == Integer.MIN_VALUE) {
              mCarrierColor = defaultColor;
         }
-        setTextColor(mCarrierColor);
+		if (!BarBackgroundUpdater.mStatusEnabled) {
+        	setTextColor(mCarrierColor);
+		} else {
+			setTextColor(mOverrideIconColor);
+		}
     }
 
     private void updateSize() {

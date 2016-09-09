@@ -48,7 +48,7 @@ import com.android.systemui.cm.UserContentObserver;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
-
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 public class StatusBarIconView extends AnimatedImageView {
     private static final String TAG = "StatusBarIconView";
 
@@ -66,7 +66,11 @@ public class StatusBarIconView extends AnimatedImageView {
     private int mNotifCountColor;
     private int mNotifCountTextColor;
     private GlobalSettingsObserver mObserver;
-
+	private final Handler mHandler;
+    
+    private int mPreviousOverrideIconColor = 0;
+    private int mOverrideIconColor = 0;
+	
     public StatusBarIconView(Context context, String slot, Notification notification) {
         super(context);
         final Resources res = context.getResources();
@@ -95,6 +99,40 @@ public class StatusBarIconView extends AnimatedImageView {
         }
 
         setScaleType(ImageView.ScaleType.CENTER);
+		mHandler = new Handler();
+       
+        BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+
+				@Override
+				public void onUpdateStatusBarIconColor(final int previousIconColor,
+													   final int iconColor) {
+					mPreviousOverrideIconColor = previousIconColor;
+					mOverrideIconColor = iconColor;
+
+					if (mOverrideIconColor == 0) {
+						mHandler.post(new Runnable() {
+
+								@Override
+								public void run() {
+									setColorFilter(null);
+								}
+
+							});
+						//return null;
+					} else {
+						mHandler.post(new Runnable() {
+
+								@Override
+								public void run() {
+									setColorFilter(mOverrideIconColor);
+								}
+
+							});
+						
+					}
+				}
+
+			});
     }
 
     public void setNotification(Notification notification) {
@@ -112,6 +150,40 @@ public class StatusBarIconView extends AnimatedImageView {
         final float scale = (float)imageBounds / (float)outerBounds;
         setScaleX(scale);
         setScaleY(scale);
+		mHandler = new Handler();
+       
+        BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+
+				@Override
+				public void onUpdateStatusBarIconColor(final int previousIconColor,
+													   final int iconColor) {
+					mPreviousOverrideIconColor = previousIconColor;
+					mOverrideIconColor = iconColor;
+
+					if (mOverrideIconColor == 0) {
+						mHandler.post(new Runnable() {
+
+								@Override
+								public void run() {
+									setColorFilter(null);
+								}
+
+							});
+						// return null;
+					} else {
+						mHandler.post(new Runnable() {
+
+								@Override
+								public void run() {
+									setColorFilter(mOverrideIconColor);
+								}
+
+							});
+						
+					}
+				}
+
+			});
     }
 
     private static boolean streq(String a, String b) {
@@ -190,7 +262,12 @@ public class StatusBarIconView extends AnimatedImageView {
             setImageDrawable(null);
         }
         setImageDrawable(drawable);
-
+		if (mOverrideIconColor == 0) {
+            setColorFilter(null);
+        } else {
+			setColorFilter(mOverrideIconColor);
+           
+        }
         return true;
     }
 
@@ -208,7 +285,9 @@ public class StatusBarIconView extends AnimatedImageView {
      */
     public static Drawable getIcon(Context context, StatusBarIcon icon) {
         Resources r = null;
-
+		if (icon == null) {
+			return null;
+		}
         if (icon.iconPackage != null) {
             try {
                 int userId = icon.user.getIdentifier();
@@ -240,7 +319,7 @@ public class StatusBarIconView extends AnimatedImageView {
             return r.getDrawable(icon.iconId);
         } catch (RuntimeException e) {
             Log.w(TAG, "Icon not found in "
-                  + (icon.iconPackage != null ? icon.iconId : "<system>")
+                  + (icon.iconPackage != null ? icon.iconId : 0/*"<system>"*/)
                   + ": " + Integer.toHexString(icon.iconId));
         }
 

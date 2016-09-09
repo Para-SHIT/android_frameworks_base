@@ -4522,6 +4522,12 @@ public final class Settings {
          */
         public static final String DOUBLE_TAP_SLEEP_NAVBAR = "double_tap_sleep_navbar";
 
+        /** Whether to collapse panel when quick settings tile is pressed.
+         *
+         * @hide
+         */
+        public static final String QUICK_SETTINGS_COLLAPSE_PANEL = "quick_settings_collapse_panel";
+
         /**
          * Network traffic indicator, goes from least to greatest significant bitwise
          * 0 = Display up-stream traffic if set
@@ -4531,12 +4537,6 @@ public final class Settings {
          * @hide
          */
         public static final String NETWORK_TRAFFIC_STATE = "network_traffic_state";
-
-        /** Whether to collapse panel when quick settings tile is pressed.
-         *
-         * @hide
-         */
-        public static final String QUICK_SETTINGS_COLLAPSE_PANEL = "quick_settings_collapse_panel";
 
         /**
          * Whether or not to hide the network traffic indicator when there is no activity
@@ -4550,11 +4550,11 @@ public final class Settings {
          */
         public static final String NETWORK_TRAFFIC_AUTOHIDE_THRESHOLD = "network_traffic_autohide_threshold";
 
-        /**
+	    /**
          * Network stats Color style
          * @hide
          */
-        public static final String NETWORK_TRAFFIC_COLOR = "network_traffic_color";
+	    public static final String NETWORK_TRAFFIC_COLOR = "network_traffic_color";
 
         /**
          * NFC polling mode configuration key
@@ -5445,10 +5445,10 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String DISABLE_TORCH_ON_SCREEN_OFF_DELAY = "disable_torch_on_screen_off_delay";
 
         /**
-         * Network stats Color style
+         * Whether to disable showing arrows in network traffic indicators
          * @hide
          */
-        public static final String NETWORK_TRAFFIC_HIDE_ARROW = "network_traffic_hide_arrow";
+        public static final String NETWORK_TRAFFIC_HIDEARROW = "network_traffic_hidearrow";
 
         /**
          * Hide lockscreen date
@@ -5966,6 +5966,46 @@ public static final String LISTVIEW_DURATION = "listview_duration";
          * @hide
          */
         public static final String QS_BRIGHTNESS_SLIDER_BG_COLOR = "qs_brightness_slider_bg_color";
+
+        /**
+         * Whether the status bar is set to be colored dynamically
+         * 0 = disabled (default)
+         * 1 = enabled
+         * @hide
+         */
+        public static final String DYNAMIC_STATUS_BAR_STATE = "dynamic_status_bar_state";
+
+        /**
+         * Whether the navigation bar is set to be colored dynamically
+         * 0 = disabled (default)
+         * 1 = enabled
+         * @hide
+         */
+        public static final String DYNAMIC_NAVIGATION_BAR_STATE = "dynamic_navigation_bar_state";
+
+        /**
+         * Whether the dynamic system bars are set to have a gradient overlay
+         * 0 = disabled (default)
+         * 1 = enabled
+         * @hide
+         */
+        public static final String DYNAMIC_SYSTEM_BARS_GRADIENT_STATE = "dynamic_system_bars_gradient_state";
+
+        /**
+         * Whether the dynamic status bar is set to have a (darkening) filter overlay
+         * 0 = disabled (default)
+         * 1 = enabled
+         * @hide
+         */
+        public static final String DYNAMIC_STATUS_BAR_FILTER_STATE = "dynamic_status_bar_filter_state";
+
+        /**
+         * Whether the status bar icon is set to be colored dynamically
+         * 0 = disabled (default)
+         * 1 = enabled
+         * @hide
+         */
+        public static final String DYNAMIC_ICON_TINT_STATE = "dynamic_icon_tint_state";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
