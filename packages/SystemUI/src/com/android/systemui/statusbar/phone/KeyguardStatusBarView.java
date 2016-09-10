@@ -94,7 +94,7 @@ public class KeyguardStatusBarView extends RelativeLayout {
 
     private int mShowCarrierLabel;
     private TextView mCarrierLabel;
-    private int mTextColor = 0xFFFFFF;
+	private int mTextColor = 0xffffffff;
 
     private ContentObserver mObserver = new ContentObserver(new Handler()) {
         public void onChange(boolean selfChange, Uri uri) {
@@ -136,10 +136,6 @@ public class KeyguardStatusBarView extends RelativeLayout {
     public void updateTextColor(int color) {
         mTextColor = color;
         mCarrierLabel.setTextColor(mTextColor);
-        mBatteryLevel.setTextColor(mTextColor);
-        if (mDockBatteryLevel != null) {
-            mDockBatteryLevel.setTextColor(mTextColor);
-        }
     }
 
     private void loadDimens() {
@@ -177,8 +173,8 @@ public class KeyguardStatusBarView extends RelativeLayout {
         if (mDockBatteryLevel != null) {
             mDockBatteryLevel.setVisibility(View.VISIBLE);
         }
-        getFontStyle(mCarrierLabelFontStyle);
-    }
+		getFontStyle(mCarrierLabelFontStyle);
+	}
 
     public void getFontStyle(int font) {
          switch (font) {
