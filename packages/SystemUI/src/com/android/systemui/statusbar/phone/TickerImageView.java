@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 ParanoidAndroid Project
+ * Copyright (C) 2016 ParanoidSHIT Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 package com.android.systemui.statusbar.phone;
 
-import android.animation.Animator;
+/*import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
+import android.animation.ObjectAnimator;*/
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Handler;
@@ -29,14 +29,14 @@ import android.view.ViewGroup;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 
-import com.android.systemui.R;
+//import com.android.systemui.R;
 
 import java.util.ArrayList;
 
 public class TickerImageView extends ImageSwitcher {
     private final Handler mHandler;
     //private final int mDSBDuration;
-    //private int mPreviousOverrideIconColor = 0;
+    private int mPreviousOverrideIconColor = 0;
     private int mOverrideIconColor = 0;
 
     public TickerImageView(final Context context, final AttributeSet attrs) {
@@ -48,7 +48,7 @@ public class TickerImageView extends ImageSwitcher {
             @Override
             public /*AnimatorSet*/void onUpdateStatusBarIconColor(final int previousIconColor,
                     final int iconColor) {
-                //mPreviousOverrideIconColor = previousIconColor;
+                mPreviousOverrideIconColor = previousIconColor;
                 mOverrideIconColor = iconColor;
 
                 //final ArrayList<Animator> anims = new ArrayList<Animator>();

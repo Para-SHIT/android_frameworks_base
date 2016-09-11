@@ -16,10 +16,10 @@
 
 package com.android.systemui.statusbar.phone;
 
-import android.animation.Animator;
+/*import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;
+import android.animation.ObjectAnimator;*/
 import android.content.Context;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -28,7 +28,7 @@ import android.view.ViewGroup;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 
-import com.android.systemui.R;
+//import com.android.systemui.R;
 
 import java.util.ArrayList;
 
@@ -36,7 +36,7 @@ public class TickerView extends TextSwitcher {
     Ticker mTicker;
 
     private final Handler mHandler;
-    //private final int mDefaultTextColor = 0xffffffff; // TODO use the resource value instead
+    private final int mDefaultTextColor = 0xffffffff; // TODO use the resource value instead
     private int mOverrideTextColor = 0;
 
     public TickerView(Context context, AttributeSet attrs) {
@@ -46,11 +46,12 @@ public class TickerView extends TextSwitcher {
         BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
             @Override
-            public void onUpdateStatusBarIconColor(final int previousIconColor,
+            public /*AnimatorSet*/void onUpdateStatusBarIconColor(final int previousIconColor,
                     final int iconColor) {
                 mOverrideTextColor = iconColor;
 
-                /*final int targetColor = mOverrideTextColor == 0 ?
+                /*final ArrayList<Animator> anims = new ArrayList<Animator>();
+                final int targetColor = mOverrideTextColor == 0 ?
                         mDefaultTextColor : mOverrideTextColor;*/
 
                 final int childCount = getChildCount();
@@ -110,13 +111,8 @@ public class TickerView extends TextSwitcher {
     @Override
     public void addView(final View child, final int index, final ViewGroup.LayoutParams params) {
         if (child instanceof TextView) {
-            /*((TextView) child).setTextColor(mOverrideTextColor == 0 ?
-                    mDefaultTextColor : mOverrideTextColor);*/
-			if (mOverrideTextColor == 0) {
-                ((TextView) child).setTextColor(null);
-            } else {
-                ((TextView) child).setTextColor(mOverrideTextColor);
-            }
+            ((TextView) child).setTextColor(mOverrideTextColor == 0 ?
+                    mDefaultTextColor : mOverrideTextColor);
         }
 
         super.addView(child, index, params);
