@@ -297,6 +297,10 @@ public class BarTransitions {
 
         protected int getColorOpaque() {
 			return mOpaque;
+			
+        }
+		protected int getColorwarning() {
+			return mWarning;
         }
 		
         protected int getColorSemiTransparent() {
@@ -321,15 +325,40 @@ public class BarTransitions {
 			return BarBackgroundUpdater.mStatusEnabled;
 			
 		}
-		private boolean header(){
-			return BarBackgroundUpdater.mHeaderEnabled;
-
-		}
+		
 		public boolean ls(){
 			return NotificationPanelView.mKeyguardShowing;
 		}
+		public boolean isps(){
+			boolean b=false;
+			boolean ps=Settings.System.getInt(mContext.getContentResolver(),"TRANS_PS",0)==1;
+			final Intent intent = new Intent(Intent.ACTION_MAIN);
+
+			final ActivityManager am = (ActivityManager) mContext
+				.getSystemService(Activity.ACTIVITY_SERVICE);
+			List<RunningAppProcessInfo> apps = am.getRunningAppProcesses();
+			for (RunningAppProcessInfo appInfo : apps) {
+
+				// Make sure it's a foreground user application (not system,
+				// root, phone, etc.)
+				if (appInfo.pkgList != null && (appInfo.pkgList.length > 0)) {
+					for (String pkg : appInfo.pkgList) {
+						if (pkg.equals("com.android.vending")) {
+
+							return b=ps?true:false;
+						}
+
+						else {
+							return b=false;
+						}
+					}
+				}
+			}
+			return b;
+		}
 		public boolean ishome(){
 			boolean b=false;
+			
 			final Intent intent = new Intent(Intent.ACTION_MAIN);
 			String defaultHomePackage = "com.android.launcher";
 			intent.addCategory(Intent.CATEGORY_HOME);
@@ -350,6 +379,7 @@ public class BarTransitions {
 								
 							   return b=true;
 							}
+			
 							else {
 								return b=false;
 							}
@@ -361,9 +391,7 @@ public class BarTransitions {
 		private final int getTargetColor(final int mode) {
 			
 			switch (mode) {
-					
-				
-				case MODE_LIGHTS_OUT_TRANSPARENT:
+			   case MODE_LIGHTS_OUT_TRANSPARENT:
 					if(isena()){
 						return getColorOpaque();
 					}else{
@@ -377,7 +405,10 @@ public class BarTransitions {
 							return getColorTransparent();
 						}else if(ls()){
 							return getColorTransparent();
-						}else{
+						}else if(isps()){
+							return getColorTransparent();
+						}
+						else{
 							return getColorOpaque();
 						}
 						
@@ -385,10 +416,23 @@ public class BarTransitions {
 						return// header()?getkolorbg(): 
 						getColorTransparent();
 					}
-						
+				case MODE_WARNING:
+				    if(isena()){
+						if(ishome()){
+							return getColorTransparent();
+						}else if(ls()){
+							return getColorTransparent();
+						}else{
+							return getColorOpaque();
+						}
+
+					}else{
+						return// header()?getkolorbg(): 
+							getColorwarning();
+					}
 				case MODE_TRANSLUCENT:
 					if(isena()){
-						return getColorOpaque();
+						return 0;
 					}else{
 						return //header()?getkolorbg():
 						getColorSemiTransparent();
@@ -416,13 +460,15 @@ public class BarTransitions {
 		private final int getTargetGradientAlpha(final int mode) {
 			switch (mode) {
 				case MODE_TRANSPARENT:
-					return 0;
+					return getGradientAlphaOpaque();
 				case MODE_TRANSLUCENT:
 					return 0xff;
 				case MODE_SEMI_TRANSPARENT:
-					return getGradientAlphaSemiTransparent();
+					return //0xff;
+					getGradientAlphaSemiTransparent();
 				default:
-					return getGradientAlphaOpaque();
+					return //0xff;
+					getGradientAlphaOpaque();
 			}
 		}
 		

@@ -19,19 +19,12 @@
 
 package com.android.systemui.statusbar;
 
-import android.content.ContentResolver;
 import android.content.Context;
-import android.database.ContentObserver;
-import android.graphics.PorterDuff.Mode;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.SystemProperties;
-import android.os.UserHandle;
-import android.provider.Settings;
 import android.telephony.SignalStrength;
 import android.telephony.SubscriptionManager;
 import android.telephony.SubscriptionInfo;
-import android.telephony.TelephonyManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -40,8 +33,6 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-
-import com.android.internal.util.temasek.ColorHelper;
 
 import com.android.systemui.R;
 import com.android.systemui.statusbar.policy.NetworkControllerImpl;
@@ -59,79 +50,32 @@ public class SignalClusterView
     static final String TAG = "SignalClusterView";
     static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
-    private static final int DEFAULT_COLOR = 0xffffffff;
-    private static final int DEFAULT_ACTIVITY_COLOR = 0xff000000;
-    Handler mHandler;
-
     NetworkControllerImpl mNC;
     SecurityController mSC;
-    private SettingsObserver mObserver;
 
     private boolean mNoSimsVisible = false;
     private boolean mVpnVisible = false;
     private boolean mWifiVisible = false;
-    private int mInetCondition = 0;
-    private int mWifiStrengthId = 0, mWifiActivityId = 0;
+    private int mWifiStrengthId = 0;
+    private int mWifiActivityId = 0;
     private boolean mIsAirplaneMode = false;
     private int mAirplaneIconId = 0;
     private int mAirplaneContentDescription;
     private String mWifiDescription;
     private ArrayList<PhoneState> mPhoneStates = new ArrayList<PhoneState>();
     ViewGroup mWifiGroup;
-    ImageView mVpn, mWifi, mWifiActivity, mAirplane, mNoSims;
+    ImageView mVpn, mWifi, mAirplane, mNoSims;
+    ImageView mWifiActivity;
     View mWifiAirplaneSpacer;
     View mWifiSignalSpacer;
     LinearLayout mMobileSignalGroup;
+	private final Handler mHandler;
     
     private int mPreviousOverrideIconColor = 0;
     private int mOverrideIconColor = 0;
 	
     private int mWideTypeIconStartPadding;
     private int mSecondaryTelephonyPadding;
-
-    private int mActivityIcon = 0;
-    private int mNetworkColor = DEFAULT_COLOR;
-    private int mNetworkActivityColor = DEFAULT_ACTIVITY_COLOR;
-    private int mAirplaneModeColor = DEFAULT_COLOR;
-    private int mVpnColor = DEFAULT_COLOR;
-
-    class SettingsObserver extends ContentObserver {
-        SettingsObserver(Handler handler) {
-            super(handler);
-        }
-
-        void observe() {
-            ContentResolver resolver = mContext.getContentResolver();
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_NETWORK_ICONS_NORMAL_COLOR),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_NETWORK_ICONS_FULLY_COLOR),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_NETWORK_ACTIVITY_ICONS_NORMAL_COLOR),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_NETWORK_ACTIVITY_ICONS_FULLY_COLOR),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_AIRPLANE_MODE_ICON_COLOR),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_VPN_ICON_COLOR),
-                    false, this, UserHandle.USER_ALL);
-        }
-
-        void unobserve() {
-            mContext.getContentResolver().unregisterContentObserver(this);
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            updateSettings();
-        }
-    }
-
 
     public SignalClusterView(Context context) {
         this(context, null);
@@ -143,12 +87,9 @@ public class SignalClusterView
 
     public SignalClusterView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        mHandler = new Handler();
-		mObserver = new SettingsObserver(mHandler);
-
-        ContentResolver resolver = mContext.getContentResolver();
-
-		BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+		mHandler = new Handler();
+       
+        BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
 				@Override
 				public void onUpdateStatusBarIconColor(final int previousIconColor,
@@ -156,26 +97,81 @@ public class SignalClusterView
 					mPreviousOverrideIconColor = previousIconColor;
 					mOverrideIconColor = iconColor;
 
-					mHandler.post(new Runnable() {
+					if (mOverrideIconColor == 0) {
+						mHandler.post(new Runnable() {
 
-							@Override
-							public void run() {
-								apply();
-								updateSettings();
-							}
-					});
+								@Override
+								public void run() {
+									if (mWifi != null) {
+										mWifi.setColorFilter(null);
+									}
+									if (mVpn != null) {
+										mVpn.setColorFilter(null);
+									}
+									if (mWifiActivity != null) {
+										mWifiActivity.setColorFilter(null);
+									}
+									if (mAirplane != null) {
+										mAirplane.setColorFilter(null);
+									}
+									for (PhoneState state : mPhoneStates) {
+										if (state.mMobile != null) {
+											state.mMobile.setColorFilter(null);
+										}
 
+										if (state.mMobileActivity != null) {
+											state.mMobileActivity.setColorFilter(null);
+										}
+
+										if (state.mMobileType != null) {
+											state.mMobileType.setColorFilter(null);
+										}
+									}
+								}
+
+							});
+
+						//return null;
+					} else {
+						mHandler.post(new Runnable() {
+
+								@Override
+								public void run() {
+
+									if (mWifi != null) {
+										mWifi.setColorFilter(mOverrideIconColor);
+									}
+									if (mVpn != null) {
+										mVpn.setColorFilter(mOverrideIconColor);
+									}
+									if (mWifiActivity != null) {
+										mWifiActivity.setColorFilter(mOverrideIconColor);
+									}
+									if (mAirplane != null) {
+										mAirplane.setColorFilter(mOverrideIconColor);
+									}
+									for (PhoneState state : mPhoneStates) {
+										if (state.mMobile != null) {
+											state.mMobile.setColorFilter(mOverrideIconColor);
+										}
+
+										if (state.mMobileActivity != null) {
+											state.mMobileActivity.setColorFilter(mOverrideIconColor);
+										}
+
+										if (state.mMobileType != null) {
+											state.mMobileType.setColorFilter(mOverrideIconColor);
+										}
+									}
+											}
+							});
+
+					}
 				}
+			});}
 
-		});
-
-        mAirplaneModeColor = Settings.System.getIntForUser(resolver,
-                Settings.System.STATUS_BAR_AIRPLANE_MODE_ICON_COLOR,
-                DEFAULT_COLOR, UserHandle.USER_CURRENT);
-        mVpnColor = Settings.System.getIntForUser(resolver,
-                Settings.System.STATUS_BAR_VPN_ICON_COLOR,
-                DEFAULT_COLOR, UserHandle.USER_CURRENT);
-    }
+    
+	
 
     public void setNetworkController(NetworkControllerImpl nc) {
         if (DEBUG) Log.d(TAG, "NetworkController=" + nc);
@@ -214,13 +210,10 @@ public class SignalClusterView
         mMobileSignalGroup   = (LinearLayout) findViewById(R.id.mobile_signal_group);
 
         for (PhoneState state : mPhoneStates) {
-            if (state != null) {
-                mMobileSignalGroup.addView(state.mMobileGroup);
-            }
+            mMobileSignalGroup.addView(state.mMobileGroup);
         }
 
-        mObserver.observe();
-        updateSettings();
+        apply();
     }
 
     @Override
@@ -233,8 +226,6 @@ public class SignalClusterView
 
         mMobileSignalGroup.removeAllViews();
         mMobileSignalGroup = null;
-
-        mObserver.unobserve();
 
         super.onDetachedFromWindow();
     }
@@ -252,29 +243,28 @@ public class SignalClusterView
     }
 
     @Override
-    public void setWifiIndicators(boolean visible, int strengthIcon, int inetCondition, int activityIcon,
+    public void setWifiIndicators(boolean visible, int strengthIcon, int activityIcon,
             String contentDescription) {
         mWifiVisible = visible;
         mWifiStrengthId = strengthIcon;
-        mInetCondition = inetCondition;
-        mWifiActivityId = activityIcon;
-        mActivityIcon = activityIcon;
         mWifiActivityId = activityIcon;
         mWifiDescription = contentDescription;
 
-        updateSettings();
         apply();
     }
 
     @Override
-    public void setMobileDataIndicators(boolean visible, int strengthIcon, int inetCondition,
+    public void setMobileDataIndicators(boolean visible, int strengthIcon,
             int activityIcon, int typeIcon, String contentDescription,
             String typeContentDescription, boolean isTypeIconWide,
             boolean showRoamingIndicator, int subId) {
         PhoneState state = getState(subId);
+        if (state == null) {
+            return;
+        }
+
         state.mMobileVisible = visible;
         state.mMobileStrengthId = strengthIcon;
-        mInetCondition = inetCondition;
         state.mMobileActivityId = activityIcon;
         state.mMobileTypeId = typeIcon;
         state.mMobileDescription = contentDescription;
@@ -282,7 +272,6 @@ public class SignalClusterView
         state.mIsMobileTypeIconWide = isTypeIconWide;
         state.mShowRoamingIndicator = showRoamingIndicator;
 
-        updateSettings();
         apply();
     }
 
@@ -328,7 +317,7 @@ public class SignalClusterView
         mAirplaneIconId = airplaneIconId;
         mAirplaneContentDescription = contentDescription;
 
-        updateSettings();
+        apply();
     }
 
     @Override
@@ -355,7 +344,6 @@ public class SignalClusterView
             mWifiActivity.setImageDrawable(null);
         }
 
-        if (mPhoneStates != null)
         for (PhoneState state : mPhoneStates) {
             if (state.mMobile != null) {
                 state.mMobile.setImageDrawable(null);
@@ -390,13 +378,7 @@ public class SignalClusterView
         if (DEBUG) Log.d(TAG, String.format("vpn: %s", mVpnVisible ? "VISIBLE" : "GONE"));
         if (mWifiVisible) {
             mWifi.setImageResource(mWifiStrengthId);
-			if(!BarBackgroundUpdater.mStatusEnabled){
-            	mWifi.setColorFilter(mNetworkColor, Mode.MULTIPLY);
-			} else {
-				mWifi.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
-			}
             mWifiActivity.setImageResource(mWifiActivityId);
-            mWifiActivity.setColorFilter(mNetworkActivityColor, Mode.MULTIPLY);
             mWifiGroup.setContentDescription(mWifiDescription);
             mWifiGroup.setVisibility(View.VISIBLE);
         } else {
@@ -421,26 +403,11 @@ public class SignalClusterView
 
         if (mIsAirplaneMode) {
             mAirplane.setImageResource(mAirplaneIconId);
-			if(!BarBackgroundUpdater.mStatusEnabled){
-            	mAirplane.setColorFilter(mAirplaneModeColor, Mode.MULTIPLY);
-			} else {
-				mAirplane.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
-			}
             mAirplane.setContentDescription(mAirplaneContentDescription != 0 ?
                     mContext.getString(mAirplaneContentDescription) : null);
             mAirplane.setVisibility(View.VISIBLE);
         } else {
             mAirplane.setVisibility(View.GONE);
-        }
-
-        if (mVpnVisible) {
-			if(!BarBackgroundUpdater.mStatusEnabled){
-            	mVpn.setColorFilter(mVpnColor, Mode.MULTIPLY);
-			} else {
-				mVpn.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
-			}
-        } else {
-            mVpn.setVisibility(View.GONE);
         }
 
         if (mIsAirplaneMode && mWifiVisible) {
@@ -458,85 +425,17 @@ public class SignalClusterView
         mNoSims.setVisibility(mNoSimsVisible ? View.VISIBLE : View.GONE);
     }
 
-    public void updateSettings() {
-        ContentResolver resolver = mContext.getContentResolver();
-
-        int networkNormalColor = Settings.System.getIntForUser(resolver,
-                Settings.System.STATUS_BAR_NETWORK_ICONS_NORMAL_COLOR,
-                DEFAULT_COLOR, UserHandle.USER_CURRENT);
-        int networkFullyColor = Settings.System.getIntForUser(resolver,
-                Settings.System.STATUS_BAR_NETWORK_ICONS_FULLY_COLOR,
-                networkNormalColor, UserHandle.USER_CURRENT);
-        int networkActivityNormalColor = Settings.System.getIntForUser(resolver,
-                Settings.System.STATUS_BAR_NETWORK_ACTIVITY_ICONS_NORMAL_COLOR,
-                DEFAULT_ACTIVITY_COLOR, UserHandle.USER_CURRENT);
-        int networkActivityFullyColor = Settings.System.getIntForUser(resolver,
-                Settings.System.STATUS_BAR_NETWORK_ACTIVITY_ICONS_FULLY_COLOR,
-                networkActivityNormalColor, UserHandle.USER_CURRENT);
-        mAirplaneModeColor = Settings.System.getIntForUser(resolver,
-                Settings.System.STATUS_BAR_AIRPLANE_MODE_ICON_COLOR,
-                networkNormalColor, UserHandle.USER_CURRENT);
-
-        mNetworkColor =
-                mInetCondition == 0 ? networkNormalColor : networkFullyColor;
-        mNetworkActivityColor =
-                mInetCondition == 0 ? networkActivityNormalColor : networkActivityFullyColor;
-
-        if (mWifi != null) {
-			if(!BarBackgroundUpdater.mStatusEnabled){
-            	mWifi.setColorFilter(mNetworkColor, Mode.MULTIPLY);
-			}else{
-				mWifi.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
-			}
-        }
-        if (mWifiActivity != null) {
-            mWifiActivity.setColorFilter(mNetworkActivityColor, Mode.MULTIPLY);
-        }
-        for (PhoneState state : mPhoneStates) {
-            if (state.mMobile != null) {
-				if(!BarBackgroundUpdater.mStatusEnabled){
-                	state.mMobile.setColorFilter(mNetworkColor, Mode.MULTIPLY);
-				}else{
-					state.mMobile.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
-				}
-            }
-            if (state.mMobileActivity != null) {
-                state.mMobileActivity.setColorFilter(mNetworkActivityColor, Mode.MULTIPLY);
-            }
-            if (state.mMobileType != null) {
-				if(!BarBackgroundUpdater.mStatusEnabled){
-                	state.mMobileType.setColorFilter(mNetworkColor, Mode.MULTIPLY);
-				}else{
-					state.mMobileType.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
-				}
-            }
-        }
-        if(mAirplane != null) {
-			if(!BarBackgroundUpdater.mStatusEnabled){
-            	mAirplane.setColorFilter(mAirplaneModeColor, Mode.MULTIPLY);
-			}else{
-				mAirplane.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
-			}
-        }
-        if(mNoSims != null) {
-			if(!BarBackgroundUpdater.mStatusEnabled){
-            	mNoSims.setColorFilter(networkNormalColor, Mode.MULTIPLY);
-			}else{
-				mNoSims.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
-			}
-        }
-    }
-
     private class PhoneState {
         private final int mSubId;
         private boolean mMobileVisible = false;
-        private int mMobileStrengthId = 0, mMobileActivityId = 0, mMobileTypeId = 0;
+        private int mMobileStrengthId = 0, mMobileTypeId = 0;
+        private int mMobileActivityId = 0;
         private boolean mIsMobileTypeIconWide, mShowRoamingIndicator;
         private String mMobileDescription, mMobileTypeDescription;
 
         private ViewGroup mMobileGroup;
-        private ImageView mMobile, mMobileType, mMobileActivity;
-        private ImageView mMobileRoaming;
+        public ImageView mMobile, mMobileType, mMobileActivity;
+        public ImageView mMobileRoaming;
 
         public PhoneState(int subId, Context context) {
             ViewGroup root = (ViewGroup) LayoutInflater.from(context)
@@ -555,7 +454,7 @@ public class SignalClusterView
             if (mMobileVisible && !mIsAirplaneMode) {
                 mMobile.setImageResource(mMobileStrengthId);
                 mMobileGroup.setContentDescription(
-                mMobileTypeDescription + " " + mMobileDescription);
+                        mMobileTypeDescription + " " + mMobileDescription);
                 mMobileGroup.setVisibility(View.VISIBLE);
                 mMobileActivity.setImageResource(mMobileActivityId);
                 mMobileType.setImageResource(mMobileTypeId);
@@ -569,13 +468,10 @@ public class SignalClusterView
                     0, 0, 0);
             mMobile.setPaddingRelative(mIsMobileTypeIconWide ? mWideTypeIconStartPadding : 0,
                     0, 0, 0);
-
-            if (DEBUG) Log.d(TAG, String.format("mobile: %s sig=%d act=%d typ=%d",
-                        (mMobileVisible ? "VISIBLE" : "GONE"), mMobileStrengthId,
-                        mMobileActivityId, mMobileTypeId));
+            if (DEBUG) Log.d(TAG, String.format("mobile: %s sig=%d typ=%d",
+                        (mMobileVisible ? "VISIBLE" : "GONE"), mMobileStrengthId, mMobileTypeId));
 
             mMobileType.setVisibility(mMobileTypeId != 0 ? View.VISIBLE : View.GONE);
-            mMobileActivity.setVisibility(mMobileTypeId != 0 ? View.VISIBLE : View.GONE);
 
             return mMobileVisible;
         }
@@ -584,6 +480,6 @@ public class SignalClusterView
                     && mMobileGroup.getContentDescription() != null) {
                 event.getText().add(mMobileGroup.getContentDescription());
             }
-        }        
-     }
-  }
+        }
+    }
+}
