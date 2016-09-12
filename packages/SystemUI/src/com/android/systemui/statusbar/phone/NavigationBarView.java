@@ -89,7 +89,11 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
     private OnClickListener mRecentsClickListener;
     private OnTouchListener mRecentsPreloadListener;
     private OnTouchListener mHomeSearchActionListener;
+    private OnClickListener mNotificationsClickListener;
+    private OnLongClickListener mNotificationsLongListener;
     private OnLongClickListener mRecentsBackListener;
+    private OnClickListener mScreenShotClickListener;
+    private OnClickListener mImmersiveClickListener;
 
     private OnLongClickListener mPowerListener = new View.OnLongClickListener() {
         @Override
@@ -142,7 +146,7 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
     private boolean mDoubleTapToSleep;
 
     /**
-     * Tracks the current visibilities of the far left (R.id.one) and right (R.id.six) buttons
+     * Tracks the current visibilities of the far left (R.id.one) and right (R.id.sev) buttons
      * while dpad arrow keys are visible.
      *
      * We keep track of the orientations separately because they can get in different states,
@@ -374,7 +378,13 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
 			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_DPAD_LEFT)),
 			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_DPAD_RIGHT)),
 			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_POWER)),
-			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_SEARCH))
+			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_SEARCH)),
+			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_EMPTY)),
+			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_ALWAYS_MENU)),
+			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_MENU_BIG)),
+			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_NOTIFICATIONS)),
+			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_SCREENSHOT)),
+			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_EXPAND))
 		
 		};
 
@@ -621,17 +631,17 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
             setVisibleOrGone(getCurrentView().findViewById(R.id.dpad_left), showingIme);
             setVisibleOrGone(getCurrentView().findViewById(R.id.dpad_right), showingIme);
 
-            View one = getCurrentView().findViewById(mVertical ? R.id.six : R.id.one);
-            View six = getCurrentView().findViewById(mVertical ? R.id.one : R.id.six);
+            View one = getCurrentView().findViewById(mVertical ? R.id.sev : R.id.one);
+            View sev = getCurrentView().findViewById(mVertical ? R.id.one : R.id.sev);
             if (showingIme) {
                 if (one.getVisibility() != View.GONE) {
                     setSideButtonVisibility(true, one.getVisibility());
                     setVisibleOrGone(one, false);
                 }
 
-                if (six.getVisibility() != View.GONE) {
-                    setSideButtonVisibility(false, six.getVisibility());
-                    setVisibleOrGone(six, false);
+                if (sev.getVisibility() != View.GONE) {
+                    setSideButtonVisibility(false, sev.getVisibility());
+                    setVisibleOrGone(sev, false);
                 }
             } else {
                 if (getSideButtonVisibility(true) != -1) {
@@ -639,7 +649,7 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
                     setSideButtonVisibility(true, - 1);
                 }
                 if (getSideButtonVisibility(false) != -1) {
-                    six.setVisibility(getSideButtonVisibility(false));
+                    sev.setVisibility(getSideButtonVisibility(false));
                     setSideButtonVisibility(false, -1);
                 }
             }
@@ -699,6 +709,8 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
         setButtonWithTagVisibility(NavbarEditor.NAVBAR_HOME, !disableHome);
         setButtonWithTagVisibility(NavbarEditor.NAVBAR_RECENT, !disableRecent);
         setButtonWithTagVisibility(NavbarEditor.NAVBAR_POWER, !disableRecent);
+        setButtonWithTagVisibility(NavbarEditor.NAVBAR_NOTIFICATIONS, !disableRecent);
+        setButtonWithTagVisibility(NavbarEditor.NAVBAR_SCREENSHOT, !disableRecent);
         setButtonWithTagVisibility(NavbarEditor.NAVBAR_SEARCH, !disableSearch);
 
         mBarTransitions.applyBackButtonQuiescentAlpha(mBarTransitions.getMode(), true /*animate*/);
@@ -752,6 +764,7 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
         setButtonWithTagVisibility(NavbarEditor.NAVBAR_CONDITIONAL_MENU, shouldShow);
         setButtonWithTagVisibility(NavbarEditor.NAVBAR_SEARCH, shouldShowAlwaysMenu);
         setButtonWithTagVisibility(NavbarEditor.NAVBAR_POWER, shouldShowAlwaysMenu);
+        setButtonWithTagVisibility(NavbarEditor.NAVBAR_NOTIFICATIONS, shouldShowAlwaysMenu);
     }
 
     @Override
@@ -1023,11 +1036,17 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
     }
 
     void setListeners(OnClickListener recentsClickListener, OnTouchListener recentsPreloadListener,
-                      OnLongClickListener recentsBackListener, OnTouchListener homeSearchActionListener) {
+                      OnLongClickListener recentsBackListener, OnTouchListener homeSearchActionListener,
+                      OnClickListener notificationsClickListener, OnLongClickListener notificationsLongListener,
+                      OnClickListener screenshotClickListener, OnClickListener immersiveClickListener) {
         mRecentsClickListener = recentsClickListener;
         mRecentsPreloadListener = recentsPreloadListener;
         mHomeSearchActionListener = homeSearchActionListener;
         mRecentsBackListener = recentsBackListener;
+        mNotificationsClickListener = notificationsClickListener;
+        mNotificationsLongListener = notificationsLongListener;
+        mScreenShotClickListener = screenshotClickListener;
+        mImmersiveClickListener = immersiveClickListener;
         updateButtonListeners();
     }
 
@@ -1078,6 +1097,29 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
             powerView.setLongClickable(true);
             powerView.setOnLongClickListener(mPowerListener);
         }
+        View notificationsView = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_NOTIFICATIONS);
+        if (notificationsView != null) {
+            if (mNavButtonsRotation) {
+            	notificationsView.startAnimation(animation);
+            }
+            notificationsView.setOnClickListener(mNotificationsClickListener);
+            notificationsView.setLongClickable(true);
+            notificationsView.setOnLongClickListener(mNotificationsLongListener);
+        }
+        View screenshotView = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_SCREENSHOT);
+        if (screenshotView != null) {
+            if (mNavButtonsRotation) {
+            	screenshotView.startAnimation(animation);
+            }
+            screenshotView.setOnClickListener(mScreenShotClickListener);
+        }
+        View immersivetView = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_EXPAND);
+        if (immersivetView != null) {
+            if (mNavButtonsRotation) {
+            	immersivetView.startAnimation(animation);
+           }
+           immersivetView.setOnClickListener(mImmersiveClickListener);
+        }
     }
 
     public boolean isInEditMode() {
@@ -1093,10 +1135,10 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
         // if we're showing dpad arrow keys (e.g. the side button visibility where it's shown != -1)
         // then don't actually update that buttons visibility, but update the stored value
         if (getSideButtonVisibility(true) != -1
-                && findView.getId() == (mVertical ? R.id.six : R.id.one)) {
+                && findView.getId() == (mVertical ? R.id.sev : R.id.one)) {
             setSideButtonVisibility(true, visibility);
         } else if (getSideButtonVisibility(false) != -1
-                && findView.getId() == (mVertical ? R.id.one : R.id.six)) {
+                && findView.getId() == (mVertical ? R.id.one : R.id.sev)) {
             setSideButtonVisibility(false, visibility);
         } else {
             findView.setVisibility(visibility);

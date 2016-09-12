@@ -160,4 +160,12 @@
     <!-- Greeting -->
     <string name="greeting_label">Welcome</string>
 
+    <!-- Navigation Bar -->
+    <string name="navbar_notifications_button">Notifications button</string>
+    <string name="accessibility_notifications">Notifications</string>
+    <string name="navbar_screenshot">Screenshot</string>
+    <string name="accessibility_screenshot">Screenshot</string>
+    <string name="navbar_expand">Immersive mode</string>
+    <string name="accessibility_expand">Immersive mode</string>
+
 </resources>
