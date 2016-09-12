@@ -66,7 +66,7 @@ public class TickerView extends TextSwitcher {
 
                                 @Override
                                 public void run() {
-                                    tv.setTextColor(null);
+                                    tv.setTextColor(mDefaultTextColor);
                                 }
 
                             });
