@@ -36,6 +36,8 @@ import static com.android.systemui.statusbar.phone.BarTransitions.MODE_TRANSPARE
 import static com.android.systemui.statusbar.phone.BarTransitions.MODE_WARNING;
 
 import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.TimeInterpolator;
 import android.annotation.ChaosLab;
@@ -112,8 +114,8 @@ import android.service.notification.NotificationListenerService.RankingMap;
 import android.service.notification.StatusBarNotification;
 import android.telephony.TelephonyManager;
 import android.text.SpannableString;
-import android.text.TextUtils;
 import android.text.style.RelativeSizeSpan;
+import android.text.TextUtils;
 import android.util.ArraySet;
 import android.util.DisplayMetrics;
 import android.util.EventLog;
@@ -160,6 +162,7 @@ import com.android.internal.util.cm.ActionUtils;
 import com.android.internal.util.cm.WeatherController;
 import com.android.internal.util.cm.WeatherControllerImpl;
 import com.android.internal.util.cm.WeatherController.WeatherInfo;
+import com.android.internal.util.temasek.GreetingTextHelper;
 import com.android.keyguard.KeyguardHostView.OnDismissAction;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.ViewMediatorCallback;
@@ -302,6 +305,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     public static final int FADE_KEYGUARD_START_DELAY = 50;
     public static final int FADE_KEYGUARD_DURATION = 150;
 
+    private static final int GREETING_LABEL_ALWAYS = 0;
+    private static final int GREETING_LABEL_ONCE   = 0;
+    private static final int GREETING_LABEL_HIDDEN = 2;
+
     //Expanded Desktop
     private static final int STATE_ENABLE_FOR_ALL = 0;
     private static final int STATE_USER_CONFIGURABLE = 1;
@@ -419,7 +426,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     // the icons themselves
     IconMerger mNotificationIcons;
     View mNotificationIconArea;
-    TextView mGreetingText;
 
     // [+>
     View mMoreIcon;
@@ -439,8 +445,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     View mFlipSettingsView;
     private QSPanel mQSPanel;
     private QSTileHost mQSTileHost;
-
-    String mGreeting = "";
 
     // task manager
     private TaskManager mTaskManager;
@@ -468,6 +472,16 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     int mKeyguardMaxNotificationCount;
 
+    private LinearLayout mGreetingLabelLayout;
+    private DsbText mGreetingLabel;
+    private int mShowGreetingLabel;
+    private boolean mHideGreetingLabel = false;
+    private int mGreetingLabelTimeout;
+    private int mGreetingFontSize = 12;
+    private int mGreetingLabelPreview;
+
+    private GreetingLabelObserver mGreetingLabelObserver;
+
     // carrier/wifi label
     private TextView mCarrierLabel;
     private boolean mCarrierLabelVisible = false;
@@ -476,9 +490,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     private ActivityStarter mActivityStarter;
     private ServiceConnection mScreenshotConnection = null;
-
-    private boolean mShowGreeting;
-    private int mShowGreetingTimeout = 1000;
 
     // Temasek logo
     private boolean mTemasekLogo;
@@ -598,15 +609,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.STATUS_BAR_TEMASEK_LOGO_STYLE),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_GREETING),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_GREETING_COLOR),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_GREETING_TIMEOUT),
-                    false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.SCREEN_BRIGHTNESS_MODE), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_CLOCK), false, this, UserHandle.USER_ALL);
@@ -723,6 +725,18 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_POWER_MENU),
                     false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_GREETING_SHOW_LABEL),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_GREETING_CUSTOM_LABEL),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_GREETING_TIMEOUT),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_GREETING_COLOR),
+                    false, this, UserHandle.USER_ALL);
             update();
         }
 
@@ -840,6 +854,15 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                         1,
                         UserHandle.USER_CURRENT);
                 setHeadsUpGlobalSwitch(headsUpGlobalSwitch);
+            } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_GREETING_SHOW_LABEL))
+                || uri.equals(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_GREETING_CUSTOM_LABEL))
+                || uri.equals(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_GREETING_TIMEOUT))
+                || uri.equals(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_GREETING_COLOR))) {
+                updateGreetingLabelSettings();
             }
             update();
         }
@@ -1052,25 +1075,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 	    	}
 
 	    	showmCustomlogo(mCustomlogo, mCustomlogoColor,  mCustomlogoStyle);
-
-            mGreeting = Settings.System.getStringForUser(resolver,
-                    Settings.System.STATUS_BAR_GREETING,
-                    mCurrentUserId);
-            if (mGreetingText != null) {
-                if (mGreeting != null && !TextUtils.isEmpty(mGreeting)) {
-                    mGreetingText.setText(mGreeting);
-                    mGreetingText.setTextColor(Settings.System.getInt(resolver,
-                        Settings.System.STATUS_BAR_GREETING_COLOR, 0xffffffff));
-                } else {
-                    mGreetingText.setText("");
-                }
-            }
-            mShowGreetingTimeout = Settings.System.getIntForUser(resolver,
-                    Settings.System.STATUS_BAR_GREETING_TIMEOUT,
-                    1000, mCurrentUserId);
-            if (mShowGreetingTimeout < 100) {
-                mShowGreetingTimeout = 100;
-            }
 
             if (mQSPanel != null) {
                 mQSPanel.updateNumColumns();
@@ -1462,6 +1466,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         addNavigationBar(false);
 
+        mGreetingLabelObserver = new GreetingLabelObserver(mHandler);
+        mGreetingLabelObserver.observe();
+
         // Status bar settings observer
         SettingsObserver observer = new SettingsObserver(mHandler);
         observer.observe();
@@ -1628,13 +1635,14 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         // figure out which pixel-format to use for the status bar.
         mPixelFormat = PixelFormat.OPAQUE;
 
+        mGreetingLabelLayout = (LinearLayout) mStatusBarView.findViewById(R.id.status_bar_greeting_label_layout);
+        mGreetingLabel = (DsbText) mStatusBarView.findViewById(R.id.status_bar_greeting_label);
         mSystemIconArea = (LinearLayout) mStatusBarView.findViewById(R.id.system_icon_area);
         mSystemIcons = (LinearLayout) mStatusBarView.findViewById(R.id.system_icons);
         mStatusIcons = (LinearLayout)mStatusBarView.findViewById(R.id.statusIcons);
         mNotificationIconArea = mStatusBarView.findViewById(R.id.notification_icon_area_inner);
         mNotificationIcons = (IconMerger)mStatusBarView.findViewById(R.id.notificationIcons);
         mMoreIcon = mStatusBarView.findViewById(R.id.moreIcon);
-        mGreetingText = (DsbText)mStatusBarView.findViewById(R.id.statusbar_greeting);
         mNotificationIcons.setOverflowIndicator(mMoreIcon);
         mStatusBarContents = (LinearLayout)mStatusBarView.findViewById(R.id.status_bar_contents);
 
@@ -2112,6 +2120,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         startGlyphRasterizeHack();
         setBottomIconsColors();
         setWeatherTempVisibility();
+        updateGreetingLabelSettings();
+        updateGreetingFontSize();
         UpdateNotifDrawerClearAllIconColor();
         mStatusBarHeaderMachine = new StatusBarHeaderMachine(mContext);
         mStatusBarHeaderMachine.addObserver(mHeader);
@@ -3489,6 +3499,119 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
     }
 
+    private void updateGreetingLabelSettings() {
+        final ContentResolver resolver = mContext.getContentResolver();
+
+        mShowGreetingLabel = Settings.System.getInt(resolver,
+                Settings.System.STATUS_BAR_GREETING_SHOW_LABEL,
+                GREETING_LABEL_ONCE);
+        mGreetingLabelTimeout = Settings.System.getInt(resolver,
+                Settings.System.STATUS_BAR_GREETING_TIMEOUT, 400);
+        final int color = Settings.System.getInt(resolver,
+                Settings.System.STATUS_BAR_GREETING_COLOR, 0xffffffff);
+
+        setGreetingLabelText();
+        mGreetingLabel.setTextColor(color);
+    }
+
+    class GreetingLabelObserver extends ContentObserver {
+        GreetingLabelObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.STATUS_BAR_GREETING_FONT_SIZE),
+                    false, this, UserHandle.USER_CURRENT);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_GREETING_SHOW_LABEL_PREVIEW),
+                    false, this, UserHandle.USER_ALL);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            updateGreetingFontSize();
+            previewGreetingLabel();
+        }
+    }
+
+    private void setGreetingLabelText() {
+        final String greeting = Settings.System.getString(
+                mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_GREETING_CUSTOM_LABEL);
+
+        if (greeting == null || greeting.isEmpty()) {
+            mGreetingLabel.setText(GreetingTextHelper.getDefaultGreetingText(mContext));
+        } else {
+            mGreetingLabel.setText(greeting);
+        }
+    }
+
+    private void updateGreetingFontSize() {
+        ContentResolver resolver = mContext.getContentResolver();
+
+        mGreetingFontSize = Settings.System.getIntForUser(resolver,
+                Settings.System.STATUS_BAR_GREETING_FONT_SIZE, 12,
+                UserHandle.USER_CURRENT);
+
+        mGreetingLabel.setTextSize(mGreetingFontSize);
+    }
+
+    private void previewGreetingLabel() {
+        ContentResolver resolver = mContext.getContentResolver();
+
+        mGreetingLabelPreview = Settings.System.getIntForUser(resolver,
+                Settings.System.STATUS_BAR_GREETING_SHOW_LABEL_PREVIEW, 0,
+                UserHandle.USER_CURRENT);
+
+        if (mGreetingLabelPreview == 1) {
+            AnimatorSet anims = new AnimatorSet();
+            ArrayList<Animator> animList = new ArrayList<Animator>();
+
+            if (mClockLocation == Clock.STYLE_CLOCK_CENTER) {
+                animList.add(fadeOutAnimator(mClockView));
+            }
+            animList.add(fadeOutAnimator(mSystemIconArea));
+            animList.add(fadeOutAnimator(mNotificationIconArea));
+
+            anims.playTogether(animList);
+            anims.start();
+            mGreetingLabelLayout.setVisibility(View.VISIBLE);
+            mGreetingLabelLayout.animate().cancel();
+            mGreetingLabelLayout.animate()
+                .alpha(1f)
+                .setDuration(600)
+                .setInterpolator(ALPHA_IN)
+                .setStartDelay(60)
+                .start();
+        } else {
+            mGreetingLabelLayout.animate().cancel();
+            mGreetingLabelLayout.animate()
+                .alpha(0f)
+                .setDuration(400)
+                .setInterpolator(ALPHA_OUT)
+                .withEndAction(new Runnable() {
+                @Override
+                public void run() {
+                    mGreetingLabelLayout.setVisibility(View.GONE);
+
+                    AnimatorSet anims = new AnimatorSet();
+                    ArrayList<Animator> animList = new ArrayList<Animator>();
+
+                    if (mClockLocation == Clock.STYLE_CLOCK_CENTER) {
+                        animList.add(fadeInAnimator(mClockView));
+                    }
+                    animList.add(fadeInAnimator(mSystemIconArea));
+                    animList.add(fadeInAnimator(mNotificationIconArea));
+
+                    anims.playTogether(animList);
+                    anims.start();
+                }
+            });
+        }
+    }
+
     private void setWeatherTempVisibility() {
         final ContentResolver resolver = mContext.getContentResolver();
 
@@ -3633,26 +3756,29 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 }
                 animateStatusBarHide(mNotificationIconArea, animate);
             } else {
-                if (mGreeting != null && mGreetingText != null
-                    && !TextUtils.isEmpty(mGreeting) && mShowGreeting) {
+                if (mShowGreetingLabel != GREETING_LABEL_HIDDEN && !mHideGreetingLabel) {
                     if (animate) {
-                        mGreetingText.setVisibility(View.VISIBLE);
-                        mGreetingText.animate().cancel();
-                        mGreetingText.animate()
+                        if (mClockLocation == Clock.STYLE_CLOCK_CENTER) {
+                            mClockView.setVisibility(View.GONE);
+                        }
+                        mSystemIconArea.setVisibility(View.GONE);
+                        mGreetingLabelLayout.setVisibility(View.VISIBLE);
+                        mGreetingLabelLayout.animate().cancel();
+                        mGreetingLabelLayout.animate()
                                 .alpha(1f)
-                                .setDuration(mShowGreetingTimeout)
+                                .setDuration(400)
                                 .setInterpolator(ALPHA_IN)
                                 .setStartDelay(50)
                                 .withEndAction(new Runnable() {
                             @Override
                             public void run() {
-                                labelAnimatorFadeOut(animate);
+                                greetingLabelAnimatorFadeOut(animate);
                             }
                         });
                     } else {
-                        labelAnimatorFadeOut(animate);
+                        greetingLabelAnimatorFadeOut(animate);
                     }
-                    mShowGreeting = false;
+                    mHideGreetingLabel = true;
                 } else {
                     animateStatusBarShow(mNotificationIconArea, animate);
                 }
@@ -3732,23 +3858,18 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
     }
 
-    protected void labelAnimatorFadeOut(final boolean animate) {
-        if (mGreetingText == null) {
-            return;
-        }
-        mGreetingText.animate().cancel();
-        mGreetingText.animate()
-                .alpha(0f)
-                .setDuration(200)
-                .setStartDelay(1200)
-                .setInterpolator(ALPHA_OUT)
-                .withEndAction(new Runnable() {
-            @Override
-            public void run() {
-                mGreetingText.setVisibility(View.GONE);
-                animateStatusBarShow(mNotificationIconArea, animate);
-            }
-        });
+    public ObjectAnimator fadeOutAnimator(final View v) {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(v, "alpha", 1f, 0f);
+        animator.setDuration(400);
+        animator.setStartDelay(50);
+        animator.setInterpolator(ALPHA_OUT);
+        animator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    v.setVisibility(View.VISIBLE);
+                }
+            });
+        return animator;
     }
 
     @Override
@@ -3823,6 +3944,52 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     @Override  // UnlockMethodCache.OnUnlockMethodChangedListener
     public void onUnlockMethodStateChanged() {
         logStateToEventlog();
+    }
+
+    protected void greetingLabelAnimatorFadeOut(final boolean animate) {
+        mGreetingLabelLayout.animate().cancel();
+        mGreetingLabelLayout.animate()
+                .alpha(0f)
+                .setDuration(400)
+                .setStartDelay(mGreetingLabelTimeout)
+                .setInterpolator(ALPHA_OUT)
+                .withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                mGreetingLabelLayout.setVisibility(View.GONE);
+
+                AnimatorSet anims = new AnimatorSet();
+                ArrayList<Animator> animList = new ArrayList<Animator>();
+
+                if (mClockLocation == Clock.STYLE_CLOCK_CENTER) {
+                    animList.add(fadeInAnimator(mClockView));
+                }
+                animList.add(fadeInAnimator(mSystemIconArea));
+                animList.add(fadeInAnimator(mNotificationIconArea));
+
+
+                anims.playTogether(animList);
+                anims.start();
+            }
+        });
+    }
+
+    public ObjectAnimator fadeInAnimator(final View v) {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(v, "alpha", 0f, 1f);
+        animator.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    v.setVisibility(View.VISIBLE);
+                }
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    if (mState != StatusBarState.SHADE) {
+                        v.setAlpha(0);
+                        v.setVisibility(View.INVISIBLE);
+                    }
+                }
+            });
+        return animator;
     }
 
     /**
@@ -4977,7 +5144,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             }
             else if (Intent.ACTION_SCREEN_OFF.equals(action)) {
                 mScreenOn = false;
-                mShowGreeting = true;
+                if (mShowGreetingLabel == GREETING_LABEL_ALWAYS) {
+                    mHideGreetingLabel = false;
+                }
                 notifyNavigationBarScreenOn(false);
                 notifyHeadsUpScreenOn(false);
                 finishBarAnimations();

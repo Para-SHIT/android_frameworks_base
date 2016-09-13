@@ -48,15 +48,33 @@
         android:orientation="horizontal"
         >
         
-		<com.android.systemui.statusbar.phone.DsbText
-            android:id="@+id/statusbar_greeting"
-            android:layout_width="wrap_content"
+		<LinearLayout android:id="@+id/status_bar_greeting_label_layout"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:paddingStart="3dp"
+            android:orientation="horizontal"
             android:visibility="gone"
-            android:text="@string/greeting_label"
-            android:textAppearance="@style/TextAppearance.StatusBar.Clock" />
+            >
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <com.android.systemui.statusbar.phone.DsbText
+                android:id="@+id/status_bar_greeting_label"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_vertical"
+                android:textAppearance="@style/TextAppearance.StatusBar.Greeting"
+                android:textColor="#ffffff" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+        </LinearLayout>
 
         <com.android.systemui.statusbar.AlphaOptimizedFrameLayout
             android:id="@+id/notification_icon_area"

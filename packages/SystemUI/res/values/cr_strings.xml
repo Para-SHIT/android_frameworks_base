@@ -157,9 +157,6 @@
     <string name="toast_recents_queue_app">Launch %s after closing recents</string>
     <string name="toast_recents_cancel_queued_app">Cancelled app launch</string>
 
-    <!-- Greeting -->
-    <string name="greeting_label">Welcome</string>
-
     <!-- Navigation Bar -->
     <string name="navbar_notifications_button">Notifications button</string>
     <string name="accessibility_notifications">Notifications</string>

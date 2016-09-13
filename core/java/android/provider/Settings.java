@@ -5817,22 +5817,40 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String NOTIFICATION_FONT_STYLES = "notification_font_styles";
 
         /**
-         * Status bar greeting
+         *  Weather to show a greeting on the status bar after unlocking the device
          * @hide
          */
-        public static final String STATUS_BAR_GREETING = "status_bar_greeting";
+        public static final String STATUS_BAR_GREETING_SHOW_LABEL = "status_bar_greeting_show_label";
 
         /**
-         * Status bar greeting text color
+         *  Label used for the greeting on the status bar
+         * @hide
+         */
+        public static final String STATUS_BAR_GREETING_CUSTOM_LABEL = "status_bar_greeting_custom_label";
+
+        /**
+         *  Timeout for the greeting on the status bar
+         * @hide
+         */
+        public static final String STATUS_BAR_GREETING_TIMEOUT = "status_bar_greeting_timeout";
+
+        /**
+         *  Color of the greeting label on the status bar
          * @hide
          */
         public static final String STATUS_BAR_GREETING_COLOR = "status_bar_greeting_color";
 
         /**
-         * Status bar greeting timeout
+         *  Font size of the greeting label on the status bar
          * @hide
          */
-        public static final String STATUS_BAR_GREETING_TIMEOUT = "status_bar_greeting_timeout";
+        public static final String STATUS_BAR_GREETING_FONT_SIZE = "status_bar_greeting_font_size";
+
+        /**
+         *  Preview text of the greeting label on the status bar
+         * @hide
+         */
+        public static final String STATUS_BAR_GREETING_SHOW_LABEL_PREVIEW = "status_bar_greeting_show_label_preview";
 
         /**
          *  Color of the qs brightness slider icon

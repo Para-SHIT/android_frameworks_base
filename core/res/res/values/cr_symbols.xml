@@ -170,6 +170,9 @@
   <java-symbol type="drawable" name="ic_lock_onthego" />
   <java-symbol type="drawable" name="ic_lock_onthego_alpha" />
 
+  <!-- Status bar greeting -->
+  <java-symbol type="string" name="default_greeting_welcome" />
+
   <java-symbol type="array" name="anim_controls_entries" />
 
   <!-- Power menu Animations  -->
