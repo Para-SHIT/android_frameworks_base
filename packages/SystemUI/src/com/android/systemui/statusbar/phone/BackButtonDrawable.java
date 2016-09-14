@@ -74,7 +74,7 @@ public class BackButtonDrawable extends Drawable {
 
     @Override
     public void setColorFilter(ColorFilter cf) {
-	mWrappedDrawable.setColorFilter(cf);
+		mWrappedDrawable.setColorFilter(cf);
     }
 
     @Override
@@ -95,7 +95,6 @@ public class BackButtonDrawable extends Drawable {
         return mWrappedDrawable.getAlpha();
     }
 
-    
     @Override
     public int getOpacity() {
         return mWrappedDrawable.getOpacity();

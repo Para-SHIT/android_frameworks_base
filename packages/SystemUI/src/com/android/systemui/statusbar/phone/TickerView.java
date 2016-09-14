@@ -16,10 +16,6 @@
 
 package com.android.systemui.statusbar.phone;
 
-/*import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ArgbEvaluator;
-import android.animation.ObjectAnimator;*/
 import android.content.Context;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -27,8 +23,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
-
-//import com.android.systemui.R;
 
 import java.util.ArrayList;
 
@@ -42,25 +36,18 @@ public class TickerView extends TextSwitcher {
     public TickerView(Context context, AttributeSet attrs) {
         super(context, attrs);
     	mHandler = new Handler();
-		//mDSBDuration = context.getResources().getInteger(R.integer.dsb_transition_duration);
+
         BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
             @Override
-            public /*AnimatorSet*/void onUpdateStatusBarIconColor(final int previousIconColor,
+            public void onUpdateStatusBarIconColor(final int previousIconColor,
                     final int iconColor) {
                 mOverrideTextColor = iconColor;
-
-                /*final ArrayList<Animator> anims = new ArrayList<Animator>();
-                final int targetColor = mOverrideTextColor == 0 ?
-                        mDefaultTextColor : mOverrideTextColor;*/
 
                 final int childCount = getChildCount();
                 for (int i = 0; i < childCount; i++) {
                     final TextView tv = (TextView) getChildAt(i);
                     if (tv != null) {
-                        /*final int currentColor = tv.getTextColors().getDefaultColor();
-                        anims.add(ObjectAnimator.ofObject(tv, "textColor", new ArgbEvaluator(),
-                            currentColor, targetColor).setDuration(mDSBDuration));*/
 						if (mOverrideTextColor == 0) {
                             mHandler.post(new Runnable() {
 
@@ -83,16 +70,10 @@ public class TickerView extends TextSwitcher {
                     }
                 }
 
-                /*if (anims.isEmpty()) {
-                    return null;
-                } else {
-                    final AnimatorSet animSet = new AnimatorSet();
-                    animSet.playTogether(anims);
-                    return animSet;
-                }*/
             }
 
         });
+
     }
 
     @Override
@@ -105,9 +86,6 @@ public class TickerView extends TextSwitcher {
         mTicker = t;
     }
 
-	/**
-     * {@inheritDoc}
-     */
     @Override
     public void addView(final View child, final int index, final ViewGroup.LayoutParams params) {
         if (child instanceof TextView) {

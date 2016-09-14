@@ -238,17 +238,20 @@ public class NetworkTraffic extends TextView {
 				@Override
 				public void onUpdateStatusBarIconColor(final int previousIconColor,
 														   final int iconColor) {
-					//mPreviousOverrideIconColor = previousIconColor;
 					mOverrideIconColor = iconColor;
-                                        mHandler.post(new Runnable(){
-                                        @Override
-                                        public void run(){
-					updateSettings();
-                                        }
-				     });
+
+					mHandler.post(new Runnable(){
+
+						@Override
+						public void run(){
+							updateSettings();
+						}
+
+					});
+
 				}
 
-			});
+		});
     }
 
     @Override
@@ -312,18 +315,18 @@ public class NetworkTraffic extends TextView {
         mNetworkTrafficColor = Settings.System.getInt(resolver,
                 Settings.System.NETWORK_TRAFFIC_COLOR, -2);
 
-            if (mNetworkTrafficColor == Integer.MIN_VALUE
-                || mNetworkTrafficColor == -2) {
-					if(!BarBackgroundUpdater.mStatusEnabled){
-            mNetworkTrafficColor = defaultColor;
+        if (mNetworkTrafficColor == Integer.MIN_VALUE
+            || mNetworkTrafficColor == -2) {
+			if(!BarBackgroundUpdater.mStatusEnabled){
+            	mNetworkTrafficColor = defaultColor;
 			}
         }
 		if(!BarBackgroundUpdater.mStatusEnabled){
             setTextColor(mNetworkTrafficColor);
-			}else{
-				setTextColor(mOverrideIconColor);
-			}
-            updateTrafficDrawable();
+		}else{
+			setTextColor(mOverrideIconColor);
+		}
+        updateTrafficDrawable();
 
         if (isSet(mState, MASK_UNIT)) {
             KB = KILOBYTE;
@@ -381,11 +384,9 @@ public class NetworkTraffic extends TextView {
             if (intTrafficDrawable != 0) {
                 drw = getContext().getResources().getDrawable(intTrafficDrawable);
 				if(!BarBackgroundUpdater.mStatusEnabled){
-					
-                drw.setColorFilter(mNetworkTrafficColor, PorterDuff.Mode.SRC_ATOP);
+                	drw.setColorFilter(mNetworkTrafficColor, PorterDuff.Mode.SRC_ATOP);
 				}else{
 					drw.setColorFilter(mOverrideIconColor, PorterDuff.Mode.SRC_ATOP);
-					
 				}
             }
         } else {

@@ -41,6 +41,7 @@ import com.android.systemui.statusbar.policy.SecurityController;
 import java.util.ArrayList;
 import java.util.List;
 import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
+
 // Intimately tied to the design of res/layout/signal_cluster_view.xml
 public class SignalClusterView
         extends LinearLayout
@@ -71,7 +72,6 @@ public class SignalClusterView
     LinearLayout mMobileSignalGroup;
 	private final Handler mHandler;
     
-    private int mPreviousOverrideIconColor = 0;
     private int mOverrideIconColor = 0;
 	
     private int mWideTypeIconStartPadding;
@@ -94,84 +94,81 @@ public class SignalClusterView
 				@Override
 				public void onUpdateStatusBarIconColor(final int previousIconColor,
 													   final int iconColor) {
-					mPreviousOverrideIconColor = previousIconColor;
 					mOverrideIconColor = iconColor;
 
 					if (mOverrideIconColor == 0) {
 						mHandler.post(new Runnable() {
 
-								@Override
-								public void run() {
-									if (mWifi != null) {
-										mWifi.setColorFilter(null);
+							@Override
+							public void run() {
+								if (mWifi != null) {
+									mWifi.setColorFilter(null);
+								}
+								if (mVpn != null) {
+									mVpn.setColorFilter(null);
+								}
+								if (mWifiActivity != null) {
+									mWifiActivity.setColorFilter(null);
+								}
+								if (mAirplane != null) {
+									mAirplane.setColorFilter(null);
+								}
+								for (PhoneState state : mPhoneStates) {
+									if (state.mMobile != null) {
+										state.mMobile.setColorFilter(null);
 									}
-									if (mVpn != null) {
-										mVpn.setColorFilter(null);
-									}
-									if (mWifiActivity != null) {
-										mWifiActivity.setColorFilter(null);
-									}
-									if (mAirplane != null) {
-										mAirplane.setColorFilter(null);
-									}
-									for (PhoneState state : mPhoneStates) {
-										if (state.mMobile != null) {
-											state.mMobile.setColorFilter(null);
-										}
 
-										if (state.mMobileActivity != null) {
-											state.mMobileActivity.setColorFilter(null);
-										}
+									if (state.mMobileActivity != null) {
+										state.mMobileActivity.setColorFilter(null);
+									}
 
-										if (state.mMobileType != null) {
-											state.mMobileType.setColorFilter(null);
-										}
+									if (state.mMobileType != null) {
+										state.mMobileType.setColorFilter(null);
 									}
 								}
+							}
 
-							});
-
-						//return null;
+						});
 					} else {
 						mHandler.post(new Runnable() {
 
-								@Override
-								public void run() {
+							@Override
+							public void run() {
+								if (mWifi != null) {
+									mWifi.setColorFilter(mOverrideIconColor);
+								}
+								if (mVpn != null) {
+									mVpn.setColorFilter(mOverrideIconColor);
+								}
+								if (mWifiActivity != null) {
+									mWifiActivity.setColorFilter(mOverrideIconColor);
+								}
+								if (mAirplane != null) {
+									mAirplane.setColorFilter(mOverrideIconColor);
+								}
+								for (PhoneState state : mPhoneStates) {
+									if (state.mMobile != null) {
+										state.mMobile.setColorFilter(mOverrideIconColor);
+									}
 
-									if (mWifi != null) {
-										mWifi.setColorFilter(mOverrideIconColor);
+									if (state.mMobileActivity != null) {
+										state.mMobileActivity.setColorFilter(mOverrideIconColor);
 									}
-									if (mVpn != null) {
-										mVpn.setColorFilter(mOverrideIconColor);
-									}
-									if (mWifiActivity != null) {
-										mWifiActivity.setColorFilter(mOverrideIconColor);
-									}
-									if (mAirplane != null) {
-										mAirplane.setColorFilter(mOverrideIconColor);
-									}
-									for (PhoneState state : mPhoneStates) {
-										if (state.mMobile != null) {
-											state.mMobile.setColorFilter(mOverrideIconColor);
-										}
 
-										if (state.mMobileActivity != null) {
-											state.mMobileActivity.setColorFilter(mOverrideIconColor);
-										}
-
-										if (state.mMobileType != null) {
-											state.mMobileType.setColorFilter(mOverrideIconColor);
-										}
+									if (state.mMobileType != null) {
+										state.mMobileType.setColorFilter(mOverrideIconColor);
 									}
-											}
-							});
+								}
+							}
+
+						});
 
 					}
 				}
-			});}
 
-    
-	
+		});
+
+	}
 
     public void setNetworkController(NetworkControllerImpl nc) {
         if (DEBUG) Log.d(TAG, "NetworkController=" + nc);

@@ -43,11 +43,6 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
     private Animator mCurrentAnimation;
 
     public PhoneStatusBarTransitions(PhoneStatusBarView view) {
-        /*super(view, R.drawable.status_background, R.color.status_bar_background_opaque,
-                R.color.status_bar_background_semi_transparent,
-                R.color.status_bar_background_transparent,
-                com.android.internal.R.color.battery_saver_mode_color);
-				*/
 		super(view, new PhoneStatusBarBackgroundDrawable(view.getContext()));
 		
         mView = view;
@@ -63,7 +58,7 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
         mClock = mView.findViewById(R.id.clock);
         mNetworkTraffic = mView.findViewById(R.id.networkTraffic);
         mTemasekLogo = mView.findViewById(R.id.temasek_logo);
-	mCLogo =mView.findViewById(R.id.custom);
+		mCLogo =mView.findViewById(R.id.custom);
         mWeatherTextView = mView.findViewById(R.id.weather_temp);
         mLeftWeatherTextView = mView.findViewById(R.id.left_weather_temp);
         applyModeBackground(-1, getMode(), false /*animate*/);
@@ -134,11 +129,11 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
             if (mBattery != null) mBattery.setAlpha(newAlphaBC);
             if (mClock != null) mClock.setAlpha(newAlphaBC);
             if (mTemasekLogo != null) mTemasekLogo.setAlpha(newAlphaBC);
-	    if (mCLogo != null) mCLogo.setAlpha(newAlphaBC);
+	    	if (mCLogo != null) mCLogo.setAlpha(newAlphaBC);
         }
     }
-	protected static class PhoneStatusBarBackgroundDrawable
-            extends BarTransitions.BarBackgroundDrawable {
+
+	protected static class PhoneStatusBarBackgroundDrawable extends BarTransitions.BarBackgroundDrawable {
         private final Context mContext;
 
         private int mOverrideColor = 0;
@@ -172,15 +167,11 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
             BarBackgroundUpdater.init(context);
         }
 
-		
-        
         @Override
         protected int getColorOpaque() {
             return mOverrideColor == 0 ? super.getColorOpaque() : mOverrideColor;
         }
 
-		
-        
         @Override
         protected int getColorSemiTransparent() {
             return mOverrideColor == 0 ? super.getColorSemiTransparent() :

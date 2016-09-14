@@ -53,13 +53,14 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 
 import com.android.systemui.R;
+import com.android.systemui.statusbar.phone.NavbarDsbImage;
 import com.android.systemui.statusbar.phone.NavbarEditor;
 import com.android.systemui.statusbar.phone.NavigationBarView;
 
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_CLICK;
 import static android.view.accessibility.AccessibilityNodeInfo.ACTION_LONG_CLICK;
 
-public class KeyButtonView extends ImageView {
+public class KeyButtonView extends NavbarDsbImage {
     private static final String TAG = "StatusBar.KeyButtonView";
     private static final boolean DEBUG = false;
 
@@ -80,6 +81,7 @@ public class KeyButtonView extends ImageView {
     private AudioManager mAudioManager;
     private Animator mAnimateToQuiescent = new ObjectAnimator();
 
+    private Context mContext;
     private PowerManager mPm;
     private final Handler mHandler = new Handler();
     private boolean mPerformedLongClick;
@@ -114,6 +116,7 @@ public class KeyButtonView extends ImageView {
 
     public KeyButtonView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs);
+        mContext = context;
 
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.KeyButtonView,
                 defStyle, 0);

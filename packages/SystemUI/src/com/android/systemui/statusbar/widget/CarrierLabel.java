@@ -103,7 +103,9 @@ public class CarrierLabel extends TextView {
 					public void run() {
 						updateColor();
 					}
+
 				});
+
 			}
 
 		});
@@ -194,7 +196,9 @@ public class CarrierLabel extends TextView {
                 Settings.System.STATUS_BAR_CARRIER_COLOR, defaultColor);
 
         if  (mCarrierColor == Integer.MIN_VALUE) {
-             mCarrierColor = defaultColor;
+			if (!BarBackgroundUpdater.mStatusEnabled) {
+             	mCarrierColor = defaultColor;
+			}
         }
 		if (!BarBackgroundUpdater.mStatusEnabled) {
         	setTextColor(mCarrierColor);

@@ -891,6 +891,7 @@ public class BatteryMeterView extends View implements DemoMode,
         private void drawCircle(Canvas canvas, BatteryTracker tracker,
                 float textX, RectF drawRect) {
             boolean unknownStatus = tracker.status == BatteryManager.BATTERY_STATUS_UNKNOWN;
+            final boolean anu = mOverrideIconColor != 0;
             int level = tracker.level;
             Paint paint;
 
@@ -925,6 +926,8 @@ public class BatteryMeterView extends View implements DemoMode,
 
             } else if (tracker.plugged) {
                 canvas.drawPath(mBoltPath, mBoltPaint);
+				mBoltPaint.setColor(anu?kolor:kolor);
+
             } else {
                 if (level > mCriticalLevel
                         && (mShowPercent && !(tracker.level == 100 && !SHOW_100_PERCENT))) {

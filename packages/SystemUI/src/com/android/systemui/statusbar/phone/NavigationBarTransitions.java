@@ -46,6 +46,7 @@ public final class NavigationBarTransitions extends BarTransitions {
 
     public NavigationBarTransitions(NavigationBarView view) {
         super(view,new NavigationBarBackgroundDrawable(view.getContext()));
+
         mView = view;
         mBarService = IStatusBarService.Stub.asInterface(
                 ServiceManager.getService(Context.STATUS_BAR_SERVICE));
@@ -214,8 +215,8 @@ public final class NavigationBarTransitions extends BarTransitions {
             return false;
         }
     };
-	protected static class NavigationBarBackgroundDrawable
-	extends BarTransitions.BarBackgroundDrawable {
+
+	protected static class NavigationBarBackgroundDrawable extends BarTransitions.BarBackgroundDrawable {
         private final Context mContext;
 
         private int mOverrideColor = 0;
@@ -249,8 +250,6 @@ public final class NavigationBarTransitions extends BarTransitions {
 				});
             BarBackgroundUpdater.init(context);
         }
-
-
 
         @Override
         protected int getColorOpaque() {

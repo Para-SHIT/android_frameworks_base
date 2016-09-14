@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 ParanoidAndroid Project
+ * Copyright (C) 2014 ParanoidSHIT Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package com.android.systemui.statusbar.phone;
 
-//import android.animation.Animator;
-//import android.animation.AnimatorSet;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -29,7 +27,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Point;
-//import android.graphics.Rect;
 import android.os.Handler;
 import android.os.UserHandle;
 import android.provider.Settings;
@@ -44,6 +41,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import com.android.systemui.statusbar.phone.BarBackgroundUpdaterNative;
+
 public class BarBackgroundUpdater {
     private final static boolean DEBUG_ALL = false;
     private final static String LOG_TAG = BarBackgroundUpdater.class.getSimpleName();
@@ -69,9 +67,11 @@ public class BarBackgroundUpdater {
         }
 
     };
+
     private static boolean expanded(){
 		return PhoneStatusBar.mExpandedVisible;
 	}
+
     private final static Thread THREAD = new Thread(new Runnable() {
 
         @Override
@@ -194,18 +194,13 @@ public class BarBackgroundUpdater {
                                 0.114f * Color.blue(navigationBarOverrideColor)) / 255;
                         final boolean isNavigationBarConsistent = colors[3] == 1;
 						if(reverse&&mStatusEnabled){
-							//boolean same=statusBarBrightness==navigationBarBrightness;
 							int kolor=navigationBarBrightness > 0.7f &&
 								isNavigationBarConsistent ? 0xFF000000 : 0xFFFFFFFF;
 							boolean same= statusBarBrightness==navigationBarBrightness;
-							//boolean tinggi=statusBarBrightness>navigationBarBrightness;
-							//boolean rendah=statusBarBrightness<navigationBarBrightness;
 							boolean uiputih=statusBarBrightness>0.8f;
 							boolean uiblek=statusBarBrightness<0.2f;
 							boolean navputih=navigationBarBrightness>0.8f;
 							boolean navblek=navigationBarBrightness<0.2f;
-							//boolean w=uiputih&&navputih;
-							//boolean b =uiblek&&navblek;
 							if(uiputih&&navputih){
 								updateNavigationBarIconColor(kolor);
 							}
@@ -233,23 +228,6 @@ public class BarBackgroundUpdater {
                     updateNavigationBarIconColor(0);
                 }
 
-                // start queued animators
-                /*if (!mQueuedAnimators.isEmpty()) {
-                    final AnimatorSet animSet = new AnimatorSet();
-
-                    animSet.playTogether(mQueuedAnimators);
-                    mQueuedAnimators.clear();
-
-                    mHandler.post(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            animSet.start();
-                        }
-
-                    })
-                }*/
-
                 // do a quick cleanup of the listener list
                 synchronized(BarBackgroundUpdater.class) {
                     final ArrayList<UpdateListener> removables = new ArrayList<UpdateListener>();
@@ -264,14 +242,6 @@ public class BarBackgroundUpdater {
                         mListeners.remove(removable);
                     }
                 }
-
-               // final long delta = System.currentTimeMillis() - now;
-                //final long delay = Math.max(sMinDelay, delta * 2);
-
-               /* if (DEBUG_FLOOD_ALL_DELAY || (DEBUG_EXCESSIVE_DELAY && delay > sMinDelay)) {
-                    Log.d(LOG_TAG, "delta=" + Long.toString(delta) + "ms " +
-                            "delay=" + Long.toString(delay) + "ms");
-                }*/
 
                 try {
                     Thread.sleep(sMinDelay);
@@ -315,7 +285,6 @@ public class BarBackgroundUpdater {
 	public static boolean reverse=false;
    
     private static final ArrayList<UpdateListener> mListeners = new ArrayList<UpdateListener>();
-   // private static final ArrayList<Animator> mQueuedAnimators = new ArrayList<Animator>();
     private static Handler mHandler = null;
     private static Context mContext = null;
     private static SettingsObserver mObserver = null;
@@ -323,19 +292,6 @@ public class BarBackgroundUpdater {
     private BarBackgroundUpdater() {
 		
     }
-
-   /* private static void anim(final Animator animator) {
-        if (animator != null && mHandler != null) {
-            mHandler.post(new Runnable() {
-
-                @Override
-                public void run() {
-                    animator.start();
-                }
-
-            });
-        }
-    }*/
 
     private synchronized static void setPauseState(final boolean isPaused) {
         PAUSED = isPaused;
@@ -405,19 +361,6 @@ public class BarBackgroundUpdater {
                 "DYNAMIC_NAVIGATION_BAR_STATE", 0, UserHandle.USER_CURRENT) == 1;
         mStatusFilterEnabled = Settings.System.getIntForUser(mContext.getContentResolver(),
                 "DYNAMIC_STATUS_BAR_FILTER_STATE", 0, UserHandle.USER_CURRENT) == 1;
-
-       /* final int freq = Settings.System.getIntForUser(mContext.getContentResolver(),
-                "EXPERIMENTAL_DSB_FREQUENCY", 2, UserHandle.USER_CURRENT);
-        if (freq == 0) {
-            // approx 1 fps
-            sMinDelay = 950;
-        } else if (freq < 0) {
-            // approx (-freq)^-1 fps
-            sMinDelay = Math.abs(1000 * (-freq) - 50);
-        } else {
-            // approx freq fps
-            sMinDelay = Math.max(0, Math.round(1000 / freq) - 50);
-        }*/
 
         final Display d = ((WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE))
                 .getDefaultDisplay();
@@ -513,9 +456,7 @@ public class BarBackgroundUpdater {
         if (mStatusBarOverrideColor == newColor) {
             return;
         }
-        /*if(expanded()){
-			return;
-		}*/
+
         mPreviousStatusBarOverrideColor = mStatusBarOverrideColor;
         mStatusBarOverrideColor = newColor;
 
@@ -525,15 +466,11 @@ public class BarBackgroundUpdater {
         }
 
         for (final UpdateListener listener : mListeners) {
-            //final Animator anim = 
 			listener.onUpdateStatusBarColor(
-                    mPreviousStatusBarOverrideColor, //expanded()?mPreviousStatusBarIconOverrideColor: 
-					mStatusBarOverrideColor);
-            /*if (anim != null) {
-                mQueuedAnimators.add(anim);
-            }*/
+            mPreviousStatusBarOverrideColor, mStatusBarOverrideColor);
         }
     }
+
 	public synchronized static void updateHeaderColor(final int newColor) {
         if (mHeaderOverrideColor == newColor) {
             return;
@@ -547,10 +484,10 @@ public class BarBackgroundUpdater {
         
         for (final UpdateListener listener : mListeners) {
 			listener.onUpdateHeaderColor(
-				mPreviousHeaderOverrideColor,// mPreviousHeaderOverrideColor==0 ?mPreviousStatusBarIconOverrideColor: 
-				mHeaderOverrideColor);
+			mPreviousHeaderOverrideColor, mHeaderOverrideColor);
         }
     }
+
 	public synchronized static void updateStatusBarIconColor(final int newColor) {
         if (mStatusBarIconOverrideColor == newColor) {
             return;
@@ -565,14 +502,11 @@ public class BarBackgroundUpdater {
         }
 
         for (final UpdateListener listener : mListeners) {
-            //final Animator anim = 
 			listener.onUpdateStatusBarIconColor(
-				mPreviousStatusBarIconOverrideColor, mStatusBarIconOverrideColor);
-			/* if (anim != null) {
-			 mQueuedAnimators.add(anim);
-			 }*/
+			mPreviousStatusBarIconOverrideColor, mStatusBarIconOverrideColor);
         }
     }
+
     public synchronized static void updateHeaderIconColor(final int newColor) {
         if (mHeaderIconOverrideColor == newColor) {
             return;
@@ -589,13 +523,8 @@ public class BarBackgroundUpdater {
         }
 
         for (final UpdateListener listener : mListeners) {
-            //final Animator anim = 
 			listener.onUpdateHeaderIconColor(
-                    mPreviousHeaderIconOverrideColor, //mPreviousHeaderIconOverrideColor==0?mPreviousHeaderIconOverrideColor: 
-					mHeaderIconOverrideColor);
-           /* if (anim != null) {
-                mQueuedAnimators.add(anim);
-            }*/
+            mPreviousHeaderIconOverrideColor, mHeaderIconOverrideColor);
         }
     }
 
@@ -613,12 +542,8 @@ public class BarBackgroundUpdater {
         }
 
         for (final UpdateListener listener : mListeners) {
-            //final Animator anim = 
 			listener.onUpdateNavigationBarColor(
-                    mPreviousNavigationBarOverrideColor, mNavigationBarOverrideColor);
-           /* if (anim != null) {
-                mQueuedAnimators.add(anim);
-            }*/
+            mPreviousNavigationBarOverrideColor, mNavigationBarOverrideColor);
         }
     }
 
@@ -636,12 +561,8 @@ public class BarBackgroundUpdater {
         }
 
         for (final UpdateListener listener : mListeners) {
-            //final Animator anim = 
 			listener.onUpdateNavigationBarIconColor(
-                    mPreviousNavigationBarIconOverrideColor, mNavigationBarIconOverrideColor);
-            /*if (anim != null) {
-                mQueuedAnimators.add(anim);
-            }*/
+            mPreviousNavigationBarIconOverrideColor, mNavigationBarIconOverrideColor);
         }
     }
 
@@ -662,23 +583,18 @@ public class BarBackgroundUpdater {
 		public void onUpdateHeaderColor(final int previousColor, final int color) {
             //return null;
         }
-		public void onUpdateHeaderIconColor(final int previousIconColor,
-											   final int iconColor) {
+		public void onUpdateHeaderIconColor(final int previousIconColor, final int iconColor) {
             //return null;
         }
-        public void onUpdateStatusBarIconColor(final int previousIconColor,
-                final int iconColor) {
-            //return null;
-        }
-		
-
-        public void onUpdateNavigationBarColor(final int previousColor,
-                final int color) {
+        public void onUpdateStatusBarIconColor(final int previousIconColor, final int iconColor) {
             //return null;
         }
 
-        public void onUpdateNavigationBarIconColor(final int previousIconColor,
-                final int iconColor) {
+        public void onUpdateNavigationBarColor(final int previousColor, final int color) {
+            //return null;
+        }
+
+        public void onUpdateNavigationBarIconColor(final int previousIconColor, final int iconColor) {
            // return null;
         }
     }
@@ -702,19 +618,6 @@ public class BarBackgroundUpdater {
             mStatusFilterEnabled = Settings.System.getIntForUser(mContext.getContentResolver(),
                     "DYNAMIC_STATUS_BAR_FILTER_STATE", 0,
                     UserHandle.USER_CURRENT) == 1;
-
-           /* final int freq = Settings.System.getIntForUser(mContext.getContentResolver(),
-                "EXPERIMENTAL_DSB_FREQUENCY", 2, UserHandle.USER_CURRENT);
-            if (freq == 0) {
-                // approx 1 fps
-                sMinDelay = 950;
-            } else if (freq < 0) {
-                // approx (-freq)^-1 fps
-                sMinDelay = Math.abs(1000 * (-freq) - 50);
-            } else {
-                // approx freq fps
-                sMinDelay = Math.max(0, Math.round(1000 / freq) - 50);
-            }*/
 			
         }
     }

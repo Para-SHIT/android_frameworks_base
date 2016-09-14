@@ -106,7 +106,6 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
     final Display mDisplay;
     View mCurrentView = null;
     View[] mRotatedViews = new View[4];
-	private int mPreviousOverrideIconColor = 0 ;
     private int mOverrideIconColor = 0;
     int mBarSize;
     boolean mVertical;
@@ -339,17 +338,15 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
         mBarTransitions = new NavigationBarTransitions(this);
 		BarBackgroundUpdater . addListener( new BarBackgroundUpdater.UpdateListener( this) {
 
-				@Override
-				public void onUpdateNavigationBarIconColor(final int previousIconColor,
-														   final int iconColor ) {
-					mPreviousOverrideIconColor = previousIconColor;
-					mOverrideIconColor = iconColor;
+			@Override
+			public void onUpdateNavigationBarIconColor(final int previousIconColor, final int iconColor ) {
+				mOverrideIconColor = iconColor;
 
-					//return 
-					generateButtonColorsAnimatorSet();
-				}
+				generateButtonColorsAnimatorSet();
+			}
 
-			});
+		});
+
         mNavBarReceiver = new NavBarReceiver();
         mSettingsObserver = new SettingsObserver(new Handler());
 
@@ -385,35 +382,29 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
 			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_NOTIFICATIONS)),
 			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_SCREENSHOT)),
 			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_EXPAND))
-		
 		};
-
-		// final ArrayList< Animator> anims = new ArrayList< Animator> ();
 
 		for ( final ImageView button : buttons) {
 			if (button != null) {
 				if (mOverrideIconColor == 0 ) {
 					mHandler . post( new Runnable() {
 
-							@Override
-							public void run() {
-								button . setColorFilter( null);
-							}
-
-						});
+						@Override
+						public void run() {
+							button . setColorFilter( null);
+						}
+					});
 				} else {
-                    			mHandler . post( new Runnable() {
-					
-                            				@Override
-							public void run() {
-								button . setColorFilter(mOverrideIconColor);
-                            				}
+                    mHandler . post( new Runnable() {
 
-                        			});
+                        @Override
+						public void run() {
+							button . setColorFilter(mOverrideIconColor);
+                        }
+                    });
 				}
 			}
 		}
-
 		
 	}
 
@@ -523,7 +514,7 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
     }
 
     public View getBackButton() {
-        return mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_BACK);
+        return mCurrentView == null ? null :mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_BACK);
     }
 
     public View getHomeButton() {
