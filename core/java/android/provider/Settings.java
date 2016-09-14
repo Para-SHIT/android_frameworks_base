@@ -5847,6 +5847,12 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String STATUS_BAR_GREETING_FONT_SIZE = "status_bar_greeting_font_size";
 
         /**
+         *  Font style of the greeting label on the status bar
+         * @hide
+         */
+        public static final String STATUS_BAR_GREETING_FONT_STYLE = "status_bar_greeting_font_style";
+
+        /**
          *  Preview text of the greeting label on the status bar
          * @hide
          */

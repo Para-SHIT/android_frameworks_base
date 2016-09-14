@@ -322,7 +322,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     };
     private ExpandedDesktopObserver mObserver;
 
-    // Weather temperature
+    // Font Style
     public static final int FONT_NORMAL = 0;
     public static final int FONT_ITALIC = 1;
     public static final int FONT_BOLD = 2;
@@ -478,6 +478,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private boolean mHideGreetingLabel = false;
     private int mGreetingLabelTimeout;
     private int mGreetingFontSize = 12;
+    private int mGreetingFontStyle = FONT_NORMAL;
     private int mGreetingLabelPreview;
 
     private GreetingLabelObserver mGreetingLabelObserver;
@@ -2122,6 +2123,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         setWeatherTempVisibility();
         updateGreetingLabelSettings();
         updateGreetingFontSize();
+        updateGreetingFontStyle();
         UpdateNotifDrawerClearAllIconColor();
         mStatusBarHeaderMachine = new StatusBarHeaderMachine(mContext);
         mStatusBarHeaderMachine.addObserver(mHeader);
@@ -3524,6 +3526,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.STATUS_BAR_GREETING_FONT_SIZE),
                     false, this, UserHandle.USER_CURRENT);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.STATUS_BAR_GREETING_FONT_STYLE),
+                    false, this, UserHandle.USER_CURRENT);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_GREETING_SHOW_LABEL_PREVIEW),
                     false, this, UserHandle.USER_ALL);
@@ -3532,6 +3537,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         @Override
         public void onChange(boolean selfChange) {
             updateGreetingFontSize();
+            updateGreetingFontStyle();
             previewGreetingLabel();
         }
     }
@@ -3556,6 +3562,97 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 UserHandle.USER_CURRENT);
 
         mGreetingLabel.setTextSize(mGreetingFontSize);
+    }
+
+    private void updateGreetingFontStyle() {
+        ContentResolver resolver = mContext.getContentResolver();
+
+        mGreetingFontStyle = Settings.System.getIntForUser(resolver,
+                Settings.System.STATUS_BAR_GREETING_FONT_STYLE, FONT_NORMAL,
+                UserHandle.USER_CURRENT);
+
+        setGreetingFontStyle(mGreetingFontStyle);
+    }
+
+    private void setGreetingFontStyle(int font) {
+        switch (font) {
+            case FONT_NORMAL:
+            default:
+                mGreetingLabel.setTypeface(Typeface.create("sans-serif", Typeface.NORMAL));
+                break;
+            case FONT_ITALIC:
+                mGreetingLabel.setTypeface(Typeface.create("sans-serif", Typeface.ITALIC));
+                break;
+            case FONT_BOLD:
+                mGreetingLabel.setTypeface(Typeface.create("sans-serif", Typeface.BOLD));
+                break;
+            case FONT_BOLD_ITALIC:
+                mGreetingLabel.setTypeface(Typeface.create("sans-serif", Typeface.BOLD_ITALIC));
+                break;
+            case FONT_LIGHT:
+                mGreetingLabel.setTypeface(Typeface.create("sans-serif-light", Typeface.NORMAL));
+                break;
+            case FONT_LIGHT_ITALIC:
+                mGreetingLabel.setTypeface(Typeface.create("sans-serif-light", Typeface.ITALIC));
+                break;
+            case FONT_THIN:
+                mGreetingLabel.setTypeface(Typeface.create("sans-serif-thin", Typeface.NORMAL));
+                break;
+            case FONT_THIN_ITALIC:
+                mGreetingLabel.setTypeface(Typeface.create("sans-serif-thin", Typeface.ITALIC));
+                break;
+            case FONT_CONDENSED:
+                mGreetingLabel.setTypeface(Typeface.create("sans-serif-condensed", Typeface.NORMAL));
+                break;
+            case FONT_CONDENSED_ITALIC:
+                mGreetingLabel.setTypeface(Typeface.create("sans-serif-condensed", Typeface.ITALIC));
+                break;
+            case FONT_CONDENSED_LIGHT:
+                mGreetingLabel.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.NORMAL));
+                break;
+            case FONT_CONDENSED_LIGHT_ITALIC:
+                mGreetingLabel.setTypeface(Typeface.create("sans-serif-condensed-light", Typeface.ITALIC));
+                break;
+            case FONT_CONDENSED_BOLD:
+                mGreetingLabel.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD));
+                break;
+            case FONT_CONDENSED_BOLD_ITALIC:
+                mGreetingLabel.setTypeface(Typeface.create("sans-serif-condensed", Typeface.BOLD_ITALIC));
+                break;
+            case FONT_MEDIUM:
+                mGreetingLabel.setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+                break;
+            case FONT_MEDIUM_ITALIC:
+                mGreetingLabel.setTypeface(Typeface.create("sans-serif-medium", Typeface.ITALIC));
+                break;
+            case FONT_BLACK:
+                mGreetingLabel.setTypeface(Typeface.create("sans-serif-black", Typeface.NORMAL));
+                break;
+            case FONT_BLACK_ITALIC:
+                mGreetingLabel.setTypeface(Typeface.create("sans-serif-black", Typeface.ITALIC));
+                break;
+            case FONT_DANCINGSCRIPT:
+                mGreetingLabel.setTypeface(Typeface.create("cursive", Typeface.NORMAL));
+                break;
+            case FONT_DANCINGSCRIPT_BOLD:
+                mGreetingLabel.setTypeface(Typeface.create("cursive", Typeface.BOLD));
+                break;
+            case FONT_COMINGSOON:
+                mGreetingLabel.setTypeface(Typeface.create("casual", Typeface.NORMAL));
+                break;
+            case FONT_NOTOSERIF:
+                mGreetingLabel.setTypeface(Typeface.create("serif", Typeface.NORMAL));
+                break;
+            case FONT_NOTOSERIF_ITALIC:
+                mGreetingLabel.setTypeface(Typeface.create("serif", Typeface.ITALIC));
+                break;
+            case FONT_NOTOSERIF_BOLD:
+                mGreetingLabel.setTypeface(Typeface.create("serif", Typeface.BOLD));
+                break;
+            case FONT_NOTOSERIF_BOLD_ITALIC:
+                mGreetingLabel.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
+                break;
+        }
     }
 
     private void previewGreetingLabel() {

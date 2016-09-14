@@ -141,7 +141,8 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
 
     private int mClockCollapsedSize;
     private int mClockExpandedSize;
- 
+
+    private int mStatusBarHeaderFontStyle = FONT_NORMAL;
     private int mStatusBarHeaderClockFont = FONT_NORMAL;
     private int mStatusBarHeaderWeatherFont = FONT_NORMAL;
     private int mStatusBarHeaderAlarmFont = FONT_NORMAL;
@@ -227,7 +228,6 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
     public static final int FONT_NOTOSERIF_ITALIC = 22;
     public static final int FONT_NOTOSERIF_BOLD = 23;
     public static final int FONT_NOTOSERIF_BOLD_ITALIC = 24;
-    private int mStatusBarHeaderFontStyle = FONT_NORMAL;
 
     public StatusBarHeaderView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -294,9 +294,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         updateStatusBarPowerMenuVisibility();
         updateVisibilities();
         updateClockScale();
-        if (mQSCSwitch) {
-            updateBackgroundColor();
-        }
+        updateBackgroundColor();
         updateAvatarScale();
         addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -502,9 +500,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         updateAvatarScale();
         updateClockLp();
         requestCaptureValues();
-        if (mQSCSwitch) {
-            updateBackgroundColor();
-        }
+        updateBackgroundColor();
         updateIconColorSettings();
         updateWeatherSettings();
         updateStatusBarPowerMenuVisibility();
