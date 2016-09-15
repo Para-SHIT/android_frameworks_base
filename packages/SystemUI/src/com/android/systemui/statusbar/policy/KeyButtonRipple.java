@@ -20,18 +20,25 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.database.ContentObserver;
+import android.graphics.*;
 import android.graphics.Canvas;
 import android.graphics.CanvasProperty;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Handler;
+import android.os.UserHandle;
+import android.provider.Settings;
 import android.view.HardwareCanvas;
 import android.view.RenderNodeAnimator;
 import android.view.View;
 import android.view.animation.Interpolator;
 
 import com.android.systemui.R;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
 
 import java.util.ArrayList;
@@ -66,12 +73,87 @@ public class KeyButtonRipple extends Drawable {
     private final HashSet<Animator> mRunningAnimations = new HashSet<>();
     private final ArrayList<Animator> mTmpArray = new ArrayList<>();
 
+    private final Handler mHandler;
+	private SettingsObserver mObserver = null;
+	static boolean ena;
+	static Context mContext;
+    private int mOverrideIconColor = 0;
     private int mRippleColor;
 
     public KeyButtonRipple(Context ctx, View targetView) {
-        mMaxWidth =  ctx.getResources().getDimensionPixelSize(R.dimen.key_button_ripple_max_width);
+		mContext=ctx;
+        mHandler = new Handler();
+		if (mContext != null) {
+
+            if (mObserver != null) {
+                mContext.getContentResolver().unregisterContentObserver(mObserver);
+            }
+        }
+
+        if (mObserver == null) {
+            mObserver = new SettingsObserver(this,mHandler);
+        }
+
+		mContext.getContentResolver().registerContentObserver(
+			Settings.System.getUriFor("DYNAMIC_NAVIGATION_BAR_STATE"),
+			false, mObserver);
+        ena= Settings.System.getIntForUser(mContext.getContentResolver(),
+														   "DYNAMIC_NAVIGATION_BAR_STATE", 0, UserHandle.USER_CURRENT) == 1;
+
+        mMaxWidth = ctx.getResources().getDimensionPixelSize(R.dimen.key_button_ripple_max_width);
         mTargetView = targetView;
         mRippleColor = ctx.getResources().getColor(R.color.navbutton_ripple_color);
+        BarBackgroundUpdater . addListener( new BarBackgroundUpdater.UpdateListener( this) {
+
+			@Override
+			public void onUpdateNavigationBarIconColor(final int previousIconColor,
+													   final int iconColor ) {
+				mOverrideIconColor = iconColor;
+
+				apdet(mOverrideIconColor);
+
+			}
+
+		});
+    }
+
+    public boolean enable(){
+		return ena;
+	}
+
+    public void apdet(final int targetColor){
+	   mHandler.post(new Runnable() {
+
+			@Override
+			public void run() {
+				if (mRipplePaint!= null) {
+
+					mRipplePaint.setColor(enable()?targetColor:Color.WHITE);
+
+				}
+
+			}
+
+		});
+
+	}
+
+    private class SettingsObserver extends ContentObserver {
+		private final KeyButtonRipple kbr;
+        private SettingsObserver(final KeyButtonRipple br,final Handler handler) {
+            super(handler);
+			kbr=br;
+        }
+
+        @Override
+        public final void onChange(final boolean selfChange) {
+			kbr.ena=Settings.System.getInt(kbr.mContext.getContentResolver(),
+										  "DYNAMIC_NAVIGATION_BAR_STATE", 0) ==1;
+
+            kbr.apdet( Settings.System.getInt(kbr.mContext.getContentResolver(),
+											 "DYNAMIC_NAVIGATION_BAR_STATE", 0) == 1?mOverrideIconColor:Color.WHITE);
+        }
+
     }
 
     private Paint getRipplePaint() {
