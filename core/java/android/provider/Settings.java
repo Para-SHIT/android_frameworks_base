@@ -5885,6 +5885,14 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String DYNAMIC_STATUS_BAR_STATE = "dynamic_status_bar_state";
 
         /**
+         * Whether the header is set to be colored dynamically
+         * 0 = disabled (default)
+         * 1 = enabled
+         * @hide
+         */
+        public static final String DYNAMIC_HEADER_STATE = "dynamic_header_state";
+
+        /**
          * Whether the navigation bar is set to be colored dynamically
          * 0 = disabled (default)
          * 1 = enabled

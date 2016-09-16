@@ -49,7 +49,7 @@ public class BarBackgroundUpdater {
     private final static boolean DEBUG_COLOR_CHANGE = DEBUG_ALL || false;
     private final static boolean DEBUG_EXCESSIVE_DELAY = DEBUG_ALL || false;
     private final static boolean DEBUG_FLOOD_ALL_DELAY = DEBUG_ALL || false;
-	 private static long sMinDelay = 50; // time to enforce between the screenshots
+	 private static long sMinDelay = 5; // time to enforce between the screenshots
 
     private static boolean PAUSED = true;
 
@@ -99,7 +99,7 @@ public class BarBackgroundUpdater {
                         // we haven't been initiated yet; retry in a bit
 
                         try {
-                            Thread.sleep(2000);
+                            Thread.sleep(1000);
                         } catch (InterruptedException e) {
                             return;
                         }
@@ -128,7 +128,7 @@ public class BarBackgroundUpdater {
 
                         // configuration has changed - abort and retry in a bit
                         try {
-                            Thread.sleep(2000);
+                            Thread.sleep(1000);
                         } catch (InterruptedException e) {
                             return;
                         }
@@ -153,7 +153,7 @@ public class BarBackgroundUpdater {
                                 0.114f * Color.blue(statusBarOverrideColor)) / 255;
                         final boolean isStatusBarConsistent = colors[1] == 1;
                         updateStatusBarIconColor(statusBarBrightness > 0.7f &&
-                                isStatusBarConsistent ? 0xFF000000 : 0xFFFFFFFF);
+												 isStatusBarConsistent ? Color.parseColor("#FF000000") : Color.parseColor("#FFFFFFFF"));
                     } else {
                         // dynamic status bar is disabled
                         updateStatusBarColor(0);
@@ -172,7 +172,7 @@ public class BarBackgroundUpdater {
 							0.114f * Color.blue(headerOverrideColor)) / 255;
                         final boolean isStatusBarConsistent = colors[1] == 1;
                         updateHeaderIconColor(HeaderBrightness > 0.7f &&
-												 isStatusBarConsistent ? 0xFF000000 : 0xFFFFFFFF);
+												 isStatusBarConsistent ? Color.parseColor("#FF000000") : Color.parseColor("#FFFFFFFF"));
                     } else {
                         // dynamic status bar is disabled
                         updateHeaderColor(0);
@@ -195,8 +195,9 @@ public class BarBackgroundUpdater {
                         final boolean isNavigationBarConsistent = colors[3] == 1;
 						if(reverse&&mStatusEnabled){
 							int kolor=navigationBarBrightness > 0.7f &&
-								isNavigationBarConsistent ? 0xFF000000 : 0xFFFFFFFF;
+								isNavigationBarConsistent ? Color.parseColor("#FF000000") : Color.parseColor("#FFFFFFFF");
 							boolean same= statusBarBrightness==navigationBarBrightness;
+							boolean rendah=statusBarBrightness-navigationBarBrightness<0.1f;
 							boolean uiputih=statusBarBrightness>0.8f;
 							boolean uiblek=statusBarBrightness<0.2f;
 							boolean navputih=navigationBarBrightness>0.8f;
@@ -211,7 +212,7 @@ public class BarBackgroundUpdater {
 							}
 						}else{
 							updateNavigationBarIconColor(navigationBarBrightness > 0.7f &&
-														 isNavigationBarConsistent ? 0xFF000000 : 0xFFFFFFFF);
+														 isNavigationBarConsistent ? Color.parseColor("#FF000000") : Color.parseColor("#FFFFFFFF"));
 							
 						}
                     } else {
@@ -492,7 +493,9 @@ public class BarBackgroundUpdater {
         if (mStatusBarIconOverrideColor == newColor) {
             return;
         }
-
+		if(expanded()&&mHeaderEnabled){
+			return;
+		}
         mPreviousStatusBarIconOverrideColor = mStatusBarIconOverrideColor;
         mStatusBarIconOverrideColor = newColor;
 
@@ -514,11 +517,11 @@ public class BarBackgroundUpdater {
 		if(expanded()&&mHeaderEnabled){
 			return;
 		}
-        mPreviousHeaderIconOverrideColor = mStatusBarIconOverrideColor;
+        mPreviousHeaderIconOverrideColor = mHeaderIconOverrideColor;
         mHeaderIconOverrideColor = newColor;
 
         if (DEBUG_COLOR_CHANGE) {
-            Log.d(LOG_TAG, "statusBarIconOverrideColor=" + (newColor == 0 ? "none" :
+            Log.d(LOG_TAG, "headerIconOverrideColor=" + (newColor == 0 ? "none" :
                     "0x" + Integer.toHexString(newColor)));
         }
 

@@ -926,7 +926,7 @@ public class BatteryMeterView extends View implements DemoMode,
 
             } else if (tracker.plugged) {
                 canvas.drawPath(mBoltPath, mBoltPaint);
-				mBoltPaint.setColor(anu?kolor:kolor);
+				mBoltPaint.setColor(anu?kolor:0xB2000000);
 
             } else {
                 if (level > mCriticalLevel
