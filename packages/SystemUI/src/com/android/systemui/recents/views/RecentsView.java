@@ -412,7 +412,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
         updateTimeVisibility();
 
         boolean showClearAllRecents = Settings.System.getInt(resolver,
-                Settings.System.SHOW_CLEAR_ALL_RECENTS, 1) == 1;
+                Settings.System.SHOW_CLEAR_ALL_RECENTS, 0) == 1;
 
         Rect taskStackBounds = new Rect();
         mConfig.getTaskStackBounds(width, height, mConfig.systemInsets.top,
@@ -420,9 +420,9 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
 
         if (mFloatingButton != null && showClearAllRecents) {
             int clearRecentsLocation = Settings.System.getInt(resolver,
-                    Settings.System.RECENTS_CLEAR_ALL_LOCATION, Constants.DebugFlags.App.RECENTS_CLEAR_ALL_BOTTOM_RIGHT);
+                    Settings.System.RECENTS_CLEAR_ALL_LOCATION, Constants.DebugFlags.App.RECENTS_CLEAR_ALL_BOTTOM_LEFT);
             int bgColor = Settings.System.getInt(resolver,
-                    Settings.System.RECENT_APPS_CLEAR_ALL_BG_COLOR, 0xffDC4C3C);
+                    Settings.System.RECENT_APPS_CLEAR_ALL_BG_COLOR, 0xffdc4c3c);
             int iconColor = Settings.System.getInt(resolver,
                     Settings.System.RECENT_APPS_CLEAR_ALL_ICON_COLOR, 0xffffffff);
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)
@@ -534,7 +534,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
 
     private boolean dismissAll() {
         return Settings.System.getInt(mContext.getContentResolver(),
-            Settings.System.RECENTS_CLEAR_ALL_DISMISS_ALL, 1) == 1;
+            Settings.System.RECENTS_CLEAR_ALL_DISMISS_ALL, 0) == 1;
     }
 
     @Override
@@ -762,9 +762,9 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
                 Settings.System.IMMERSIVE_RECENTS, 0, UserHandle.USER_CURRENT) != 0;
         final Resources res = getContext().getResources();
         int mClockcolor = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.RECENTS_CLOCK_COLOR, 0xFFFFFFFF);
+                Settings.System.RECENTS_CLOCK_COLOR, 0xffffffff);
 		int mDatecolor = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.RECENTS_DATE_COLOR, 0xFFFFFFFF);
+                Settings.System.RECENTS_DATE_COLOR, 0xffffffff);
 
         if (fullscreenEnabled) {
             if (showClock) {
@@ -930,7 +930,7 @@ public class RecentsView extends FrameLayout implements TaskStackView.TaskStackV
                 b = Bitmap.createBitmap(fromHeaderWidth, fromHeaderHeight,
                         Bitmap.Config.ARGB_8888);
                 if (Constants.DebugFlags.App.EnableTransitionThumbnailDebugMode) {
-                    b.eraseColor(0xFFff0000);
+                    b.eraseColor(0xffff0000);
                 } else {
                     Canvas c = new Canvas(b);
                     c.scale(tv.getScaleX(), tv.getScaleY());
