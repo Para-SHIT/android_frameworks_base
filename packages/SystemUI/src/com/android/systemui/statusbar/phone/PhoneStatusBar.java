@@ -306,7 +306,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     public static final int FADE_KEYGUARD_DURATION = 150;
 
     private static final int GREETING_LABEL_ALWAYS = 0;
-    private static final int GREETING_LABEL_ONCE   = 0;
+    private static final int GREETING_LABEL_ONCE   = 1;
     private static final int GREETING_LABEL_HIDDEN = 2;
 
     //Expanded Desktop

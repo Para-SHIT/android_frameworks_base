@@ -3941,13 +3941,6 @@ public final class Settings {
          */
         public static final String MEDIA_SCANNER_ON_BOOT = "media_scanner_on_boot";
 
-         /**
-         * Color of the expanded status bar header background
-         * @hide
-         */
-        public static final String STATUS_BAR_EXPANDED_HEADER_BG_COLOR = "status_bar_expanded_header_bg_color";
-
-
         /**
          * Display style of the status bar battery information
          * 0: Display the battery an icon in portrait mode
@@ -4125,7 +4118,8 @@ public final class Settings {
          * Whether to use default custom header or poly hd
          * 0 = default
          * 1 = modern
-         * 2 = poly hd
+         * 2 = flat
+         * 3 = poly hd
          * @hide
          */
         public static final String STATUS_BAR_CUSTOM_HEADER_DEFAULT = "status_bar_custom_header_default";

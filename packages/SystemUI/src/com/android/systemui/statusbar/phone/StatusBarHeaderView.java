@@ -285,25 +285,25 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         mClock.setOnClickListener(this);
         mClock.setOnLongClickListener(this);
         mTime = (TextView) findViewById(R.id.time_view);
-		Time = mTime.getTextColors();
+        Time = mTime.getTextColors();
         mAmPm = (TextView) findViewById(R.id.am_pm_view);
-		AmPm = mAmPm.getTextColors();
+        AmPm = mAmPm.getTextColors();
         mMultiUserSwitch = (MultiUserSwitch) findViewById(R.id.multi_user_switch);
         mMultiUserAvatar = (ImageView) findViewById(R.id.multi_user_avatar);
         mDateCollapsed = (TextView) findViewById(R.id.date_collapsed);
-		DateCollapsed = mDateCollapsed.getTextColors();
+        DateCollapsed = mDateCollapsed.getTextColors();
         mDateExpanded = (TextView) findViewById(R.id.date_expanded);
-		DateExpanded = mDateExpanded.getTextColors();
+        DateExpanded = mDateExpanded.getTextColors();
         mSettingsButton = findViewById(R.id.settings_button);
         mSettingsButton.setOnClickListener(this);
         mQsDetailHeader = findViewById(R.id.qs_detail_header);
         mQsDetailHeader.setAlpha(0);
         mQsDetailHeaderTitle = (TextView) mQsDetailHeader.findViewById(android.R.id.title);
-		QsDetailHeaderTitle = mQsDetailHeaderTitle.getTextColors();
+        QsDetailHeaderTitle = mQsDetailHeaderTitle.getTextColors();
         mQsDetailHeaderSwitch = (Switch) mQsDetailHeader.findViewById(android.R.id.toggle);
         mQsDetailHeaderProgress = (ImageView) findViewById(R.id.qs_detail_header_progress);
         mEmergencyCallsOnly = (TextView) findViewById(R.id.header_emergency_calls_only);
-		EmergencyCallsOnly = mEmergencyCallsOnly.getTextColors();
+        EmergencyCallsOnly = mEmergencyCallsOnly.getTextColors();
 
         mTaskManagerButton = findViewById(R.id.task_manager_button);
         if (mTaskManagerButton != null) {
@@ -317,10 +317,10 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         }
 
         mBatteryLevel = (BatteryLevelTextView) findViewById(R.id.battery_level_text);
-		BatteryLevel = mBatteryLevel.getTextColors();
+        BatteryLevel = mBatteryLevel.getTextColors();
         mDockBatteryLevel = (BatteryLevelTextView) findViewById(R.id.dock_battery_level_text);
         mAlarmStatus = (TextView) findViewById(R.id.alarm_status);
-		AlarmStatus = mAlarmStatus.getTextColors();
+        AlarmStatus = mAlarmStatus.getTextColors();
         mAlarmStatus.setOnClickListener(this);
         mAlarmStatus.setOnLongClickListener(this);
         mSignalCluster = findViewById(R.id.signal_cluster);
@@ -329,16 +329,15 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         mWeatherContainer.setOnClickListener(this);
         mWeatherContainer.setOnLongClickListener(this);
         mWeatherLine1 = (TextView) findViewById(R.id.weather_line_1);
-		WeatherLine1 = mWeatherLine1.getTextColors();
+        WeatherLine1 = mWeatherLine1.getTextColors();
         mWeatherLine2 = (TextView) findViewById(R.id.weather_line_2);
-		WeatherLine2 = mWeatherLine2.getTextColors();
+        WeatherLine2 = mWeatherLine2.getTextColors();
         mSettingsObserver = new SettingsObserver(new Handler());
         mBackgroundImage = (ImageView) findViewById(R.id.background_image);
         loadDimens();
         updateStatusBarPowerMenuVisibility();
         updateVisibilities();
         updateClockScale();
-        updateBackgroundColor();
         updateAvatarScale();
         addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -364,75 +363,80 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
 
         BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
-				@Override
-				public void onUpdateHeaderIconColor(final int previousIconColor,
-								   final int iconColor) {
-				    
-					mOverrideIconColor = iconColor;
+                @Override
+                public void onUpdateHeaderIconColor(final int previousIconColor,
+                                                    final int iconColor) {
 
-				    apdet();
-					
-				}
-				
-		});
-		
+                    mOverrideIconColor = iconColor;
+
+                    apdet();
+
+                }
+
+        });
+
     }
 
-	public void apdet(){
+    public void apdet(){
+        if(!BarBackgroundUpdater.mHeaderEnabled&&vis){
+            mHandler.post(new Runnable() {
 
-		if(!BarBackgroundUpdater.mHeaderEnabled&&vis){
-			mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAmPm.setTextColor(AmPm);
+                        mAlarmStatus.setTextColor(AlarmStatus);
+                        mTime.setTextColor(Time);
+                        mEmergencyCallsOnly.setTextColor(EmergencyCallsOnly);
+                        mWeatherLine1.setTextColor(WeatherLine1);
+                        mWeatherLine2.setTextColor(WeatherLine2);
+                        mDateExpanded.setTextColor(DateExpanded);
+                        mDateCollapsed.setTextColor(DateCollapsed);
+                        ((ImageView)mSettingsButton).setColorFilter(mIconColor, Mode.MULTIPLY);
+                        ((ImageView)mStatusBarPowerMenu).setColorFilter(mIconColor, Mode.MULTIPLY);
+                        ((ImageView)mTaskManagerButton).setColorFilter(mIconColor, Mode.MULTIPLY);
+                        mBatteryLevel.setTextColor(BatteryLevel);
+                        mQsDetailHeaderTitle.setTextColor(QsDetailHeaderTitle);
+                        Drawable alarmIcon = getResources().getDrawable(R.drawable.ic_access_alarms_small);
+                        alarmIcon.setColorFilter(mIconColor, Mode.MULTIPLY);
+                        mAlarmStatus.setCompoundDrawablesWithIntrinsicBounds(alarmIcon, null, null, null);
+
+                        invalidate();
+					}
+
+            });
+        }
+
+        if (mOverrideIconColor !=0&&vis&&BarBackgroundUpdater.mHeaderEnabled){
+            mHandler.post(new Runnable() {
 
 					@Override
 					public void run() {
-						mAmPm.setTextColor(AmPm);
-						mAlarmStatus.setTextColor(AlarmStatus);
-						mTime.setTextColor(Time);
-						mEmergencyCallsOnly.setTextColor(EmergencyCallsOnly);
-						mWeatherLine1.setTextColor(WeatherLine1);
-						mWeatherLine2.setTextColor(WeatherLine2);
-						mDateExpanded.setTextColor(DateExpanded);
-						mDateCollapsed.setTextColor(DateCollapsed);
-						((ImageView)mSettingsButton).setColorFilter(mIconColor, Mode.MULTIPLY);
-						((ImageView)mStatusBarPowerMenu).setColorFilter(mIconColor, Mode.MULTIPLY);
-						((ImageView)mTaskManagerButton).setColorFilter(mIconColor, Mode.MULTIPLY);
-						mBatteryLevel.setTextColor(BatteryLevel);
-						mQsDetailHeaderTitle.setTextColor(QsDetailHeaderTitle);
-						
-						invalidate();
-					}
+                        mAmPm.setTextColor(mOverrideIconColor);
+                        mAlarmStatus.setTextColor(mOverrideIconColor);
+                        mTime.setTextColor(mOverrideIconColor);
+                        mDateExpanded.setTextColor(mOverrideIconColor);
+                        mDateCollapsed.setTextColor(mOverrideIconColor);
+                        ((ImageView)mSettingsButton).setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
+                        ((ImageView)mStatusBarPowerMenu).setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
+                        ((ImageView)mTaskManagerButton).setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
+                        mBatteryLevel.setTextColor(mOverrideIconColor);
+                        mEmergencyCallsOnly.setTextColor(mOverrideIconColor);
+                        mWeatherLine1.setTextColor(mOverrideIconColor);
+                        mWeatherLine2.setTextColor(mOverrideIconColor);
+                        mQsDetailHeaderTitle.setTextColor(mOverrideIconColor);
+                        Drawable alarmIcon = getResources().getDrawable(R.drawable.ic_access_alarms_small);
+                        alarmIcon.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
+                        mAlarmStatus.setCompoundDrawablesWithIntrinsicBounds(alarmIcon, null, null, null);
 
-			});
-		}
+                        invalidate();
+                    }
 
-		if (mOverrideIconColor !=0&&vis&&BarBackgroundUpdater.mHeaderEnabled){
-			mHandler.post(new Runnable() {
+            });
+        }
 
-					@Override
-					public void run() {
-	    				mAmPm.setTextColor(mOverrideIconColor);
-	    				mAlarmStatus.setTextColor(mOverrideIconColor);
-						mTime.setTextColor(mOverrideIconColor);
-						mDateExpanded.setTextColor(mOverrideIconColor);
-						mDateCollapsed.setTextColor(mOverrideIconColor);
-						((ImageView)mSettingsButton).setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
-						((ImageView)mStatusBarPowerMenu).setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
-						((ImageView)mTaskManagerButton).setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
-						mBatteryLevel.setTextColor(mOverrideIconColor);
-	    				mEmergencyCallsOnly.setTextColor(mOverrideIconColor);
-	    				mWeatherLine1.setTextColor(mOverrideIconColor);
-	    				mWeatherLine2.setTextColor(mOverrideIconColor);
-						mQsDetailHeaderTitle.setTextColor(mOverrideIconColor);
+    }
 
-						invalidate();
-					}
-
-			});
-		}
-		
-	}
-
-	public BarTransitions getBarTransitions() {
+    public BarTransitions getBarTransitions() {
         return ht;
     }
 
@@ -502,13 +506,6 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
                 FontSizeUtils.LARGE_TEXT_SCALE) - 1f) / (FontSizeUtils.LARGE_TEXT_SCALE - 1f);
         mClockMarginBottomCollapsed = Math.round((1 - largeFactor) * padding + largeFactor * largePadding);
         requestLayout();
-    }
-
-    private void updateBackgroundColor() {
-        ContentResolver resolver = mContext.getContentResolver();
-        int backgroundColor = Settings.System.getInt(resolver,
-                Settings.System.STATUS_BAR_EXPANDED_HEADER_BG_COLOR, 0xff384248);
-        getBackground().setColorFilter(backgroundColor, Mode.SRC_OVER);
     }
     
     private void requestCaptureValues() {
@@ -615,11 +612,10 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         updateAvatarScale();
         updateClockLp();
         requestCaptureValues();
-        updateBackgroundColor();
         updateIconColorSettings();
         updateWeatherSettings();
         updateStatusBarPowerMenuVisibility();
-		apdet();
+        apdet();
     }
 
     void setTaskManagerEnabled(boolean enabled) {
@@ -1570,8 +1566,10 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         @Override
         public void onChange(boolean selfChange, Uri uri) {
             if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_EXPANDED_HEADER_BG_COLOR))) {
-                updateBackgroundColor();
+                    Settings.System.STATUS_BAR_EXPANDED_HEADER_SHOW_WEATHER))
+                || uri.equals(Settings.System.getUriFor(
+                    Settings.System.STATUS_BAR_EXPANDED_HEADER_SHOW_WEATHER_LOCATION))) {
+                updateWeatherSettings();
             }
             update();
         }
@@ -1630,7 +1628,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
 	    	setStatusBarAlarmFontStyle(mStatusBarHeaderAlarmFont);
 	    	setStatusBarDateFontStyle(mStatusBarHeaderDateFont);
 	    	setStatusBarDetailFontStyle(mStatusBarHeaderDetailFont);
-			apdet();
+            apdet();
             updateVisibilities();
             requestCaptureValues();
             setclockcolor();
@@ -1641,21 +1639,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
 	    	setbatterytextcolor();
             updateIconColorSettings();
             hidepanelItems();
-            updateWithUri(null);
         }
-    }
-
-    public void updateWithUri(Uri uri) {
-            ContentResolver resolver = mContext.getContentResolver();
-            boolean updateAll = (uri == null);
-
-            if (updateAll ||
-                uri.equals(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_EXPANDED_HEADER_SHOW_WEATHER))
-                || uri.equals(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_EXPANDED_HEADER_SHOW_WEATHER_LOCATION))) {
-                updateWeatherSettings();
-            }
     }
 
     private void updateIconColorSettings() {

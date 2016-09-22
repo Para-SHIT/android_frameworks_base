@@ -50,26 +50,32 @@ public class DaylightHeaderProvider implements
     private static final int TIME_SUNRISE = 5;
     private static final int DRAWABLE_SUNRISE = R.drawable.notifhead_sunrise;
     private static final int DRAWABLE_SUNRISE_1 = R.drawable.notifhead_sunrise_1;
+    private static final int DRAWABLE_SUNRISE_2 = R.drawable.notifhead_sunrise_2;
     private static final int DRAWABLE_SUNRISE_HD = R.drawable.notifhead_sunrise_hd;
     private static final int TIME_MORNING = 7;
     private static final int DRAWABLE_MORNING = R.drawable.notifhead_morning;
     private static final int DRAWABLE_MORNING_1 = R.drawable.notifhead_morning_1;
+    private static final int DRAWABLE_MORNING_2 = R.drawable.notifhead_morning_2;
     private static final int DRAWABLE_MORNING_HD = R.drawable.notifhead_morning_hd;
     private static final int TIME_NOON = 11;
     private static final int DRAWABLE_NOON = R.drawable.notifhead_noon;
     private static final int DRAWABLE_NOON_1 = R.drawable.notifhead_noon_1;
+    private static final int DRAWABLE_NOON_2 = R.drawable.notifhead_noon_2;
     private static final int DRAWABLE_NOON_HD = R.drawable.notifhead_noon_hd;
     private static final int TIME_AFTERNOON = 15;
     private static final int DRAWABLE_AFTERNOON = R.drawable.notifhead_afternoon;
     private static final int DRAWABLE_AFTERNOON_1 = R.drawable.notifhead_afternoon_1;
+    private static final int DRAWABLE_AFTERNOON_2 = R.drawable.notifhead_afternoon_2;
     private static final int DRAWABLE_AFTERNOON_HD = R.drawable.notifhead_afternoon_hd;
     private static final int TIME_SUNSET = 17;
     private static final int DRAWABLE_SUNSET = R.drawable.notifhead_sunset;
     private static final int DRAWABLE_SUNSET_1 = R.drawable.notifhead_sunset_1;
+    private static final int DRAWABLE_SUNSET_2 = R.drawable.notifhead_sunset_2;
     private static final int DRAWABLE_SUNSET_HD = R.drawable.notifhead_sunset_hd;
     private static final int TIME_NIGHT = 18;
     private static final int DRAWABLE_NIGHT = R.drawable.notifhead_night;
     private static final int DRAWABLE_NIGHT_1 = R.drawable.notifhead_night_1;
+    private static final int DRAWABLE_NIGHT_2 = R.drawable.notifhead_night_2;
     private static final int DRAWABLE_NIGHT_HD = R.drawable.notifhead_night_hd;
 
     // Special events
@@ -77,11 +83,13 @@ public class DaylightHeaderProvider implements
     private static final Calendar CAL_CHRISTMAS = Calendar.getInstance();
     private static final int DRAWABLE_CHRISTMAS = R.drawable.notifhead_christmas;
     private static final int DRAWABLE_CHRISTMAS_1 = R.drawable.notifhead_christmas_1;
+    private static final int DRAWABLE_CHRISTMAS_2 = R.drawable.notifhead_christmas_2;
     private static final int DRAWABLE_CHRISTMAS_HD = R.drawable.notifhead_christmas_hd;
     // New years eve is on Dec 31st
     private static final Calendar CAL_NEWYEARSEVE = Calendar.getInstance();
     private static final int DRAWABLE_NEWYEARSEVE = R.drawable.notifhead_newyearseve;
     private static final int DRAWABLE_NEWYEARSEVE_1 = R.drawable.notifhead_newyearseve_1;
+    private static final int DRAWABLE_NEWYEARSEVE_2 = R.drawable.notifhead_newyearseve_2;
     private static final int DRAWABLE_NEWYEARSEVE_HD = R.drawable.notifhead_newyearseve_hd;
 
     // Default drawable (AOSP)
@@ -140,6 +148,15 @@ public class DaylightHeaderProvider implements
         if (headerdefault == 2) {
             if (isItToday(CAL_CHRISTMAS)) {
                 // Merry christmas!
+                return loadOrFetch(DRAWABLE_CHRISTMAS_2);
+            } else if (isItToday(CAL_NEWYEARSEVE)) {
+                // Happy new year!
+                return loadOrFetch(DRAWABLE_NEWYEARSEVE_2);
+            }
+        }
+        if (headerdefault == 3) {
+            if (isItToday(CAL_CHRISTMAS)) {
+                // Merry christmas!
                 return loadOrFetch(DRAWABLE_CHRISTMAS_HD);
             } else if (isItToday(CAL_NEWYEARSEVE)) {
                 // Happy new year!
@@ -181,6 +198,21 @@ public class DaylightHeaderProvider implements
             }
         }
         if (headerdefault == 2) {
+            if (hour < TIME_SUNRISE || hour >= TIME_NIGHT) {
+                return loadOrFetch(DRAWABLE_NIGHT_2);
+            } else if (hour >= TIME_SUNRISE && hour < TIME_MORNING) {
+                return loadOrFetch(DRAWABLE_SUNRISE_2);
+            } else if (hour >= TIME_MORNING && hour < TIME_NOON) {
+                return loadOrFetch(DRAWABLE_MORNING_2);
+            } else if (hour >= TIME_NOON && hour < TIME_AFTERNOON) {
+                return loadOrFetch(DRAWABLE_NOON_2);
+            } else if (hour >= TIME_AFTERNOON && hour < TIME_SUNSET) {
+                return loadOrFetch(DRAWABLE_AFTERNOON_2);
+            } else if (hour >= TIME_SUNSET && hour < TIME_NIGHT) {
+                return loadOrFetch(DRAWABLE_SUNSET_2);
+            }
+        }
+        if (headerdefault == 3) {
             if (hour < TIME_SUNRISE || hour >= TIME_NIGHT) {
                 return loadOrFetch(DRAWABLE_NIGHT_HD);
             } else if (hour >= TIME_SUNRISE && hour < TIME_MORNING) {
