@@ -587,7 +587,7 @@ public class BatteryMeterView extends View implements DemoMode,
             mFrame.top += mSubpixelSmoothingLeft;
             mFrame.right -= mSubpixelSmoothingRight;
             mFrame.bottom -= mSubpixelSmoothingRight;
-            mFramePaint.setColor(doOverride ? framekolor : framekolor);
+            mFramePaint.setColor(doOverride ? framekolor : 0x66FFFFFF);
 
             // set the battery charging color
 	        final int color = tracker.plugged ? (doOverride ? mOverrideIconColor : kolor) :
@@ -907,7 +907,7 @@ public class BatteryMeterView extends View implements DemoMode,
             } else {
                 paint.setPathEffect(null);
             }
-            mBackPaint.setColor(doOverride ? framekolor : framekolor);
+            mBackPaint.setColor(doOverride ? framekolor : 0x66FFFFFF);
 
             // draw thin gray ring first
             canvas.drawArc(drawRect, 270, 360, false, mBackPaint);
