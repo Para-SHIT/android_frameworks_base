@@ -63,11 +63,9 @@ public class BatteryMeterView extends View implements DemoMode,
     private float mSubpixelSmoothingLeft;
     private float mSubpixelSmoothingRight;
 
+    private int framekolor = 0;
     private int mOverrideIconColor = 0;
-
-    private int kolor=0;
-	private int framekolor=0;
-	private Runnable anu;
+    private int kolor = 0;
 
     public static enum BatteryMeterMode {
         BATTERY_METER_GONE,
@@ -266,19 +264,20 @@ public class BatteryMeterView extends View implements DemoMode,
         setAnimationsEnabled(true);
         BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
-			@Override
+            @Override
             public void onUpdateStatusBarIconColor(final int previousIconColor,
                     final int iconColor) {
 
-				mOverrideIconColor = iconColor;
-				boolean b= mOverrideIconColor==0xFFFFFFFF;
-					kolor=(b?0xFF000000:0xFFFFFFFF);
+                mOverrideIconColor = iconColor;
+                boolean b = mOverrideIconColor == 0xFFFFFFFF;
 
-				     framekolor=(b?0x66FFFFFF:0x66000000 );
-					postInvalidate();
+                    kolor = (b ? 0xFF000000 : 0xFFFFFFFF);
+                    framekolor = (b ? 0x66FFFFFF : 0x66000000);
+                    postInvalidate();
+
             }
-		});
 
+        });
     }
 
     protected BatteryMeterDrawable createBatteryMeterDrawable(BatteryMeterMode mode) {
@@ -419,7 +418,6 @@ public class BatteryMeterView extends View implements DemoMode,
 
     public int getColorForLevel(int percent) {
         final boolean doOverride = mOverrideIconColor != 0;
-
         // If we are in power save mode, always use the normal color.
         if (mPowerSaveEnabled) {
             return mColors[mColors.length-1];
@@ -433,7 +431,6 @@ public class BatteryMeterView extends View implements DemoMode,
                 return (doOverride && i == mColors.length - 2) ? mOverrideIconColor : color;
             }
         }
-
         return doOverride ? mOverrideIconColor : color;
     }
 
@@ -537,10 +534,10 @@ public class BatteryMeterView extends View implements DemoMode,
         public void onDraw(Canvas c, BatteryTracker tracker) {
             if (mDisposed) return;
 
+            final boolean doOverride = mOverrideIconColor != 0;
             final int level = tracker.level;
 
             if (level == BatteryTracker.UNKNOWN_LEVEL) return;
-            final boolean anu = mOverrideIconColor != 0;
 
             float drawFrac = (float) level / 100f;
             final int pt = getPaddingTop() + (mHorizontal ? (int)(mHeight * 0.12f) : 0);
@@ -590,10 +587,9 @@ public class BatteryMeterView extends View implements DemoMode,
             mFrame.top += mSubpixelSmoothingLeft;
             mFrame.right -= mSubpixelSmoothingRight;
             mFrame.bottom -= mSubpixelSmoothingRight;
-            mFramePaint.setColor(anu?framekolor:framekolor);
+            mFramePaint.setColor(doOverride ? framekolor : framekolor);
 
             // set the battery charging color
-            final boolean doOverride = mOverrideIconColor != 0;
 	        final int color = tracker.plugged ? (doOverride ? mOverrideIconColor : kolor) :
 	            getColorForLevel(level);
             mBatteryPaint.setColor(color);
@@ -665,7 +661,7 @@ public class BatteryMeterView extends View implements DemoMode,
                             mBoltFrame.left + mBoltPoints[0] * mBoltFrame.width(),
                             mBoltFrame.top + mBoltPoints[1] * mBoltFrame.height());
                 }
-				mBoltPaint.setColor(anu?kolor:0xB2000000);
+                mBoltPaint.setColor(doOverride ? kolor : 0xB2000000);
 
                 float boltPct = mHorizontal ?
                         (mBoltFrame.left - levelTop) / (mBoltFrame.left - mBoltFrame.right) :
@@ -695,7 +691,7 @@ public class BatteryMeterView extends View implements DemoMode,
                                 : (tracker.level == 100 ? full : nofull)));
                 mTextHeight = -mTextPaint.getFontMetrics().ascent;
 
-                mTextPaint.setColor(anu?kolor: 0xFF000000);
+                mTextPaint.setColor(doOverride ? kolor : 0xFF000000);
 
                 pctText = String.valueOf(SINGLE_DIGIT_PERCENT ? (level/10) : level);
                 pctX = mWidth * 0.5f;
@@ -891,7 +887,7 @@ public class BatteryMeterView extends View implements DemoMode,
         private void drawCircle(Canvas canvas, BatteryTracker tracker,
                 float textX, RectF drawRect) {
             boolean unknownStatus = tracker.status == BatteryManager.BATTERY_STATUS_UNKNOWN;
-            final boolean anu = mOverrideIconColor != 0;
+            final boolean doOverride = mOverrideIconColor != 0;
             int level = tracker.level;
             Paint paint;
 
@@ -911,6 +907,7 @@ public class BatteryMeterView extends View implements DemoMode,
             } else {
                 paint.setPathEffect(null);
             }
+            mBackPaint.setColor(doOverride ? framekolor : framekolor);
 
             // draw thin gray ring first
             canvas.drawArc(drawRect, 270, 360, false, mBackPaint);
@@ -925,9 +922,8 @@ public class BatteryMeterView extends View implements DemoMode,
                 canvas.drawText("?", textX, mTextY, mTextPaint);
 
             } else if (tracker.plugged) {
+                mBoltPaint.setColor(doOverride ? mOverrideIconColor : kolor);
                 canvas.drawPath(mBoltPath, mBoltPaint);
-				mBoltPaint.setColor(anu?kolor:0xB2000000);
-
             } else {
                 if (level > mCriticalLevel
                         && (mShowPercent && !(tracker.level == 100 && !SHOW_100_PERCENT))) {

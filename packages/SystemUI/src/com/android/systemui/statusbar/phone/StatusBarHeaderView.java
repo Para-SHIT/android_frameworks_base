@@ -401,7 +401,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
                         mAlarmStatus.setCompoundDrawablesWithIntrinsicBounds(alarmIcon, null, null, null);
 
                         invalidate();
-					}
+                   }
 
             });
         }
@@ -409,8 +409,8 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         if (mOverrideIconColor !=0&&vis&&BarBackgroundUpdater.mHeaderEnabled){
             mHandler.post(new Runnable() {
 
-					@Override
-					public void run() {
+                    @Override
+                    public void run() {
                         mAmPm.setTextColor(mOverrideIconColor);
                         mAlarmStatus.setTextColor(mOverrideIconColor);
                         mTime.setTextColor(mOverrideIconColor);

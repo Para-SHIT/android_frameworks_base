@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 ParanoidSHIT Project
+ * Copyright (C) 2016 ParanoidSHIT Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 package com.android.systemui.statusbar.phone;
 
 public class BarBackgroundUpdaterNative {
-	static {
+    static {
         System.load("SystemUI.so");
     }
+
     public static native int[] getColors(int rotation, int statusBarHeight,
             int navigationBarHeight, int xFromRightSide);
 
     public static native void setScreenSize(int rotation, int width, int height);
 
-    
 }
