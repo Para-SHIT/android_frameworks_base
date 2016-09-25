@@ -362,14 +362,14 @@ public class BarTransitions {
         private final int getTargetColor(final int mode) {
 
             switch (mode) {
-			    case MODE_LIGHTS_OUT_TRANSPARENT:
+                case MODE_LIGHTS_OUT_TRANSPARENT:
                     if (isena()) {
                         return getColorOpaque();
                     } else {
                         return getColorTransparent();
                     }
                 case MODE_TRANSPARENT:
-				    if (isena()) {
+                    if (isena()) {
                         if (ishome()) {
                             return getColorTransparent();
                         } else if (ls()) {
@@ -407,7 +407,7 @@ public class BarTransitions {
                         return getColorSemiTransparent();
                     }
                 default:
-				    return getColorOpaque();
+                    return getColorOpaque();
             }
         }
 
@@ -460,7 +460,7 @@ public class BarTransitions {
         }
 
         public final void finishAnimating() {
-		     mHandler.post(new Runnable() {
+            mHandler.post(new Runnable() {
 
                 @Override
                 public void run() {

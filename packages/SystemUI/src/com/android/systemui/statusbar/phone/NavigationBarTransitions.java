@@ -216,7 +216,7 @@ public final class NavigationBarTransitions extends BarTransitions {
         }
     };
 
-	protected static class NavigationBarBackgroundDrawable extends BarTransitions.BarBackgroundDrawable {
+    protected static class NavigationBarBackgroundDrawable extends BarTransitions.BarBackgroundDrawable {
         private final Context mContext;
 
         private int mOverrideColor = 0;
@@ -224,30 +224,33 @@ public final class NavigationBarTransitions extends BarTransitions {
 
         public NavigationBarBackgroundDrawable(final Context context) {
             super(context, R.drawable.nav_background, R.color.navigation_bar_background_opaque,
-				  R.color.navigation_bar_background_semi_transparent,
-				  R.color.navigation_bar_background_transparent,
-				  com.android.internal.R.color.battery_saver_mode_color);
+                  R.color.navigation_bar_background_semi_transparent,
+                  R.color.navigation_bar_background_transparent,
+                  com.android.internal.R.color.battery_saver_mode_color);
 
             mContext = context;
 
             final GradientObserver obs = new GradientObserver(this, new Handler());
             (mContext.getContentResolver()).registerContentObserver(
-				GradientObserver.DYNAMIC_SYSTEM_BARS_GRADIENT_URI,
-				false, obs, UserHandle.USER_ALL);
+                GradientObserver.DYNAMIC_SYSTEM_BARS_GRADIENT_URI,
+                false, obs, UserHandle.USER_ALL);
 
             mOverrideGradientAlpha = Settings.System.getInt(mContext.getContentResolver(),
-															"DYNAMIC_SYSTEM_BARS_GRADIENT_STATE", 0) == 1 ?
-				0xff : 0;
+                "DYNAMIC_SYSTEM_BARS_GRADIENT_STATE", 0) == 1 ? 0xff : 0;
 
             BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
-					@Override
-					public void onUpdateNavigationBarColor(final int previousColor, final int color) {
-						mOverrideColor = color;
-						generateAnimator();
-					}
+                @Override
+                public void onUpdateNavigationBarColor(final int previousColor,
+                    final int color) {
 
-				});
+                    mOverrideColor = color;
+
+                    generateAnimator();
+
+                }
+
+            });
             BarBackgroundUpdater.init(context);
         }
 
@@ -258,8 +261,7 @@ public final class NavigationBarTransitions extends BarTransitions {
 
         @Override
         protected int getColorSemiTransparent() {
-            return mOverrideColor == 0 ? super.getColorSemiTransparent() :
-				(mOverrideColor & 0x00ffffff | 0x7f000000);
+            return mOverrideColor == 0 ? super.getColorSemiTransparent() : (mOverrideColor & 0x00ffffff | 0x7f000000);
         }
 
         @Override
@@ -269,7 +271,7 @@ public final class NavigationBarTransitions extends BarTransitions {
 
         @Override
         protected int getGradientAlphaSemiTransparent() {
-            return mOverrideGradientAlpha & 0x7f;
+            return mOverrideGradientAlpha;
         }
 
         public void setOverrideGradientAlpha(final int alpha) {
@@ -280,12 +282,12 @@ public final class NavigationBarTransitions extends BarTransitions {
 
     private static final class GradientObserver extends ContentObserver {
         private static final Uri DYNAMIC_SYSTEM_BARS_GRADIENT_URI = Settings.System.getUriFor(
-			"DYNAMIC_SYSTEM_BARS_GRADIENT_STATE");
+                "DYNAMIC_SYSTEM_BARS_GRADIENT_STATE");
 
         private final NavigationBarBackgroundDrawable mDrawable;
 
         private GradientObserver(final NavigationBarBackgroundDrawable drawable,
-								 final Handler handler) {
+                final Handler handler) {
             super(handler);
             mDrawable = drawable;
         }
@@ -293,8 +295,7 @@ public final class NavigationBarTransitions extends BarTransitions {
         @Override
         public void onChange(final boolean selfChange) {
             mDrawable.setOverrideGradientAlpha(Settings.System.getInt(
-												   mDrawable.mContext.getContentResolver(),
-												   "DYNAMIC_SYSTEM_BARS_GRADIENT_STATE", 0) == 1 ? 0xff : 0);
+			mDrawable.mContext.getContentResolver(), "DYNAMIC_SYSTEM_BARS_GRADIENT_STATE", 0) == 1 ? 0xff : 0);
         }
     }
 }

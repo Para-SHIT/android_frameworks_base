@@ -43,8 +43,8 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
     private Animator mCurrentAnimation;
 
     public PhoneStatusBarTransitions(PhoneStatusBarView view) {
-		super(view, new PhoneStatusBarBackgroundDrawable(view.getContext()));
-		
+        super(view, new PhoneStatusBarBackgroundDrawable(view.getContext()));
+
         mView = view;
         final Resources res = mView.getContext().getResources();
         mIconAlphaWhenOpaque = res.getFraction(R.dimen.status_bar_icon_drawing_alpha, 1, 1);
@@ -58,7 +58,7 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
         mClock = mView.findViewById(R.id.clock);
         mNetworkTraffic = mView.findViewById(R.id.networkTraffic);
         mTemasekLogo = mView.findViewById(R.id.temasek_logo);
-		mCLogo =mView.findViewById(R.id.custom);
+        mCLogo = mView.findViewById(R.id.custom);
         mWeatherTextView = mView.findViewById(R.id.weather_temp);
         mLeftWeatherTextView = mView.findViewById(R.id.left_weather_temp);
         applyModeBackground(-1, getMode(), false /*animate*/);
@@ -112,7 +112,7 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
                     animateTransitionTo(mBattery, newAlphaBC),
                     animateTransitionTo(mClock, newAlphaBC),
                     animateTransitionTo(mTemasekLogo, newAlphaBC),
-		    animateTransitionTo(mCLogo, newAlphaBC)
+                    animateTransitionTo(mCLogo, newAlphaBC)
                     );
             if (isLightsOut(mode)) {
                 anims.setDuration(LIGHTS_OUT_DURATION);
@@ -129,11 +129,11 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
             if (mBattery != null) mBattery.setAlpha(newAlphaBC);
             if (mClock != null) mClock.setAlpha(newAlphaBC);
             if (mTemasekLogo != null) mTemasekLogo.setAlpha(newAlphaBC);
-	    	if (mCLogo != null) mCLogo.setAlpha(newAlphaBC);
+            if (mCLogo != null) mCLogo.setAlpha(newAlphaBC);
         }
     }
 
-	protected static class PhoneStatusBarBackgroundDrawable extends BarTransitions.BarBackgroundDrawable {
+    protected static class PhoneStatusBarBackgroundDrawable extends BarTransitions.BarBackgroundDrawable {
         private final Context mContext;
 
         private int mOverrideColor = 0;
@@ -141,9 +141,9 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
 
         public PhoneStatusBarBackgroundDrawable(final Context context) {
             super(context,R.drawable.status_background, R.color.status_bar_background_opaque,
-			R.color.status_bar_background_semi_transparent,
-			R.color.status_bar_background_transparent,
-			com.android.internal.R.color.battery_saver_mode_color);
+            R.color.status_bar_background_semi_transparent,
+            R.color.status_bar_background_transparent,
+            com.android.internal.R.color.battery_saver_mode_color);
             mContext = context;
 
             final GradientObserver obs = new GradientObserver(this, new Handler());
@@ -152,15 +152,18 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
                     false, obs, UserHandle.USER_ALL);
 
             mOverrideGradientAlpha = Settings.System.getInt(mContext.getContentResolver(),
-                    "DYNAMIC_SYSTEM_BARS_GRADIENT_STATE", 0) == 1 ?
-                            0xff : 0;
+                    "DYNAMIC_SYSTEM_BARS_GRADIENT_STATE", 0) == 1 ? 0xff : 0;
 
             BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
                 @Override
-                public void onUpdateStatusBarColor(final int previousColor, final int color) {
+                public void onUpdateStatusBarColor(final int previousColor,
+                    final int color) {
+                    
                     mOverrideColor = color;
-                     generateAnimator();
+                    
+                    generateAnimator();
+
                 }
 
             });
@@ -174,8 +177,7 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
 
         @Override
         protected int getColorSemiTransparent() {
-            return mOverrideColor == 0 ? super.getColorSemiTransparent() :
-                    (mOverrideColor & 0x00ffffff | 0x7f000000);
+            return mOverrideColor == 0 ? super.getColorSemiTransparent() : (mOverrideColor & 0x00ffffff | 0x7f000000);
         }
 
         @Override
@@ -209,8 +211,7 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
         @Override
         public void onChange(final boolean selfChange) {
             mDrawable.setOverrideGradientAlpha(Settings.System.getInt(
-                    mDrawable.mContext.getContentResolver(),
-                    "DYNAMIC_SYSTEM_BARS_GRADIENT_STATE", 0) == 1 ? 0xff : 0);
+            mDrawable.mContext.getContentResolver(), "DYNAMIC_SYSTEM_BARS_GRADIENT_STATE", 0) == 1 ? 0xff : 0);
         }
     }
 }
