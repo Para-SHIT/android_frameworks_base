@@ -62,6 +62,7 @@ public class BarTransitions {
     public static final int MODE_WARNING = 5;
     public static final int MODE_LIGHTS_OUT_TRANSPARENT = 6;
     public static final int MODE_LIGHTS_OUT_TRANSLUCENT = 7;
+
     public static final int LIGHTS_IN_DURATION = 250;
     public static final int LIGHTS_OUT_DURATION = 750;
     public static final int BACKGROUND_DURATION = 200;
@@ -69,14 +70,15 @@ public class BarTransitions {
     private final String mTag;
     private final View mView;
     private final BarBackgroundDrawable mBarBackground;
+
     private int mMode;
 
     public BarTransitions(View view, BarBackgroundDrawable barBackground) {
         mTag = "BarTransitions." + view.getClass().getSimpleName();
         mView = view;
         mBarBackground = barBackground;
-		mContext=mView.getContext();
-		
+        mContext = mView.getContext();
+
         if (HIGH_END) {
             mView.setBackground(mBarBackground);
         }
@@ -126,7 +128,7 @@ public class BarTransitions {
 
     protected void applyModeBackground(int oldMode, int newMode, boolean animate) {
         if (DEBUG) Log.d(mTag, String.format("applyModeBackground oldMode=%s newMode=%s animate=%s",
-											 modeToString(oldMode), modeToString(newMode), animate));
+                modeToString(oldMode), modeToString(newMode), animate));
         mBarBackground.applyMode(newMode, animate);
     }
 
@@ -166,8 +168,8 @@ public class BarTransitions {
         private int mOpaque = 0;
         private int mSemiTransparent = 0;
         private Drawable mGradient = null;
-        private int mTransparent=0;
-        private int mWarning=0;
+        private int mTransparent = 0;
+        private int mWarning = 0;
 
         private int mCurrentMode = -1;
         private int mCurrentColor = 0;
@@ -183,19 +185,19 @@ public class BarTransitions {
         private final int mTransparentColorResourceId;
         private final int mWarningColorResourceId;
 
-	    public BarBackgroundDrawable(final Context context, final int gradientResourceId,
-									 final int opaqueColorResourceId,final int semiTransparentColorResourceId,
-									 final int transparentColorResourceId, final int warningColorResourceId) {
+        public BarBackgroundDrawable(final Context context, final int gradientResourceId,
+                final int opaqueColorResourceId,final int semiTransparentColorResourceId,
+                final int transparentColorResourceId, final int warningColorResourceId) {
             res = context.getResources();
-			kontek = context;
-			mHandler = new Handler();
-			mOpaqueColorResourceId = opaqueColorResourceId;
-			mSemiTransparentColorResourceId = semiTransparentColorResourceId;
-			mGradientResourceId = gradientResourceId;
-			mTransparentColorResourceId = transparentColorResourceId;
-			mWarningColorResourceId = warningColorResourceId;
-			updateResources(res);
-		}
+            kontek = context;
+            mHandler = new Handler();
+            mOpaqueColorResourceId = opaqueColorResourceId;
+            mSemiTransparentColorResourceId = semiTransparentColorResourceId;
+            mGradientResourceId = gradientResourceId;
+            mTransparentColorResourceId = transparentColorResourceId;
+            mWarningColorResourceId = warningColorResourceId;
+            updateResources(res);
+        }
 
         @Override
         public final void draw(final Canvas canvas) {
@@ -205,8 +207,8 @@ public class BarTransitions {
             }
             final int currentGradientAlpha = mCurrentGradientAlpha;
             if (currentGradientAlpha > 0) {
-				mGradient.setAlpha(currentGradientAlpha);
-				mGradient.draw(canvas);
+                mGradient.setAlpha(currentGradientAlpha);
+                mGradient.draw(canvas);
             }
         }
 
@@ -321,7 +323,7 @@ public class BarTransitions {
                     for (String pkg : appInfo.pkgList) {
                         if (pkg.equals("com.android.vending")) {
                              return b = ps?true:false;
-						} else {
+                        } else {
                              return b = false;
                         }
                     }
@@ -340,7 +342,7 @@ public class BarTransitions {
                 defaultHomePackage = res.activityInfo.packageName;
             }
             final ActivityManager am = (ActivityManager) mContext
-	             .getSystemService(Activity.ACTIVITY_SERVICE);
+                 .getSystemService(Activity.ACTIVITY_SERVICE);
             List<RunningAppProcessInfo> apps = am.getRunningAppProcesses();
             for (RunningAppProcessInfo appInfo : apps) {
 

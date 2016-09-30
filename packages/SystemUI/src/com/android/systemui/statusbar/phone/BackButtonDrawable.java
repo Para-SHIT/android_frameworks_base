@@ -73,11 +73,6 @@ public class BackButtonDrawable extends Drawable {
     }
 
     @Override
-    public void setColorFilter(ColorFilter cf) {
-		mWrappedDrawable.setColorFilter(cf);
-    }
-
-    @Override
     protected void onBoundsChange(Rect bounds) {
         mWrappedDrawable.setBounds(bounds);
     }
@@ -88,6 +83,11 @@ public class BackButtonDrawable extends Drawable {
         if (mCurrentAnimator != null) {
             mCurrentAnimator.end();
         }
+    }
+
+    @Override
+    public void setColorFilter(ColorFilter cf) {
+        mWrappedDrawable.setColorFilter(cf);
     }
 
     @Override

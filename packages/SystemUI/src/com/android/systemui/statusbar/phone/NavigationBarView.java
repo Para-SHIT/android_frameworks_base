@@ -336,16 +336,18 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
         getIcons(res);
 
         mBarTransitions = new NavigationBarTransitions(this);
-		BarBackgroundUpdater . addListener( new BarBackgroundUpdater.UpdateListener( this) {
+        BarBackgroundUpdater . addListener( new BarBackgroundUpdater.UpdateListener( this) {
 
-			@Override
-			public void onUpdateNavigationBarIconColor(final int previousIconColor, final int iconColor ) {
-				mOverrideIconColor = iconColor;
+            @Override
+            public void onUpdateNavigationBarIconColor(final int previousIconColor,
+                final int iconColor ) {
+                mOverrideIconColor = iconColor;
 
-				generateButtonColorsAnimatorSet();
-			}
+                generateButtonColorsAnimatorSet();
 
-		});
+            }
+
+        });
 
         mNavBarReceiver = new NavBarReceiver();
         mSettingsObserver = new SettingsObserver(new Handler());
@@ -366,47 +368,47 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
     }
 
     private void generateButtonColorsAnimatorSet () {
-		final ImageView[] buttons = new ImageView[] {
-			(ImageView) getRecentsButton(),
-			(ImageView) getMenuButton(),
-			(ImageView) getImeSwitchButton() ,
-			(ImageView) getBackButton(),
-			(ImageView) getHomeButton(),
-			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_DPAD_LEFT)),
-			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_DPAD_RIGHT)),
-			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_POWER)),
-			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_SEARCH)),
-			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_EMPTY)),
-			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_ALWAYS_MENU)),
-			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_MENU_BIG)),
-			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_NOTIFICATIONS)),
-			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_SCREENSHOT)),
-			(ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_EXPAND))
-		};
+        final ImageView[] buttons = new ImageView[] {
+            (ImageView) getRecentsButton(),
+            (ImageView) getMenuButton(),
+            (ImageView) getImeSwitchButton() ,
+            (ImageView) getBackButton(),
+            (ImageView) getHomeButton(),
+            (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_DPAD_LEFT)),
+            (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_DPAD_RIGHT)),
+            (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_POWER)),
+            (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_SEARCH)),
+            (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_EMPTY)),
+            (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_ALWAYS_MENU)),
+            (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_MENU_BIG)),
+            (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_NOTIFICATIONS)),
+            (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_SCREENSHOT)),
+            (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_EXPAND))
+        };
 
-		for ( final ImageView button : buttons) {
-			if (button != null) {
-				if (mOverrideIconColor == 0 ) {
-					mHandler . post( new Runnable() {
-
-						@Override
-						public void run() {
-							button . setColorFilter( null);
-						}
-					});
-				} else {
+        for ( final ImageView button : buttons) {
+            if (button != null) {
+                if (mOverrideIconColor == 0 ) {
                     mHandler . post( new Runnable() {
 
                         @Override
-						public void run() {
-							button . setColorFilter(mOverrideIconColor);
+                        public void run() {
+                            button . setColorFilter( null);
                         }
                     });
-				}
-			}
-		}
-		
-	}
+                } else {
+                    mHandler . post( new Runnable() {
+
+                        @Override
+                        public void run() {
+                            button . setColorFilter(mOverrideIconColor);
+                        }
+                    });
+                }
+            }
+        }
+
+    }
 
     @Override
     protected void onAttachedToWindow() {
@@ -762,7 +764,7 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
     public void onFinishInflate() {
         mRot0 = (FrameLayout) findViewById(R.id.rot0);
         mRot90 = (FrameLayout) findViewById(R.id.rot90);
-		
+
         mRotatedViews[Surface.ROTATION_0] =
         mRotatedViews[Surface.ROTATION_180] = findViewById(R.id.rot0);
         mRotatedViews[Surface.ROTATION_90] = findViewById(R.id.rot90);
@@ -1091,7 +1093,7 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
         View notificationsView = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_NOTIFICATIONS);
         if (notificationsView != null) {
             if (mNavButtonsRotation) {
-            	notificationsView.startAnimation(animation);
+                notificationsView.startAnimation(animation);
             }
             notificationsView.setOnClickListener(mNotificationsClickListener);
             notificationsView.setLongClickable(true);
@@ -1100,14 +1102,14 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
         View screenshotView = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_SCREENSHOT);
         if (screenshotView != null) {
             if (mNavButtonsRotation) {
-            	screenshotView.startAnimation(animation);
+                screenshotView.startAnimation(animation);
             }
             screenshotView.setOnClickListener(mScreenShotClickListener);
         }
         View immersivetView = mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_EXPAND);
         if (immersivetView != null) {
             if (mNavButtonsRotation) {
-            	immersivetView.startAnimation(animation);
+                immersivetView.startAnimation(animation);
            }
            immersivetView.setOnClickListener(mImmersiveClickListener);
         }

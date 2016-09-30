@@ -56,11 +56,11 @@ public class TickerImageView extends ImageSwitcher {
 
                             });
                         } else {
-							mHandler.post(new Runnable() {
+                            mHandler.post(new Runnable() {
 
-								@Override
-								public void run() {
-									iv.setColorFilter(mOverrideIconColor);
+                                @Override
+                                public void run() {
+                                    iv.setColorFilter(mOverrideIconColor);
                                 }
 
                             });

@@ -35,7 +35,7 @@ public class TickerView extends TextSwitcher {
 
     public TickerView(Context context, AttributeSet attrs) {
         super(context, attrs);
-    	mHandler = new Handler();
+        mHandler = new Handler();
 
         BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
@@ -48,7 +48,7 @@ public class TickerView extends TextSwitcher {
                 for (int i = 0; i < childCount; i++) {
                     final TextView tv = (TextView) getChildAt(i);
                     if (tv != null) {
-						if (mOverrideTextColor == 0) {
+                        if (mOverrideTextColor == 0) {
                             mHandler.post(new Runnable() {
 
                                 @Override
@@ -58,11 +58,11 @@ public class TickerView extends TextSwitcher {
 
                             });
                         } else {
-							mHandler.post(new Runnable() {
+                            mHandler.post(new Runnable() {
 
-								@Override
-								public void run() {
-									tv.setTextColor(mOverrideTextColor);
+                                @Override
+                                public void run() {
+                                    tv.setTextColor(mOverrideTextColor);
                                 }
 
                             });

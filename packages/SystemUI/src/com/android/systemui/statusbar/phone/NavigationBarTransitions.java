@@ -236,7 +236,7 @@ public final class NavigationBarTransitions extends BarTransitions {
                 false, obs, UserHandle.USER_ALL);
 
             mOverrideGradientAlpha = Settings.System.getInt(mContext.getContentResolver(),
-                "DYNAMIC_SYSTEM_BARS_GRADIENT_STATE", 0) == 1 ? 0xff : 0;
+                Settings.System.DYNAMIC_SYSTEM_BARS_GRADIENT_STATE, 0) == 1 ? 0xff : 0;
 
             BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
@@ -282,7 +282,7 @@ public final class NavigationBarTransitions extends BarTransitions {
 
     private static final class GradientObserver extends ContentObserver {
         private static final Uri DYNAMIC_SYSTEM_BARS_GRADIENT_URI = Settings.System.getUriFor(
-                "DYNAMIC_SYSTEM_BARS_GRADIENT_STATE");
+            Settings.System.DYNAMIC_SYSTEM_BARS_GRADIENT_STATE);
 
         private final NavigationBarBackgroundDrawable mDrawable;
 
@@ -295,7 +295,7 @@ public final class NavigationBarTransitions extends BarTransitions {
         @Override
         public void onChange(final boolean selfChange) {
             mDrawable.setOverrideGradientAlpha(Settings.System.getInt(
-			mDrawable.mContext.getContentResolver(), "DYNAMIC_SYSTEM_BARS_GRADIENT_STATE", 0) == 1 ? 0xff : 0);
+            mDrawable.mContext.getContentResolver(), Settings.System.DYNAMIC_SYSTEM_BARS_GRADIENT_STATE, 0) == 1 ? 0xff : 0);
         }
     }
 }

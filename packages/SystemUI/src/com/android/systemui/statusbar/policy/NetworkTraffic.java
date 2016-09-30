@@ -45,7 +45,7 @@ public class NetworkTraffic extends TextView {
     private static final int KILOBIT = 1000;
     private static final int KILOBYTE = 1024;
     private int mOverrideIconColor = 0;
-	
+
     private static DecimalFormat decimalFormat = new DecimalFormat("##0.#");
     static {
         decimalFormat.setMaximumIntegerDigits(3);
@@ -233,25 +233,25 @@ public class NetworkTraffic extends TextView {
         SettingsObserver settingsObserver = new SettingsObserver(mHandler);
         settingsObserver.observe();
         updateSettings();
-		BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+        BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
-				@Override
-				public void onUpdateStatusBarIconColor(final int previousIconColor,
-														   final int iconColor) {
-					mOverrideIconColor = iconColor;
+                @Override
+                public void onUpdateStatusBarIconColor(final int previousIconColor,
+                    final int iconColor) {
+                    mOverrideIconColor = iconColor;
 
-					mHandler.post(new Runnable(){
+                    mHandler.post(new Runnable(){
 
-						@Override
-						public void run(){
-							updateSettings();
-						}
+                        @Override
+                        public void run(){
+                            updateSettings();
+                        }
 
-					});
+                    });
 
-				}
+                }
 
-		});
+        });
     }
 
     @Override
@@ -317,15 +317,15 @@ public class NetworkTraffic extends TextView {
 
         if (mNetworkTrafficColor == Integer.MIN_VALUE
             || mNetworkTrafficColor == -2) {
-			if(!BarBackgroundUpdater.mStatusEnabled){
-            	mNetworkTrafficColor = defaultColor;
-			}
+            if(!BarBackgroundUpdater.mStatusEnabled){
+                mNetworkTrafficColor = defaultColor;
+            }
         }
-		if(!BarBackgroundUpdater.mStatusEnabled){
+        if(!BarBackgroundUpdater.mStatusEnabled){
             setTextColor(mNetworkTrafficColor);
-		}else{
-			setTextColor(mOverrideIconColor);
-		}
+        }else{
+            setTextColor(mOverrideIconColor);
+        }
         updateTrafficDrawable();
 
         if (isSet(mState, MASK_UNIT)) {
@@ -383,11 +383,11 @@ public class NetworkTraffic extends TextView {
             }
             if (intTrafficDrawable != 0) {
                 drw = getContext().getResources().getDrawable(intTrafficDrawable);
-				if(!BarBackgroundUpdater.mStatusEnabled){
-                	drw.setColorFilter(mNetworkTrafficColor, PorterDuff.Mode.SRC_ATOP);
-				}else{
-					drw.setColorFilter(mOverrideIconColor, PorterDuff.Mode.SRC_ATOP);
-				}
+                if(!BarBackgroundUpdater.mStatusEnabled){
+                    drw.setColorFilter(mNetworkTrafficColor, PorterDuff.Mode.SRC_ATOP);
+                }else{
+                    drw.setColorFilter(mOverrideIconColor, PorterDuff.Mode.SRC_ATOP);
+                }
             }
         } else {
             drw = null;

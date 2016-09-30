@@ -1504,14 +1504,14 @@ public class NotificationPanelView extends PanelView implements
                     ? View.VISIBLE : View.GONE);
             mTaskManagerPanel.setVisibility(expandVisually && taskManagerShowing
                     && !mKeyguardShowing ? View.VISIBLE : View.GONE);
-    if(!mKeyguardShowing) {
-           	 if (mTaskManagerShowing) {
-               	 mTaskManagerPanel.startAnimation(getAnimation(true));
-               	 mQsPanel.startAnimation(getAnimation(false));
-            	 } else {
-                 mQsPanel.startAnimation(getAnimation(true));
-                 mTaskManagerPanel.startAnimation(getAnimation(false));
-            	 }
+            if (!mKeyguardShowing) {
+                if (mTaskManagerShowing) {
+                    mTaskManagerPanel.startAnimation(getAnimation(true));
+                    mQsPanel.startAnimation(getAnimation(false));
+                } else {
+                    mQsPanel.startAnimation(getAnimation(true));
+                    mTaskManagerPanel.startAnimation(getAnimation(false));
+                }
             }
             updateTaskQSButton();
         }

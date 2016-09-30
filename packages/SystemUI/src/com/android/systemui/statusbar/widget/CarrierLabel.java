@@ -93,22 +93,23 @@ public class CarrierLabel extends TextView {
         updateSize();
         BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
-			@Override
-			public void onUpdateStatusBarIconColor(final int previousIconColor,
-														   final int iconColor) {
-				mOverrideIconColor = iconColor;
-				mHandler.post(new Runnable() {
+            @Override
+            public void onUpdateStatusBarIconColor(final int previousIconColor,
+                final int iconColor) {
+                mOverrideIconColor = iconColor;
+
+                mHandler.post(new Runnable() {
                                         
-					@Override
-					public void run() {
-						updateColor();
-					}
+                    @Override
+                    public void run() {
+                        updateColor();
+                    }
 
-				});
+                });
 
-			}
+            }
 
-		});
+        });
     }
 
     @Override
@@ -195,16 +196,16 @@ public class CarrierLabel extends TextView {
         mCarrierColor = Settings.System.getInt(resolver,
                 Settings.System.STATUS_BAR_CARRIER_COLOR, defaultColor);
 
-        if  (mCarrierColor == Integer.MIN_VALUE) {
-			if (!BarBackgroundUpdater.mStatusEnabled) {
-             	mCarrierColor = defaultColor;
-			}
+        if (mCarrierColor == Integer.MIN_VALUE) {
+           if (!BarBackgroundUpdater.mStatusEnabled) {
+               mCarrierColor = defaultColor;
+           }
         }
-		if (!BarBackgroundUpdater.mStatusEnabled) {
-        	setTextColor(mCarrierColor);
-		} else {
-			setTextColor(mOverrideIconColor);
-		}
+        if (!BarBackgroundUpdater.mStatusEnabled) {
+            setTextColor(mCarrierColor);
+        } else {
+            setTextColor(mOverrideIconColor);
+        }
     }
 
     private void updateSize() {

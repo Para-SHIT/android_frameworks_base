@@ -45,15 +45,11 @@ public class HeaderTransitions extends BarTransitions {
         applyModeBackground(-1, getMode(), false);
     }
 
-    protected static class HeaderBackgroundDrawable
-        extends BarTransitions.BarBackgroundDrawable {
-
-        private static  Context mContext;
+    protected static class HeaderBackgroundDrawable extends BarTransitions.BarBackgroundDrawable {
+        private static Context mContext;
 
         private int mOverrideColor = 0;
-
         private int mOverrideGradientAlpha = 0;
-        private static boolean isReverse = false;
 
         public HeaderBackgroundDrawable(final Context context) {
             super(context,R.drawable.notification_header_bg, R.color.system_secondary_color,
@@ -69,7 +65,8 @@ public class HeaderTransitions extends BarTransitions {
                 false, obs, UserHandle.USER_ALL);
 
             mOverrideGradientAlpha = Settings.System.getInt(mContext.getContentResolver(),
-                "DYNAMIC_GRADIENT_STATE", 0) == 1 ? 0xff : 0;
+                Settings.System.DYNAMIC_GRADIENT_STATE, 0) == 1 ?
+                    0xff : 0;
 
             BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
@@ -94,14 +91,13 @@ public class HeaderTransitions extends BarTransitions {
 
         @Override
         protected int getColorSemiTransparent() {
-            return (mOverrideColor == 0 )? super.getColorOpaque() :
-                (mOverrideColor & 0x00ffffff | 0x7f000000);
+            return (mOverrideColor == 0 ) ? super.getColorOpaque() : (mOverrideColor & 0x00ffffff | 0x7f000000);
         }
 
         @Override
         protected int getColorTransparent() {
             // TODO: Implement this method
-            return mOverrideColor == 0  ? super.getColorOpaque():mOverrideColor;
+            return mOverrideColor == 0  ? super.getColorOpaque() : mOverrideColor;
         }
 
         @Override
@@ -111,7 +107,7 @@ public class HeaderTransitions extends BarTransitions {
 
         @Override
         protected int getGradientAlphaSemiTransparent() {
-            return mOverrideGradientAlpha;
+            return mOverrideGradientAlpha & 0x7f;
         }
 
         public void setColor(){
@@ -120,27 +116,27 @@ public class HeaderTransitions extends BarTransitions {
 
         public void setOverrideGradientAlpha(final int alpha) {
             mOverrideGradientAlpha = alpha;
-		    generateAnimator();
+            generateAnimator();
         }
     }
 
     private static final class GradientObserver extends ContentObserver {
         private static final Uri DYNAMIC_SYSTEM_BARS_GRADIENT_URI = Settings.System.getUriFor(
-            "DYNAMIC_GRADIENT_STATE");
+            Settings.System.DYNAMIC_GRADIENT_STATE);
 
         private final HeaderBackgroundDrawable mDrawable;
 
         private GradientObserver(final HeaderBackgroundDrawable drawable,
             final Handler handler) {
-            
-            super(handler);
-            mDrawable = drawable;
+          super(handler);
+          mDrawable = drawable;
         }
 
         @Override
         public void onChange(final boolean selfChange) {
-            mDrawable.setOverrideGradientAlpha(Settings.System.getInt(
-            mDrawable.mContext.getContentResolver(), "DYNAMIC_GRADIENT_STATE", 0) == 1 ? 0xff : 0);
+          mDrawable.setOverrideGradientAlpha(Settings.System.getInt(
+            mDrawable.mContext.getContentResolver(),
+            Settings.System.DYNAMIC_GRADIENT_STATE, 0) == 1 ? 0xff : 0);
         }
     }
 }

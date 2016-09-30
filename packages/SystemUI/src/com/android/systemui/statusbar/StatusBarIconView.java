@@ -58,10 +58,10 @@ public class StatusBarIconView extends AnimatedImageView {
     private Notification mNotification;
     private boolean mShowNotificationCount;
     private GlobalSettingsObserver mObserver;
-	private final Handler mHandler;
+    private final Handler mHandler;
     
     private int mOverrideIconColor = 0;
-	
+
     public StatusBarIconView(Context context, String slot, Notification notification) {
         super(context);
         final Resources res = context.getResources();
@@ -89,35 +89,35 @@ public class StatusBarIconView extends AnimatedImageView {
         }
 
         setScaleType(ImageView.ScaleType.CENTER);
-		mHandler = new Handler();
+        mHandler = new Handler();
        
         BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
-				@Override
-				public void onUpdateStatusBarIconColor(final int previousIconColor,
-													   final int iconColor) {
-					mOverrideIconColor = iconColor;
+                @Override
+                public void onUpdateStatusBarIconColor(final int previousIconColor,
+                    final int iconColor) {
+                    mOverrideIconColor = iconColor;
 
-					if (mOverrideIconColor == 0) {
-						mHandler.post(new Runnable() {
+                    if (mOverrideIconColor == 0) {
+                        mHandler.post(new Runnable() {
 
-							@Override
-							public void run() {
-								setColorFilter(null);
-							}
-						});
-					} else {
-						mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                setColorFilter(null);
+                            }
+                        });
+                    } else {
+                        mHandler.post(new Runnable() {
 
-							@Override
-							public void run() {
-								setColorFilter(mOverrideIconColor);
-							}
-						});
-					}
-				}
+                            @Override
+                            public void run() {
+                                setColorFilter(mOverrideIconColor);
+                            }
+                        });
+                    }
+                }
 
-		});
+        });
 
     }
 
@@ -136,38 +136,38 @@ public class StatusBarIconView extends AnimatedImageView {
         final float scale = (float)imageBounds / (float)outerBounds;
         setScaleX(scale);
         setScaleY(scale);
-		mHandler = new Handler();
+        mHandler = new Handler();
        
         BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
-				@Override
-				public void onUpdateStatusBarIconColor(final int previousIconColor,
-													   final int iconColor) {
-					mOverrideIconColor = iconColor;
+                @Override
+                public void onUpdateStatusBarIconColor(final int previousIconColor,
+                    final int iconColor) {
+                    mOverrideIconColor = iconColor;
 
-					if (mOverrideIconColor == 0) {
-						mHandler.post(new Runnable() {
+                    if (mOverrideIconColor == 0) {
+                        mHandler.post(new Runnable() {
 
-							@Override
-							public void run() {
-								setColorFilter(null);
-							}
+                            @Override
+                            public void run() {
+                                setColorFilter(null);
+                            }
 
-						});
-					} else {
-						mHandler.post(new Runnable() {
+                        });
+                    } else {
+                        mHandler.post(new Runnable() {
 
-							@Override
-							public void run() {
-								setColorFilter(mOverrideIconColor);
-							}
+                            @Override
+                            public void run() {
+                                setColorFilter(mOverrideIconColor);
+                            }
 
-						});
-						
-					}
-				}
+                        });
 
-		});
+                    }
+                }
+
+        });
 
     }
 
@@ -243,10 +243,10 @@ public class StatusBarIconView extends AnimatedImageView {
             setImageDrawable(null);
         }
         setImageDrawable(drawable);
-		if (mOverrideIconColor == 0) {
+        if (mOverrideIconColor == 0) {
             setColorFilter(null);
         } else {
-			setColorFilter(mOverrideIconColor);
+            setColorFilter(mOverrideIconColor);
         }
         return true;
     }
@@ -265,9 +265,9 @@ public class StatusBarIconView extends AnimatedImageView {
      */
     public static Drawable getIcon(Context context, StatusBarIcon icon) {
         Resources r = null;
-		if (icon == null) {
-			return null;
-		}
+        if (icon == null) {
+            return null;
+        }
         if (icon.iconPackage != null) {
             try {
                 int userId = icon.user.getIdentifier();

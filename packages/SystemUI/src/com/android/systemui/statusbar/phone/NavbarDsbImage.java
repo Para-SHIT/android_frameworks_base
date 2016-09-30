@@ -35,7 +35,7 @@ public class NavbarDsbImage extends ImageView {
     static Context mContext;
     private SettingsObserver mObserver = null;
 
-	public NavbarDsbImage(Context c) {
+    public NavbarDsbImage(Context c) {
         super(c);
         init(c);
     }
@@ -66,11 +66,11 @@ public class NavbarDsbImage extends ImageView {
         }
 
         mContext.getContentResolver().registerContentObserver(
-                 Settings.System.getUriFor("DYNAMIC_NAVIGATION_BAR_STATE"),
-                 false, mObserver);
+            Settings.System.getUriFor(Settings.System.DYNAMIC_NAVIGATION_BAR_STATE),
+            false, mObserver);
 
         ena = Settings.System.getIntForUser(mContext.getContentResolver(),
-                      "DYNAMIC_NAVIGATION_BAR_STATE", 0, UserHandle.USER_CURRENT) == 1;
+            Settings.System.DYNAMIC_NAVIGATION_BAR_STATE, 0, UserHandle.USER_CURRENT) == 1;
 
         BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
@@ -118,10 +118,10 @@ public class NavbarDsbImage extends ImageView {
         @Override
         public final void onChange(final boolean selfChange) {
             ndi.ena = Settings.System.getInt(ndi.mContext.getContentResolver(),
-                      "DYNAMIC_NAVIGATION_BAR_STATE", 0) == 1;
+                Settings.System.DYNAMIC_NAVIGATION_BAR_STATE, 0) == 1;
 
             ndi.apdet(Settings.System.getInt(ndi.mContext.getContentResolver(),
-                      "DYNAMIC_NAVIGATION_BAR_STATE", 0) == 1?mOverrideIconColor:Color.WHITE);
+                Settings.System.DYNAMIC_NAVIGATION_BAR_STATE, 0) == 1 ? mOverrideIconColor:Color.WHITE);
         }
 
     }

@@ -232,7 +232,7 @@ public class BatteryMeterView extends View implements DemoMode,
 
     public BatteryMeterView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-		mHandler = new Handler();
+        mHandler = new Handler();
 
         final Resources res = context.getResources();
         TypedArray atts = context.obtainStyledAttributes(attrs, R.styleable.BatteryMeterView,
@@ -590,8 +590,8 @@ public class BatteryMeterView extends View implements DemoMode,
             mFramePaint.setColor(doOverride ? framekolor : 0x66FFFFFF);
 
             // set the battery charging color
-	        final int color = tracker.plugged ? (doOverride ? mOverrideIconColor : kolor) :
-	            getColorForLevel(level);
+            final int color = tracker.plugged ? (doOverride ? mOverrideIconColor : kolor) :
+                getColorForLevel(level);
             mBatteryPaint.setColor(color);
 
             if (level >= FULL) {

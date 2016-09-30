@@ -34,7 +34,7 @@ public class DsbImage extends ImageView {
 
     public DsbImage(Context c, AttributeSet as) {
         super(c,as);
-		iv = this;
+        iv = this;
         mContext = c;
         mHandler = new Handler();
 

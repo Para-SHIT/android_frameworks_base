@@ -48,7 +48,7 @@
         android:orientation="horizontal"
         >
         
-		<LinearLayout android:id="@+id/status_bar_greeting_label_layout"
+        <LinearLayout android:id="@+id/status_bar_greeting_label_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
@@ -102,7 +102,7 @@
                     />
                 <include layout="@layout/custom_icons" />
 
-				<com.android.systemui.statusbar.phone.DsbText
+                <com.android.systemui.statusbar.phone.DsbText
                     android:id="@+id/left_clock"
                     android:textAppearance="@style/TextAppearance.StatusBar.Clock"
                     android:layout_width="wrap_content"
@@ -122,7 +122,7 @@
                     android:visibility="gone"
                     android:gravity="center"
                     android:singleLine="true"
-                />
+                    />
 
                 <com.android.systemui.statusbar.phone.DsbText
                     android:id="@+id/left_weather_temp"
@@ -166,7 +166,7 @@
                  android:visibility="gone"
                  />
 
- 	     	<com.android.systemui.statusbar.policy.NetworkTraffic
+              <com.android.systemui.statusbar.policy.NetworkTraffic
                 android:id="@+id/networkTraffic"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"

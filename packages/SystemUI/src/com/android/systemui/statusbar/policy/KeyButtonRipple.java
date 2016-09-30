@@ -74,9 +74,9 @@ public class KeyButtonRipple extends Drawable {
     private final ArrayList<Animator> mTmpArray = new ArrayList<>();
 
     private final Handler mHandler;
-	private SettingsObserver mObserver = null;
-	static boolean ena;
-	static Context mContext;
+    private SettingsObserver mObserver = null;
+    static boolean ena;
+    static Context mContext;
     private int mOverrideIconColor = 0;
     private int mRippleColor;
 
@@ -95,10 +95,10 @@ public class KeyButtonRipple extends Drawable {
         }
 
         mContext.getContentResolver().registerContentObserver(
-                 Settings.System.getUriFor("DYNAMIC_NAVIGATION_BAR_STATE"),
-                 false, mObserver);
+            Settings.System.getUriFor(Settings.System.DYNAMIC_NAVIGATION_BAR_STATE),
+            false, mObserver);
         ena = Settings.System.getIntForUser(mContext.getContentResolver(),
-                                           "DYNAMIC_NAVIGATION_BAR_STATE", 0, UserHandle.USER_CURRENT) == 1;
+            Settings.System.DYNAMIC_NAVIGATION_BAR_STATE, 0, UserHandle.USER_CURRENT) == 1;
 
         mMaxWidth = ctx.getResources().getDimensionPixelSize(R.dimen.key_button_ripple_max_width);
         mTargetView = targetView;
@@ -437,9 +437,9 @@ public class KeyButtonRipple extends Drawable {
         @Override
         public final void onChange(final boolean selfChange) {
             kbr.ena = Settings.System.getInt(kbr.mContext.getContentResolver(),
-                                            "DYNAMIC_NAVIGATION_BAR_STATE", 0) ==1;
+                Settings.System.DYNAMIC_NAVIGATION_BAR_STATE, 0) == 1;
             kbr.apdet(Settings.System.getInt(kbr.mContext.getContentResolver(),
-                                            "DYNAMIC_NAVIGATION_BAR_STATE", 0) == 1?mOverrideIconColor:Color.WHITE);
+                Settings.System.DYNAMIC_NAVIGATION_BAR_STATE, 0) == 1 ? mOverrideIconColor:Color.WHITE);
         }
 
     }
