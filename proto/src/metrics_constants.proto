@@ -2257,5 +2257,8 @@ message MetricsEvent {
 
     // ParaSHIT
     PARASHIT = 998;
+
+    // Quick setting tiles
+    QUICK_SETTINGS = 999;
   }
 }
