@@ -5895,14 +5895,6 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String DYNAMIC_NAVIGATION_BAR_STATE = "dynamic_navigation_bar_state";
 
         /**
-         * Whether the dynamic are set to have a gradient overlay
-         * 0 = disabled (default)
-         * 1 = enabled
-         * @hide
-         */
-        public static final String DYNAMIC_GRADIENT_STATE = "dynamic_gradient_state";
-
-        /**
          * Whether the dynamic system bars are set to have a gradient overlay
          * 0 = disabled (default)
          * 1 = enabled

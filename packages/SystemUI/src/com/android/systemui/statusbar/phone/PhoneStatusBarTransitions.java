@@ -187,7 +187,7 @@ public final class PhoneStatusBarTransitions extends BarTransitions {
 
         @Override
         protected int getGradientAlphaSemiTransparent() {
-            return mOverrideGradientAlpha ;
+            return mOverrideGradientAlpha;
         }
 
         public void setOverrideGradientAlpha(final int alpha) {

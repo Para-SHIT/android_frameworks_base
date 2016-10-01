@@ -166,13 +166,13 @@ public class BarBackgroundUpdater {
                         updateHeaderColor(headerOverrideColor);
 
                         // magic from http://www.w3.org/TR/AERT#color-contrast
-                        final float HeaderBrightness =
+                        final float headerBrightness =
                                 (0.299f * Color.red(headerOverrideColor) +
                                 0.587f * Color.green(headerOverrideColor) +
                                 0.114f * Color.blue(headerOverrideColor)) / 255;
-                        final boolean isStatusBarConsistent = colors[1] == 1;
-                        updateHeaderIconColor(HeaderBrightness > 0.7f &&
-                                              isStatusBarConsistent ? Color.parseColor("#FF000000") : Color.parseColor("#FFFFFFFF"));
+                        final boolean isHeaderConsistent = colors[1] == 1;
+                        updateHeaderIconColor(headerBrightness > 0.7f &&
+                                              isHeaderConsistent ? Color.parseColor("#FF000000") : Color.parseColor("#FFFFFFFF"));
                     } else {
                         // dynamic status bar is disabled
                         updateHeaderColor(0);
@@ -466,7 +466,7 @@ public class BarBackgroundUpdater {
             return;
         }
 
-        if(expanded() && mHeaderEnabled){
+        if (expanded() && mHeaderEnabled) {
             return;
         }
 
@@ -484,7 +484,7 @@ public class BarBackgroundUpdater {
             return;
         }
 
-        if(expanded() && mHeaderEnabled){
+        if (expanded() && mHeaderEnabled) {
             return;
         }
 
@@ -507,7 +507,7 @@ public class BarBackgroundUpdater {
             return;
         }
 
-        if(expanded() && mHeaderEnabled){
+        if (expanded() && mHeaderEnabled) {
             return;
         }
 
@@ -515,7 +515,7 @@ public class BarBackgroundUpdater {
         mHeaderIconOverrideColor = newColor;
 
         if (DEBUG_COLOR_CHANGE) {
-            Log.d(LOG_TAG, "statusBarIconOverrideColor=" + (newColor == 0 ? "none" :
+            Log.d(LOG_TAG, "headerIconOverrideColor=" + (newColor == 0 ? "none" :
                   "0x" + Integer.toHexString(newColor)));
         }
 

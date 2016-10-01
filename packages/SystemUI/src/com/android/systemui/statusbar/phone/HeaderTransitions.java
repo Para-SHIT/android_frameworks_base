@@ -53,8 +53,8 @@ public class HeaderTransitions extends BarTransitions {
 
         public HeaderBackgroundDrawable(final Context context) {
             super(context,R.drawable.notification_header_bg, R.color.system_secondary_color,
-            R.color.system_secondary_color,
-            R.color.system_secondary_color,
+            R.color.status_bar_background_semi_transparent,
+            R.color.status_bar_background_transparent,
             com.android.internal.R.color.battery_saver_mode_color);
 
             mContext = context;
@@ -65,7 +65,7 @@ public class HeaderTransitions extends BarTransitions {
                 false, obs, UserHandle.USER_ALL);
 
             mOverrideGradientAlpha = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.DYNAMIC_GRADIENT_STATE, 0) == 1 ?
+                "DYNAMIC_SYSTEM_BARS_GRADIENT_STATE", 0) == 1 ?
                     0xff : 0;
 
             BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
@@ -107,7 +107,7 @@ public class HeaderTransitions extends BarTransitions {
 
         @Override
         protected int getGradientAlphaSemiTransparent() {
-            return mOverrideGradientAlpha & 0x7f;
+            return mOverrideGradientAlpha;
         }
 
         public void setColor(){
@@ -122,7 +122,7 @@ public class HeaderTransitions extends BarTransitions {
 
     private static final class GradientObserver extends ContentObserver {
         private static final Uri DYNAMIC_SYSTEM_BARS_GRADIENT_URI = Settings.System.getUriFor(
-            Settings.System.DYNAMIC_GRADIENT_STATE);
+            "DYNAMIC_SYSTEM_BARS_GRADIENT_STATE");
 
         private final HeaderBackgroundDrawable mDrawable;
 
@@ -136,7 +136,7 @@ public class HeaderTransitions extends BarTransitions {
         public void onChange(final boolean selfChange) {
           mDrawable.setOverrideGradientAlpha(Settings.System.getInt(
             mDrawable.mContext.getContentResolver(),
-            Settings.System.DYNAMIC_GRADIENT_STATE, 0) == 1 ? 0xff : 0);
+            "DYNAMIC_SYSTEM_BARS_GRADIENT_STATE", 0) == 1 ? 0xff : 0);
         }
     }
 }
