@@ -50,7 +50,7 @@ public class BarBackgroundUpdater {
     private final static boolean DEBUG_COLOR_CHANGE = DEBUG_ALL || false;
     private final static boolean DEBUG_EXCESSIVE_DELAY = DEBUG_ALL || false;
     private final static boolean DEBUG_FLOOD_ALL_DELAY = DEBUG_ALL || false;
-    private static long sMinDelay = 5; // time to enforce between the screenshots
+    private static long sMinDelay = 100; // time to enforce between the screenshots
 
     private static boolean PAUSED = true;
 
@@ -78,7 +78,7 @@ public class BarBackgroundUpdater {
         @Override
         public void run() {
             while (true) {
-                final long now = System.currentTimeMillis();
+                // final long now = System.currentTimeMillis();
 
                 if (PAUSED) {
                     // we have been told to do nothing; wait for notify to continue
@@ -93,7 +93,7 @@ public class BarBackgroundUpdater {
                     continue;
                 }
 
-                if (mStatusEnabled || mNavigationEnabled||mHeaderEnabled) {
+                if (mStatusEnabled || mNavigationEnabled || mHeaderEnabled) {
                     final Context context = mContext;
 
                     if (context == null) {
@@ -170,9 +170,9 @@ public class BarBackgroundUpdater {
                                 (0.299f * Color.red(headerOverrideColor) +
                                 0.587f * Color.green(headerOverrideColor) +
                                 0.114f * Color.blue(headerOverrideColor)) / 255;
-                        final boolean isHeaderConsistent = colors[1] == 1;
+                        final boolean isStatusBarConsistent = colors[1] == 1;
                         updateHeaderIconColor(headerBrightness > 0.7f &&
-                                              isHeaderConsistent ? Color.parseColor("#FF000000") : Color.parseColor("#FFFFFFFF"));
+                                              isStatusBarConsistent ? Color.parseColor("#FF000000") : Color.parseColor("#FFFFFFFF"));
                     } else {
                         // dynamic status bar is disabled
                         updateHeaderColor(0);
@@ -194,25 +194,27 @@ public class BarBackgroundUpdater {
                                 0.587f * Color.green(navigationBarOverrideColor) +
                                 0.114f * Color.blue(navigationBarOverrideColor)) / 255;
                         final boolean isNavigationBarConsistent = colors[3] == 1;
-                        if (reverse && mStatusEnabled){
-                            int kolor = navigationBarBrightness > 0.7f &&
-                                isNavigationBarConsistent ? Color.parseColor("#FF000000") : Color.parseColor("#FFFFFFFF");
-                            boolean same = statusBarBrightness == navigationBarBrightness;
-                            boolean rendah = statusBarBrightness - navigationBarBrightness < 0.1f;
-                            boolean uiputih = statusBarBrightness > 0.8f;
-                            boolean uiblek = statusBarBrightness < 0.2f;
-                            boolean navputih = navigationBarBrightness > 0.8f;
-                            boolean navblek = navigationBarBrightness < 0.2f;
-                            if (uiputih && navputih) {
-                                updateNavigationBarIconColor(kolor);
-                            } else if (uiblek && navblek) {
-                                updateNavigationBarIconColor(kolor);
-                            } else {
-                            updateNavigationBarIconColor(same?kolor:statusBarOverrideColor);
-                            }
+                        int kolor = navigationBarBrightness > 0.7f &&
+                            isNavigationBarConsistent ? Color.parseColor("#FF000000") : Color.parseColor("#FFFFFFFF");
+                        boolean same = statusBarBrightness == navigationBarBrightness;
+                        boolean uiputih = statusBarBrightness > 0.7f;
+                        boolean uiblek = statusBarBrightness < 0.3f;
+                        boolean navputih = navigationBarBrightness > 0.7f;
+                        boolean navblek = navigationBarBrightness < 0.3f;
+                        if (uiputih && navputih) {
+                            updateNavigationBarIconColor(kolor);
+                        } else if (uiblek && navblek) {
+                            updateNavigationBarIconColor(kolor);
                         } else {
-                            updateNavigationBarIconColor(navigationBarBrightness > 0.7f &&
-                                                         isNavigationBarConsistent ? Color.parseColor("#FF000000") : Color.parseColor("#FFFFFFFF"));
+                            int er = Color.red(statusBarOverrideColor);
+                            int ge = Color.green(statusBarOverrideColor);
+                            int be = Color.blue(statusBarOverrideColor);
+                            int kol = Color.argb(0xFF, er, ge, be);
+                            if (reverse && mStatusEnabled){
+                                updateNavigationBarIconColor(same ? kolor : kol);
+                            } else {
+                                updateNavigationBarIconColor(kolor);
+                            }
                         }
                     } else {
                         // dynamic navigation bar is disabled
@@ -222,8 +224,9 @@ public class BarBackgroundUpdater {
                 } else {
                     // we are disabled completely - shush
                     updateStatusBarColor(0);
-                    updateHeaderColor(0);
                     updateStatusBarIconColor(0);
+                    updateHeaderColor(0);
+                    updateHeaderIconColor(0);
                     updateNavigationBarColor(0);
                     updateNavigationBarIconColor(0);
                 }
@@ -373,12 +376,12 @@ public class BarBackgroundUpdater {
 
             listener.onUpdateStatusBarColor(mPreviousStatusBarOverrideColor,
                      mStatusBarOverrideColor);
+            listener.onUpdateStatusBarIconColor(mPreviousStatusBarIconOverrideColor,
+                     mStatusBarIconOverrideColor);
             listener.onUpdateHeaderColor(mPreviousHeaderOverrideColor,
                      mHeaderOverrideColor);
             listener.onUpdateHeaderIconColor(mPreviousHeaderIconOverrideColor,
                      mHeaderIconOverrideColor);
-            listener.onUpdateStatusBarIconColor(mPreviousStatusBarIconOverrideColor,
-                     mStatusBarIconOverrideColor);
             listener.onUpdateNavigationBarColor(mPreviousNavigationBarOverrideColor,
                      mNavigationBarOverrideColor);
             listener.onUpdateNavigationBarIconColor(mPreviousNavigationBarIconOverrideColor,
@@ -452,12 +455,12 @@ public class BarBackgroundUpdater {
 
         if (DEBUG_COLOR_CHANGE) {
             Log.d(LOG_TAG, "statusBarOverrideColor=" + (newColor == 0 ? "none" :
-                  "0x" + Integer.toHexString(newColor)));
+                    "0x" + Integer.toHexString(newColor)));
         }
 
         for (final UpdateListener listener : mListeners) {
-             listener.onUpdateStatusBarColor(
-             mPreviousStatusBarOverrideColor, mStatusBarOverrideColor);
+            listener.onUpdateStatusBarColor(
+            mPreviousStatusBarOverrideColor, mStatusBarOverrideColor);
         }
     }
 
@@ -474,8 +477,8 @@ public class BarBackgroundUpdater {
         mHeaderOverrideColor = newColor;
 
         for (final UpdateListener listener : mListeners) {
-             listener.onUpdateHeaderColor(
-             mPreviousHeaderOverrideColor, mHeaderOverrideColor);
+            listener.onUpdateHeaderColor(
+            mPreviousHeaderOverrideColor, mHeaderOverrideColor);
         }
     }
 
@@ -493,12 +496,12 @@ public class BarBackgroundUpdater {
 
         if (DEBUG_COLOR_CHANGE) {
             Log.d(LOG_TAG, "statusBarIconOverrideColor=" + (newColor == 0 ? "none" :
-                  "0x" + Integer.toHexString(newColor)));
+                    "0x" + Integer.toHexString(newColor)));
         }
 
         for (final UpdateListener listener : mListeners) {
-             listener.onUpdateStatusBarIconColor(
-             mPreviousStatusBarIconOverrideColor, mStatusBarIconOverrideColor);
+            listener.onUpdateStatusBarIconColor(
+            mPreviousStatusBarIconOverrideColor, mStatusBarIconOverrideColor);
         }
     }
 
@@ -511,17 +514,17 @@ public class BarBackgroundUpdater {
             return;
         }
 
-        mPreviousHeaderIconOverrideColor = mStatusBarIconOverrideColor;
+        mPreviousHeaderIconOverrideColor = mHeaderIconOverrideColor;
         mHeaderIconOverrideColor = newColor;
 
         if (DEBUG_COLOR_CHANGE) {
             Log.d(LOG_TAG, "headerIconOverrideColor=" + (newColor == 0 ? "none" :
-                  "0x" + Integer.toHexString(newColor)));
+                    "0x" + Integer.toHexString(newColor)));
         }
 
         for (final UpdateListener listener : mListeners) {
-             listener.onUpdateHeaderIconColor(
-             mPreviousHeaderIconOverrideColor, mHeaderIconOverrideColor);
+            listener.onUpdateHeaderIconColor(
+            mPreviousHeaderIconOverrideColor, mHeaderIconOverrideColor);
         }
     }
 
@@ -535,12 +538,12 @@ public class BarBackgroundUpdater {
 
         if (DEBUG_COLOR_CHANGE) {
             Log.d(LOG_TAG, "navigationBarOverrideColor=" + (newColor == 0 ? "none" :
-                  "0x" + Integer.toHexString(newColor)));
+                    "0x" + Integer.toHexString(newColor)));
         }
 
         for (final UpdateListener listener : mListeners) {
-             listener.onUpdateNavigationBarColor(
-             mPreviousNavigationBarOverrideColor, mNavigationBarOverrideColor);
+            listener.onUpdateNavigationBarColor(
+            mPreviousNavigationBarOverrideColor, mNavigationBarOverrideColor);
         }
     }
 
@@ -554,12 +557,12 @@ public class BarBackgroundUpdater {
 
         if (DEBUG_COLOR_CHANGE) {
             Log.d(LOG_TAG, "navigationBarIconOverrideColor=" + (newColor == 0 ? "none" :
-                  "0x" + Integer.toHexString(newColor)));
+                    "0x" + Integer.toHexString(newColor)));
         }
 
         for (final UpdateListener listener : mListeners) {
-             listener.onUpdateNavigationBarIconColor(
-             mPreviousNavigationBarIconOverrideColor, mNavigationBarIconOverrideColor);
+            listener.onUpdateNavigationBarIconColor(
+            mPreviousNavigationBarIconOverrideColor, mNavigationBarIconOverrideColor);
         }
     }
 
@@ -578,15 +581,15 @@ public class BarBackgroundUpdater {
             //return null;
         }
 
+        public void onUpdateStatusBarIconColor(final int previousIconColor, final int iconColor) {
+            //return null;
+        }
+
         public void onUpdateHeaderColor(final int previousColor, final int color) {
             //return null;
         }
 
         public void onUpdateHeaderIconColor(final int previousIconColor, final int iconColor) {
-            //return null;
-        }
-
-        public void onUpdateStatusBarIconColor(final int previousIconColor, final int iconColor) {
             //return null;
         }
 

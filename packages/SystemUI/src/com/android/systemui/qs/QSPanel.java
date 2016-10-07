@@ -76,7 +76,7 @@ public class QSPanel extends ViewGroup {
     public static Typeface mFontStyle;
 
     private final Context mContext;
-    private final ArrayList<TileRecord> mRecords = new ArrayList<TileRecord>();
+    public final ArrayList<TileRecord> mRecords = new ArrayList<TileRecord>();
     private final View mDetail;
     private final ViewGroup mDetailContent;
     private final TextView mDetailRemoveButton;
@@ -209,10 +209,10 @@ public class QSPanel extends ViewGroup {
                 Settings.System.QS_COLOR_SWITCH, 0) == 1;
         int mIconColor = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.QS_BRIGHTNESS_ICON_COLOR, 0xFFFFFFFF);
-        if(brightnessIcon!=null) {        
-           if (mQSCSwitch) {
-               brightnessIcon.setColorFilter(mIconColor, Mode.SRC_ATOP);
-           }
+        if (brightnessIcon != null) {
+            if (mQSCSwitch) {
+                brightnessIcon.setColorFilter(mIconColor, Mode.SRC_ATOP);
+            }
         }
         mBrightnessController.setColors();
         refreshAllTiles();
@@ -450,7 +450,7 @@ public class QSPanel extends ViewGroup {
         }
     }
 
-    private void setAnimationTile(TileRecord r) {
+    public void setAnimationTile(TileRecord r) {
         ObjectAnimator animTile = null;
         int animStyle = Settings.System.getIntForUser(mContext.getContentResolver(),
                 Settings.System.ANIM_TILE_STYLE, 0, UserHandle.USER_CURRENT);
@@ -864,7 +864,7 @@ public class QSPanel extends ViewGroup {
         DetailAdapter detailAdapter;
     }
 
-    private static final class TileRecord extends Record {
+    public static final class TileRecord extends Record {
         QSTile<?> tile;
         QSTileView tileView;
         int row;

@@ -107,7 +107,7 @@ public class KeyButtonRipple extends Drawable {
 
             @Override
             public void onUpdateNavigationBarIconColor(final int previousIconColor,
-                                                       final int iconColor ) {
+                final int iconColor ) {
                 mOverrideIconColor = iconColor;
 
                 apdet(mOverrideIconColor);

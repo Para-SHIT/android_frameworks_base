@@ -65,7 +65,7 @@ public class HeaderTransitions extends BarTransitions {
                 false, obs, UserHandle.USER_ALL);
 
             mOverrideGradientAlpha = Settings.System.getInt(mContext.getContentResolver(),
-                "DYNAMIC_SYSTEM_BARS_GRADIENT_STATE", 0) == 1 ?
+                "DYNAMIC_GRADIENT_STATE", 0) == 1 ?
                     0xff : 0;
 
             BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
@@ -110,7 +110,7 @@ public class HeaderTransitions extends BarTransitions {
             return mOverrideGradientAlpha;
         }
 
-        public void setColor(){
+        public void setColor() {
             generateAnimator();
         }
 
@@ -122,21 +122,21 @@ public class HeaderTransitions extends BarTransitions {
 
     private static final class GradientObserver extends ContentObserver {
         private static final Uri DYNAMIC_SYSTEM_BARS_GRADIENT_URI = Settings.System.getUriFor(
-            "DYNAMIC_SYSTEM_BARS_GRADIENT_STATE");
+            "DYNAMIC_GRADIENT_STATE");
 
         private final HeaderBackgroundDrawable mDrawable;
 
         private GradientObserver(final HeaderBackgroundDrawable drawable,
             final Handler handler) {
-          super(handler);
-          mDrawable = drawable;
+            super(handler);
+            mDrawable = drawable;
         }
 
         @Override
         public void onChange(final boolean selfChange) {
           mDrawable.setOverrideGradientAlpha(Settings.System.getInt(
-            mDrawable.mContext.getContentResolver(),
-            "DYNAMIC_SYSTEM_BARS_GRADIENT_STATE", 0) == 1 ? 0xff : 0);
+              mDrawable.mContext.getContentResolver(),
+              "DYNAMIC_GRADIENT_STATE", 0) == 1 ? 0xff : 0);
         }
     }
 }

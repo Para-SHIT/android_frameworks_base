@@ -66,8 +66,8 @@
         android:id="@+id/memory_usage_text"
         android:layout_width="match_parent"
         android:layout_height="20dip"
-        android:layout_marginRight="70dp"
-        android:layout_marginLeft="70dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginLeft="25dp"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:gravity="center"
         android:textColor="@color/memory_usage_text_text" />

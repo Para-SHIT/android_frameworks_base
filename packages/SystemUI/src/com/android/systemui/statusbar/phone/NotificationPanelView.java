@@ -62,6 +62,7 @@ import com.android.systemui.R;
 import com.android.systemui.cm.UserContentObserver;
 import com.android.systemui.qs.QSContainer;
 import com.android.systemui.qs.QSPanel;
+import com.android.systemui.qs.QSPanel.TileRecord;
 import com.android.systemui.statusbar.ExpandableView;
 import com.android.systemui.statusbar.FlingAnimationUtils;
 import com.android.systemui.statusbar.GestureRecorder;
@@ -1243,6 +1244,7 @@ public class NotificationPanelView extends PanelView implements
         mQsFullyExpanded = height == mQsMaxExpansionHeight;
         if (height > mQsMinExpansionHeight && !mQsExpanded && !mStackScrollerOverscrolling) {
             setQsExpanded(true);
+            startAnim();
         } else if (height <= mQsMinExpansionHeight && mQsExpanded) {
             setQsExpanded(false);
             if (mLastAnnouncementWasQuickSettings && !mTracking) {
@@ -1273,6 +1275,17 @@ public class NotificationPanelView extends PanelView implements
         if (DEBUG) {
             invalidate();
         }
+    }
+
+    public void startAnim(){
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (TileRecord tr : mQsPanel.mRecords) {
+				    mQsPanel.setAnimationTile(tr);
+                }
+            }
+        });
     }
 
     private String getKeyguardOrLockScreenString() {

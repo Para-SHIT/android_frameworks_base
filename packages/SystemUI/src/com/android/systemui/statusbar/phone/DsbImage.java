@@ -17,11 +17,8 @@
 package com.android.systemui.statusbar.phone;
 
 import android.content.Context;
-import android.database.ContentObserver;
-import android.net.Uri;
+import android.graphics.*;
 import android.os.Handler;
-import android.os.UserHandle;
-import android.provider.Settings;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
@@ -32,8 +29,22 @@ public class DsbImage extends ImageView {
     ImageView iv;
     static Context mContext;
 
+    public DsbImage(Context c) {
+        super(c);
+        init(c);
+    }
+
     public DsbImage(Context c, AttributeSet as) {
-        super(c,as);
+        super(c, as);
+        init(c);
+    }
+
+    public DsbImage(Context c, AttributeSet as, int d) {
+        super(c, as, d);
+        init(c);
+    }
+
+    public void init(Context c) {
         iv = this;
         mContext = c;
         mHandler = new Handler();
@@ -43,11 +54,18 @@ public class DsbImage extends ImageView {
             @Override
             public void onUpdateStatusBarIconColor(final int previousIconColor,
                 final int iconColor) {
-
                 mOverrideIconColor = iconColor;
-                final int targetColor = (mOverrideIconColor == 0) ? 0xffffffff : mOverrideIconColor;
 
-                apdet(targetColor);
+                mHandler.post(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (iv != null) {
+                            apdet(mOverrideIconColor);
+                        }
+                    }
+
+                });
 
             }
 
@@ -61,7 +79,7 @@ public class DsbImage extends ImageView {
             @Override
             public void run() {
                 if (iv != null) {
-                    iv.setColorFilter(targetColor);
+                    iv.setColorFilter(targetColor, PorterDuff.Mode.SRC_ATOP);
                     invalidate();
                 }
             }

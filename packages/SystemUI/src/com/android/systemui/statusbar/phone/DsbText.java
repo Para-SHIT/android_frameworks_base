@@ -26,10 +26,25 @@ public class DsbText extends TextView {
     private static Handler mHandler;
     private int mOverrideIconColor = 0;
     TextView tv;
+    private static Runnable doOverride;
     static Context mContext;
 
+    public DsbText(Context c) {
+        super(c);
+        init(c);
+    }
+
     public DsbText(Context c, AttributeSet as) {
-        super(c,as);
+        super(c, as);
+        init(c);
+    }
+
+    public DsbText(Context c, AttributeSet as, int d) {
+        super(c,as,d);
+        init(c);
+    }
+
+    public void init(Context c) {
         tv = this;
         mContext = c;
         mHandler = new Handler();
@@ -39,11 +54,9 @@ public class DsbText extends TextView {
             @Override
             public void onUpdateStatusBarIconColor(final int previousIconColor,
                 final int iconColor) {
-
                 mOverrideIconColor = iconColor;
-                final int targetColor = (mOverrideIconColor == 0 ) ? 0xffffffff : mOverrideIconColor;
 
-                apdet(targetColor);
+                apdet(mOverrideIconColor);
 
             }
 
@@ -52,16 +65,19 @@ public class DsbText extends TextView {
     }
 
     public void apdet(final int targetColor) {
-        mHandler.post(new Runnable() {
+        doOverride = new Runnable() {
 
             @Override
             public void run() {
                 setTextColor(targetColor);
                 invalidate();
+                mHandler.removeCallbacks(doOverride);
+                mHandler.postDelayed(doOverride, 50);
             }
 
-        });
-
+        };
+        mHandler.removeCallbacks(doOverride);
+        mHandler.postDelayed(doOverride, 50);
     }
 
 }

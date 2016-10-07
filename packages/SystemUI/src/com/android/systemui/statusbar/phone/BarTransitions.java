@@ -262,7 +262,7 @@ public class BarTransitions {
             mWarning = res.getColor(mWarningColorResourceId);
 
             final Rect bounds = mGradient == null ? new Rect() : mGradient.getBounds();
-            mGradient = res.getDrawable(mGradientResourceId,kontek.getTheme());
+            mGradient = res.getDrawable(mGradientResourceId, kontek.getTheme());
             mGradient.setBounds(bounds);
 
             setCurrentColor(getTargetColor());
@@ -309,7 +309,8 @@ public class BarTransitions {
 
         public boolean isps() {
             boolean b = false;
-            boolean ps = Settings.System.getInt(mContext.getContentResolver(),"TRANS_PS",0) == 1;
+            boolean ps = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.DYNAMIC_TRANSPARENT_PS, 0) == 1;
             final Intent intent = new Intent(Intent.ACTION_MAIN);
 
             final ActivityManager am = (ActivityManager) mContext
@@ -322,7 +323,7 @@ public class BarTransitions {
                 if (appInfo.pkgList != null && (appInfo.pkgList.length > 0)) {
                     for (String pkg : appInfo.pkgList) {
                         if (pkg.equals("com.android.vending")) {
-                             return b = ps?true:false;
+                             return b = ps ? true : false;
                         } else {
                              return b = false;
                         }
@@ -353,7 +354,7 @@ public class BarTransitions {
                         if (pkg.equals(defaultHomePackage)) {
                              return b = true;
                         } else {
-                             return b =false;
+                             return b = false;
                         }
                     }
                 }

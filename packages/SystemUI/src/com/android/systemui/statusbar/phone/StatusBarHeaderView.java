@@ -215,6 +215,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
     private float textShadow;
     private int tShadowColor;
 
+    private int mStatusBarPowerMenuStyle;
     private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
       @Override
          public void onChange(boolean selfChange, Uri uri) {
@@ -259,8 +260,6 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         loadShowStatusBarPowerMenuSettings();
         mContext = context;
     }
-
-    private int mStatusBarPowerMenuStyle;
 
     @Override
     protected void onAttachedToWindow() {
@@ -376,28 +375,29 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
 
     }
 
-    public void apdet(){
+    public void apdet() {
+        final Drawable alarmIcon = getResources().getDrawable(R.drawable.ic_access_alarms_small);
         if (!BarBackgroundUpdater.mHeaderEnabled && vis) {
             mHandler.post(new Runnable() {
 
                 @Override
                 public void run() {
-                    mAmPm.setTextColor(AmPm);
+                    alarmIcon.setColorFilter(mIconColor, Mode.MULTIPLY);
                     mAlarmStatus.setTextColor(AlarmStatus);
-                    mTime.setTextColor(Time);
-                    mEmergencyCallsOnly.setTextColor(EmergencyCallsOnly);
-                    mWeatherLine1.setTextColor(WeatherLine1);
-                    mWeatherLine2.setTextColor(WeatherLine2);
+                    mAlarmStatus.setCompoundDrawablesWithIntrinsicBounds(alarmIcon, null, null, null);
+                    mAmPm.setTextColor(AmPm);
+                    mBatteryLevel.setTextColor(BatteryLevel);
                     mDateExpanded.setTextColor(DateExpanded);
                     mDateCollapsed.setTextColor(DateCollapsed);
+                    mEmergencyCallsOnly.setTextColor(EmergencyCallsOnly);
+                    mQsDetailHeaderTitle.setTextColor(QsDetailHeaderTitle);
                     ((ImageView)mSettingsButton).setColorFilter(mIconColor, Mode.MULTIPLY);
                     ((ImageView)mStatusBarPowerMenu).setColorFilter(mIconColor, Mode.MULTIPLY);
                     ((ImageView)mTaskManagerButton).setColorFilter(mIconColor, Mode.MULTIPLY);
-                    mBatteryLevel.setTextColor(BatteryLevel);
-                    mQsDetailHeaderTitle.setTextColor(QsDetailHeaderTitle);
-                    Drawable alarmIcon = getResources().getDrawable(R.drawable.ic_access_alarms_small);
-                    alarmIcon.setColorFilter(mIconColor, Mode.MULTIPLY);
-                    mAlarmStatus.setCompoundDrawablesWithIntrinsicBounds(alarmIcon, null, null, null);
+                    mTime.setTextColor(Time);
+                    mWeatherLine1.setTextColor(WeatherLine1);
+                    mWeatherLine2.setTextColor(WeatherLine2);
+
                     invalidate();
                 }
 
@@ -408,22 +408,22 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
 
                 @Override
                 public void run() {
-                    mAmPm.setTextColor(mOverrideIconColor);
+                    alarmIcon.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
                     mAlarmStatus.setTextColor(mOverrideIconColor);
-                    mTime.setTextColor(mOverrideIconColor);
+                    mAlarmStatus.setCompoundDrawablesWithIntrinsicBounds(alarmIcon, null, null, null);
+                    mAmPm.setTextColor(mOverrideIconColor);
+                    mBatteryLevel.setTextColor(mOverrideIconColor);
                     mDateExpanded.setTextColor(mOverrideIconColor);
                     mDateCollapsed.setTextColor(mOverrideIconColor);
+                    mEmergencyCallsOnly.setTextColor(mOverrideIconColor);
+                    mQsDetailHeaderTitle.setTextColor(mOverrideIconColor);
                     ((ImageView)mSettingsButton).setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
                     ((ImageView)mStatusBarPowerMenu).setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
                     ((ImageView)mTaskManagerButton).setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
-                    mBatteryLevel.setTextColor(mOverrideIconColor);
-                    mEmergencyCallsOnly.setTextColor(mOverrideIconColor);
+                    mTime.setTextColor(mOverrideIconColor);
                     mWeatherLine1.setTextColor(mOverrideIconColor);
                     mWeatherLine2.setTextColor(mOverrideIconColor);
-                    mQsDetailHeaderTitle.setTextColor(mOverrideIconColor);
-                    Drawable alarmIcon = getResources().getDrawable(R.drawable.ic_access_alarms_small);
-                    alarmIcon.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
-                    mAlarmStatus.setCompoundDrawablesWithIntrinsicBounds(alarmIcon, null, null, null);
+
                     invalidate();
                 }
 
@@ -1456,7 +1456,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             if (showingDetail) {
                 mQsDetailHeaderTitle.setText(detail.getTitle());
                 if (mQSCSwitch) {
-                    if(!BarBackgroundUpdater.mHeaderEnabled&&vis) {
+                    if(!BarBackgroundUpdater.mHeaderEnabled && vis) {
                         mQsDetailHeaderTitle.setTextColor(QSColorHelper.getTextColor(mContext));
                     } else {
                         mQsDetailHeaderTitle.setTextColor(mOverrideIconColor);

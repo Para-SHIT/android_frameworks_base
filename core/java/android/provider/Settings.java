@@ -5919,6 +5919,14 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String DYNAMIC_ICON_TINT_STATE = "dynamic_icon_tint_state";
 
         /**
+         * Whether the bar transition on play store is set to be transparent
+         * 0 = disabled (default)
+         * 1 = enabled
+         * @hide
+         */
+        public static final String DYNAMIC_TRANSPARENT_PS = "dynamic_transparent_ps";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *

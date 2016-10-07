@@ -40,13 +40,13 @@ public class NavbarDsbImage extends ImageView {
         init(c);
     }
 
-    public NavbarDsbImage(Context c,AttributeSet as) {
-        super(c,as);
+    public NavbarDsbImage(Context c, AttributeSet as) {
+        super(c, as);
         init(c);
     }
 
-    public NavbarDsbImage(Context c,AttributeSet as,int d) {
-        super(c,as,d);
+    public NavbarDsbImage(Context c, AttributeSet as, int d) {
+        super(c, as, d);
         init(c);
     }
 
@@ -55,14 +55,13 @@ public class NavbarDsbImage extends ImageView {
         mContext = c;
         mHandler = new Handler();
         if (mContext != null) {
-
             if (mObserver != null) {
                 mContext.getContentResolver().unregisterContentObserver(mObserver);
             }
         }
 
         if (mObserver == null) {
-            mObserver = new SettingsObserver(this,mHandler);
+            mObserver = new SettingsObserver(this, mHandler);
         }
 
         mContext.getContentResolver().registerContentObserver(
@@ -74,38 +73,37 @@ public class NavbarDsbImage extends ImageView {
 
         BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
-                @Override
-                public void onUpdateNavigationBarIconColor(final int previousIconColor,
-                    final int iconColor) {
-
-                    mOverrideIconColor = iconColor;
-
-                    apdet(mOverrideIconColor);
-
-                }
-
-        });
-
-    }
-
-    public boolean enable(){
-        return ena;
-    }
-
-    public void apdet(final int targetColor){
-        mHandler.post(new Runnable() {
-
             @Override
-            public void run() {
-                if (iv != null) {
-                    iv.setColorFilter(enable() ? targetColor : Color.WHITE,PorterDuff.Mode.MULTIPLY);
-                    invalidate();
-                }
+            public void onUpdateNavigationBarIconColor(final int previousIconColor,
+                final int iconColor) {
+                mOverrideIconColor = iconColor;
+
+                apdet(mOverrideIconColor);
 
             }
 
         });
 
+    }
+
+    public boolean enable() {
+        return ena;
+    }
+
+    public void apdet(final int targetColor) {
+        mHandler.post(new Runnable() {
+
+            @Override
+            public void run() {
+                if (iv != null) {
+                    iv.setColorFilter(enable() ? targetColor : Color.WHITE, PorterDuff.Mode.MULTIPLY);
+                    invalidate();
+                } else {
+                    iv.setColorFilter(null);
+                }
+            }
+
+        });
     }
 
     private class SettingsObserver extends ContentObserver {
@@ -121,7 +119,7 @@ public class NavbarDsbImage extends ImageView {
                 Settings.System.DYNAMIC_NAVIGATION_BAR_STATE, 0) == 1;
 
             ndi.apdet(Settings.System.getInt(ndi.mContext.getContentResolver(),
-                Settings.System.DYNAMIC_NAVIGATION_BAR_STATE, 0) == 1 ? mOverrideIconColor:Color.WHITE);
+                Settings.System.DYNAMIC_NAVIGATION_BAR_STATE, 0) == 1 ? mOverrideIconColor : Color.WHITE);
         }
 
     }
