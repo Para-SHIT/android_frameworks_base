@@ -58,6 +58,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.android.internal.messages.SystemMessageProto.SystemMessage;
 import com.android.systemui.R;
@@ -286,7 +287,7 @@ class SaveImageInBackgroundTask extends AsyncTask<Void, Void, Void> {
             // Create a delete action for the notification
             PendingIntent deleteAction = PendingIntent.getBroadcast(context,  0,
                     new Intent(context, GlobalScreenshot.DeleteScreenshotReceiver.class)
-                            .putExtra(GlobalScreenshot.SCREENSHOT_URI_ID, uri.toString()),
+                            .putExtra(GlobalScreenshot.SCREENSHOT_URI_ID, uri != null ? uri.toString() : null),
                     PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT);
             Notification.Action.Builder deleteActionBuilder = new Notification.Action.Builder(
                     R.drawable.ic_screenshot_delete,
@@ -911,6 +912,8 @@ class GlobalScreenshot {
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             final Uri uri = Uri.parse(intent.getStringExtra(SCREENSHOT_URI_ID));
             nm.cancel(SystemMessage.NOTE_GLOBAL_SCREENSHOT);
+
+            Toast.makeText(context, R.string.delete_screenshot_toast, Toast.LENGTH_SHORT).show();
 
             // And delete the image from the media store
             new DeleteImageInBackgroundTask(context).execute(uri);
