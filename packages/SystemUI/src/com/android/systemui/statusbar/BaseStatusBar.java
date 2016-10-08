@@ -1148,6 +1148,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         setNotificationTextColor((TextView) timestampText, customTextColor, 179);
         TextView appnameText = (TextView) row.findViewById(R.id.pkgname);
         appnameText.setText(appname);
+        appnameText.setTypeface(mFontStyle);
         setNotificationTextColor(appnameText, customTextColor, 255);
         final View floatButton = guts.findViewById(R.id.notification_float_item);
         final View settingsButton = guts.findViewById(R.id.notification_inspect_item);

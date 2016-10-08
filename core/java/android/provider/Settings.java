@@ -1402,7 +1402,7 @@ public final class Settings {
             }
         }
 
-	/**
+        /**
          * Convenience function for updating a single settings value as a
          * boolean. This will either create a new entry in the table if the
          * given name does not exist, or modify the value of the existing row
@@ -2119,7 +2119,7 @@ public final class Settings {
 
         /**
          * Option to hide the Bluetooth icon in the status bar when disconnected.
-	 * @hide
+         * @hide
          */
         public static final String SHOW_BLUETOOTH_ICON = "show_bluetooth_icon";
 
@@ -4012,25 +4012,6 @@ public final class Settings {
         public static final String STATUS_BAR_WEATHER_FONT_STYLE = "status_bar_weather_font_style";
 
         /**
-         * Wether to hide the weather temp on the status bar when the custom number of notifications is reached
-         * @hide
-         */
-        public static final String STATUS_BAR_WEATHER_HIDE_WEATHER = "status_bar_weather_hide_weather";
-
-        /**
-         * Hide the Weather temp on the status bar when the notification icons will reach this number
-         * 1: 1 notification icon (always)
-         * 2: 2 notification icons
-         * 3: 3 notification icons
-         * 4: 4 notification icons
-         * 5: 5 notification icons
-         * 6: 6 notification icons
-         * default: 1
-         * @hide
-         */
-        public static final String STATUS_BAR_WEATHER_NUMBER_OF_NOTIFICATION_ICONS = "status_bar_weather_number_of_notification_icons";
-
-        /**
          * Disable FC Notifications
          * @hide
          */
@@ -4162,7 +4143,7 @@ public final class Settings {
         public static final String DASHBOARD_COLUMNS = "dashboard_columns";
 
         /**
-	 *
+         *
          * Whether to show switches for wifi/cell/bt in the settings dashboard
          * @hide
          */
@@ -4186,13 +4167,13 @@ public final class Settings {
          */
         public static final String DASHBOARD_CUSTOM_COLORS = "db_custom_colors";
 
-	    /**
+        /**
          * Dashboard icon colors
          * @hide
          */
         public static final String DB_ICON_COLOR = "db_icon_color";
 
-	    /**
+        /**
          * Dashboard text color
          * @hide
          */
@@ -4317,7 +4298,7 @@ public final class Settings {
          * @hide
          */
         public static final String LOCK_SCREEN_SHOW_WEATHER_LOCATION = "lock_screen_show_weather_location";
-		
+
         /**
          * Whether to show the weather update timestamp on the lock screen
          * @hide
@@ -4513,11 +4494,11 @@ public final class Settings {
          */
         public static final String STATUS_BAR_NETWORK_ACTIVITY = "status_bar_network_activity";
 
-	    /**
+        /**
          * Network stats Color style
          * @hide
          */
-	    public static final String NETWORK_TRAFFIC_COLOR = "network_traffic_color";
+        public static final String NETWORK_TRAFFIC_COLOR = "network_traffic_color";
 
         /**
          * NFC polling mode configuration key
@@ -5454,7 +5435,7 @@ public static final String LISTVIEW_DURATION = "listview_duration";
          * @hide
          */
         public static final String OVERRIDE_CUSTOM_COLORS = "override_custom_colors";
-		
+
         /**
          * Allows to show the background activity back the lockscreen
          * 0 = off
@@ -5482,25 +5463,25 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String HEADER_CLOCK_FONT_STYLE = "header_clock_font_style";
 
 
-	/**
+        /**
          * Hide Weather Font Style
          * @hide
          */
         public static final String HEADER_WEATHER_FONT_STYLE = "header_weather_font_style";
 
-	/**
+        /**
          * Hide AM/PM Font Style
          * @hide
          */
         public static final String HEADER_DETAIL_FONT_STYLE = "header_detail_font_style";
 
-	/**
+        /**
          * Hide Date Font Style
          * @hide
          */
         public static final String HEADER_DATE_FONT_STYLE = "header_date_font_style";
 
-	/**
+        /**
          * Hide Alarm Font Style
          * @hide
          */
@@ -5552,19 +5533,19 @@ public static final String LISTVIEW_DURATION = "listview_duration";
          */
         public static final String HEADER_CLOCK_COLOR = "header_clock_color";
 
-		/**
+        /**
          * Header Date Color
          * @hide
          */
         public static final String HEADER_DETAIL_COLOR = "header_detail_color";
 
-		/**
+        /**
          * Header Weather Color
          * @hide
          */
         public static final String HEADER_WEATHERONE_COLOR = "header_weatherone_color";
 
-		/**
+        /**
          * Header Weather Color
          * @hide
          */
@@ -5576,7 +5557,7 @@ public static final String LISTVIEW_DURATION = "listview_duration";
          */
         public static final String HEADER_BATTERY_TEXT_COLOR = "header_battery_text_color";
 
-	/**
+        /**
          * Header alarm Color
          * @hide
          */
@@ -5665,14 +5646,14 @@ public static final String LISTVIEW_DURATION = "listview_duration";
          */
         public static final String SHOW_CUSTOM_LOGO = "show_custom_logo";
 
-	    /**
+        /**
          * Statusbar Custom logos Color
          * @hide
          */
 
-	    public static final String CUSTOM_LOGO_COLOR = "custom_logo_color";
+        public static final String CUSTOM_LOGO_COLOR = "custom_logo_color";
 
- 	    /**
+        /**
          * Take your Pick 
          * @hide
          */
@@ -5690,32 +5671,31 @@ public static final String LISTVIEW_DURATION = "listview_duration";
          */
         public static final String HIDE_PANEL_CLOCK = "hide_panel_clock";
 
-		/**
+        /**
          * Hide Date Of Header clock
          * @hide
          */
         public static final String HIDE_PANEL_DATE = "hide_panel_date";
 
-		/**
+        /**
          * Hide panel clock
          * @hide
          */
         public static final String HIDE_PANEL_CLOCKVALUE = "hide_panel_clockvalue";
 
-		/**
+        /**
          *  Hide Settings Battery Charging text in Panel
          * @hide
          */
         public static final String HIDE_PANEL_BATTERY = "hide_panel_battery";
 
-
-		/**
+        /**
          * Hide panel icons
          * @hide
          */
         public static final String HIDE_PANEL_ICONS = "hide_panel_icons";
 
-		/**
+        /**
          * Hide user icon in Panel
          * @hide
          */
@@ -8528,7 +8508,7 @@ public static final String LISTVIEW_DURATION = "listview_duration";
          */
         public static final String QS_USE_FOUR_COLUMNS = "qs_use_four_columns";
 
-        /**		
+        /**
          * Whether user is allowed to pull down quick settings on secure keyguard.
          * @hide
          */
