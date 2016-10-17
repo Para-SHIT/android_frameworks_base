@@ -2435,4 +2435,7 @@
 
     <!-- Show WiFi activity indicators on signal bar -->
     <bool name="config_showWifiActivityIndicators">true</bool>
+
+    <!-- Use alternative way to blur lockscreen -->
+    <bool name="config_use_stackblur">false</bool>
 </resources>

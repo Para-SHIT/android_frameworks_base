@@ -2395,16 +2395,16 @@ public final class Settings {
         public static final String QS_RIPPLE_COLOR = "qs_ripple_color";
 
         /**
-         * Transparent shade
+         * Quick settings color switch
          * @hide
          */
-        public static final String QS_TRANSPARENT_SHADE = "qs_transparent_shade";
+        public static final String QS_COLOR_SWITCH = "qs_color_switch";
 
         /**
          * Transparent shade
          * @hide
          */
-        public static final String QS_COLOR_SWITCH = "qs_color_switch";
+        public static final String QS_TRANSPARENT_SHADE = "qs_transparent_shade";
 
         /**
          * Control whether the process CPU usage meter should be shown.
@@ -5905,6 +5905,15 @@ public static final String LISTVIEW_DURATION = "listview_duration";
          * @hide
          */
         public static final String DYNAMIC_TRANSPARENT_PS = "dynamic_transparent_ps";
+
+        public static final String BLUR_SCALE_PREFERENCE_KEY = "blurred_expanded_panel_scale_pref";
+        public static final String BLUR_RADIUS_PREFERENCE_KEY = "blurred_expanded_panel_radius_pref";
+        public static final String STATUS_BAR_EXPANDED_ENABLED_PREFERENCE_KEY = "blurred_status_bar_expanded_enabled_pref";
+        public static final String RECENT_APPS_ENABLED_PREFERENCE_KEY = "blurred_recent_app_enabled_pref";
+        public static final String TRANSLUCENT_NOTIFICATIONS_PRECENTAGE_PREFERENCE_KEY = "translucent_notifications_percentage_pref";
+        public static final String TRANSLUCENT_NOTIFICATIONS_PREFERENCE_KEY = "translucent_notifications_pref";
+        public static final String TRANSLUCENT_QUICK_SETTINGS_PRECENTAGE_PREFERENCE_KEY = "translucent_quick_settings_percentage_pref";
+        public static final String TRANSLUCENT_QUICK_SETTINGS_PREFERENCE_KEY = "translucent_quick_settings_pref";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
