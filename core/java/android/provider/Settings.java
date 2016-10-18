@@ -5641,25 +5641,6 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String STATUS_BAR_TEMASEK_LOGO_COLOR = "status_bar_temasek_logo_color";
 
         /**
-         * Statusbar Custom logos
-         * @hide
-         */
-        public static final String SHOW_CUSTOM_LOGO = "show_custom_logo";
-
-        /**
-         * Statusbar Custom logos Color
-         * @hide
-         */
-
-        public static final String CUSTOM_LOGO_COLOR = "custom_logo_color";
-
-        /**
-         * Take your Pick 
-         * @hide
-         */
-        public static final String CUSTOM_LOGO_STYLE = "custom_logo_style";
-
-         /**
          * Add rotation to navbar buttons on navbar recreate (rotate screen, etc)
          * @hide
          */

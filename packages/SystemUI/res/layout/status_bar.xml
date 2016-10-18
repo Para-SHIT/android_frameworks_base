@@ -100,7 +100,6 @@
                     android:scaleType="center"
                     android:visibility="gone"
                     />
-                <include layout="@layout/custom_icons" />
 
                 <com.android.systemui.statusbar.phone.DsbText
                     android:id="@+id/left_clock"

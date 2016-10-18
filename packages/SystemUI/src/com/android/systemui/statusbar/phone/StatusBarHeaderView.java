@@ -417,6 +417,8 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
                     mDateCollapsed.setTextColor(mOverrideIconColor);
                     mEmergencyCallsOnly.setTextColor(mOverrideIconColor);
                     mQsDetailHeaderTitle.setTextColor(mOverrideIconColor);
+                    mQsDetailHeaderSwitch.getThumbDrawable().setColorFilter(mOverrideIconColor, Mode.SRC_ATOP);
+                    mQsDetailHeaderSwitch.getTrackDrawable().setColorFilter(mOverrideIconColor, Mode.SRC_ATOP);
                     ((ImageView)mSettingsButton).setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
                     ((ImageView)mStatusBarPowerMenu).setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
                     ((ImageView)mTaskManagerButton).setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
