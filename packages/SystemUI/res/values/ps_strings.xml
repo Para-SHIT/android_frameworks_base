@@ -32,4 +32,9 @@
     <string name="quick_settings_navigation_bar">Navigation bar</string>
     <string name="quick_settings_smartbar">SmartBar</string>
     <string name="quick_settings_fling">Fling</string>
+    <string name="quick_settings_pulse_label">Pulse</string>
+    <string name="accessibility_quick_settings_pulse_off">Pulse off</string>
+    <string name="accessibility_quick_settings_pulse_on">Pulse on</string>
+    <string name="accessibility_quick_settings_pulse_changed_off">Pulse turned off</string>
+    <string name="accessibility_quick_settings_pulse_changed_on">Pulse turned on</string>
 </resources>
