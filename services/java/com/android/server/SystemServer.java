@@ -94,6 +94,7 @@ import com.android.server.pm.OtaDexoptService;
 import com.android.server.pm.PackageManagerService;
 import com.android.server.pm.ShortcutService;
 import com.android.server.pm.UserManagerService;
+import com.android.server.pocket.PocketService;
 import com.android.server.power.PowerManagerService;
 import com.android.server.power.ShutdownThread;
 import com.android.server.restrictions.RestrictionsManagerService;
@@ -1269,6 +1270,9 @@ public final class SystemServer {
             mSystemServiceManager.startService(ShortcutService.Lifecycle.class);
 
             mSystemServiceManager.startService(LauncherAppsService.class);
+
+            Slog.i(TAG, "Starting PocketService");
+            mSystemServiceManager.startService(PocketService.class);
         }
 
         if (!disableNonCoreServices && !disableMediaProjection) {
