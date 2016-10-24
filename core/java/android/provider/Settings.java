@@ -2371,12 +2371,6 @@ public final class Settings {
         public static final String QS_SMART_PULLDOWN = "qs_smart_pulldown";
 
         /**
-         * Color of the quick settings panel background
-         * @hide
-         */
-        public static final String QS_BACKGROUND_COLOR = "qs_background_color";
-
-        /**
          * Color of the quick settings icons
          * @hide
          */
@@ -2399,12 +2393,6 @@ public final class Settings {
          * @hide
          */
         public static final String QS_COLOR_SWITCH = "qs_color_switch";
-
-        /**
-         * Transparent shade
-         * @hide
-         */
-        public static final String QS_TRANSPARENT_SHADE = "qs_transparent_shade";
 
         /**
          * Control whether the process CPU usage meter should be shown.
@@ -5752,13 +5740,6 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String PM_FONT_STYLES = "pm_font_styles";
 
         /**
-         * Notifications alpha
-         *
-         * @hide
-         */
-        public static final String NOTIFICATION_ALPHA = "notification_alpha";
-
-        /**
          * Typeface for quick settings
          * @hide
          */
@@ -5848,6 +5829,14 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String DYNAMIC_HEADER_STATE = "dynamic_header_state";
 
         /**
+         * Whether the qs tile is set to be colored dynamically
+         * 0 = disabled (default)
+         * 1 = enabled
+         * @hide
+         */
+        public static final String DYNAMIC_QS_TILE_STATE = "dynamic_qs_tile_state";
+
+        /**
          * Whether the navigation bar is set to be colored dynamically
          * 0 = disabled (default)
          * 1 = enabled
@@ -5893,8 +5882,12 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String RECENT_APPS_ENABLED_PREFERENCE_KEY = "blurred_recent_app_enabled_pref";
         public static final String TRANSLUCENT_NOTIFICATIONS_PRECENTAGE_PREFERENCE_KEY = "translucent_notifications_percentage_pref";
         public static final String TRANSLUCENT_NOTIFICATIONS_PREFERENCE_KEY = "translucent_notifications_pref";
-        public static final String TRANSLUCENT_QUICK_SETTINGS_PRECENTAGE_PREFERENCE_KEY = "translucent_quick_settings_percentage_pref";
-        public static final String TRANSLUCENT_QUICK_SETTINGS_PREFERENCE_KEY = "translucent_quick_settings_pref";
+
+        /**
+         * Animation of panels during enter recents app panel
+         * @hide
+         */
+        public static final String RECENTS_ENTER_ANIMATIONS = "recents_enter_animations";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings

@@ -20,7 +20,7 @@
 
     style="@style/BrightnessDialogContainer">
 
-    <ImageView
+    <com.android.systemui.statusbar.phone.QsTileImage
         android:id="@+id/brightness_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

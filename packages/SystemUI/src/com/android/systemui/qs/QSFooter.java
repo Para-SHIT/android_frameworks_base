@@ -20,9 +20,11 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
+import android.graphics.PorterDuff.Mode;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.Settings;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -33,6 +35,7 @@ import android.widget.TextView;
 
 import com.android.systemui.FontSizeUtils;
 import com.android.systemui.R;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 import com.android.systemui.statusbar.phone.QSTileHost;
 import com.android.systemui.statusbar.phone.SystemUIDialog;
 import com.android.systemui.statusbar.policy.SecurityController;
@@ -53,12 +56,17 @@ public class QSFooter implements OnClickListener, DialogInterface.OnClickListene
     private AlertDialog mDialog;
     private QSTileHost mHost;
     private Handler mHandler;
-    private final Handler mMainHandler;
+    public final Handler mMainHandler;
 
     private boolean mIsVisible;
     private boolean mIsIconVisible;
     private int mFooterTextId;
+
+    private boolean mQSCSwitch = false;
+    private int mIconColor;
     private int mTextColor;
+
+    private BarBackgroundUpdater bg;
 
     public QSFooter(QSPanel qsPanel, Context context) {
         mRootView = LayoutInflater.from(context)
@@ -68,7 +76,7 @@ public class QSFooter implements OnClickListener, DialogInterface.OnClickListene
         mFooterIcon = (ImageView) mRootView.findViewById(R.id.footer_icon);
         mContext = context;
         mMainHandler = new Handler();
-        updateTextColor();
+        updateColors();
     }
 
     public void setHost(QSTileHost host) {
@@ -247,17 +255,35 @@ public class QSFooter implements OnClickListener, DialogInterface.OnClickListene
         public void run() {
             if (mFooterTextId != 0) {
                 mFooterText.setText(mFooterTextId);
-                mFooterText.setTextColor(mTextColor);
+                if (mQSCSwitch) {
+                    if (!bg.mQsTileEnabled) {
+                        mFooterText.setTextColor(mTextColor);
+                    } else {
+                        mFooterText.setTextColor(bg.mQsTileIconOverrideColor);
+                    }
+                }
                 mFooterText.setTypeface(QSPanel.mFontStyle);
             }
             mRootView.setVisibility(mIsVisible ? View.VISIBLE : View.GONE);
             mFooterIcon.setVisibility(mIsIconVisible ? View.VISIBLE : View.INVISIBLE);
+            if (mQSCSwitch) {
+                if (!bg.mQsTileEnabled) {
+                    mFooterIcon.setColorFilter(mIconColor, Mode.MULTIPLY);
+                } else {
+                    mFooterIcon.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
+                }
+            }
         }
     };
 
-    private void updateTextColor() {
+    private void updateColors() {
         final ContentResolver resolver = mContext.getContentResolver();
-        mTextColor = QSColorHelper.getTextColor(mContext);
+        mQSCSwitch = Settings.System.getInt(resolver,
+                Settings.System.QS_COLOR_SWITCH, 0) == 1;
+        if (mQSCSwitch) {
+            mIconColor = QSColorHelper.getIconColor(mContext);
+            mTextColor = QSColorHelper.getTextColor(mContext);
+        }
     }
 
     private class Callback implements SecurityController.SecurityControllerCallback {

@@ -21,17 +21,20 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
 
 import com.android.systemui.R;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 
 public class DataUsageGraph extends View {
 
-    private final int mTrackColor;
-    private final int mUsageColor;
-    private final int mOverlimitColor;
-    private final int mWarningColor;
+    private int mTrackColor;
+    private int mUsageColor;
+    private int mOverlimitColor;
+    private int mWarningColor;
+    private int mOverrideIconColor;
     private final int mMarkerWidth;
     private final RectF mTmpRect = new RectF();
     private final Paint mTmpPaint = new Paint();
@@ -41,14 +44,38 @@ public class DataUsageGraph extends View {
     private long mUsageLevel;
     private long mMaxLevel;
 
+    public Handler mHandler;
+
     public DataUsageGraph(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mHandler = new Handler();
         final Resources res = context.getResources();
         mTrackColor = res.getColor(R.color.data_usage_graph_track);
         mUsageColor = res.getColor(R.color.system_accent_color);
         mOverlimitColor = res.getColor(R.color.system_warning_color);
         mWarningColor = res.getColor(R.color.data_usage_graph_warning);
         mMarkerWidth = res.getDimensionPixelSize(R.dimen.data_usage_graph_marker_width);
+        BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+
+            @Override
+            public void onUpdateQsTileIconColor(final int previousIconColor,
+                final int iconColor) {
+                mOverrideIconColor = iconColor;
+                mHandler.post(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (mOverrideIconColor != 0) {
+                            mUsageColor = mOverrideIconColor;
+                        } else {
+                            return;
+                        }
+                    }
+
+                });
+            }
+
+        });
     }
 
     public void setLevels(long limitLevel, long warningLevel, long usageLevel) {

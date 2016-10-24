@@ -41,9 +41,8 @@ public class NotificationBackgroundView extends View {
     private Drawable mBackground;
     private int mClipTopAmount;
     private int mActualHeight;
-    private int mNotificationsAlpha;
-    private static int mTranslucencyPercentage;
     private static boolean mTranslucentNotifications;
+    private static int mTranslucencyPercentage;
 
     private SettingsObserver mSettingsObserver;
 
@@ -64,10 +63,10 @@ public class NotificationBackgroundView extends View {
                 if (drawable.getAlpha() != mTranslucencyPercentage)
                     drawable.setAlpha(mTranslucencyPercentage);
                 if (NotificationPanelView.mKeyguardShowing) {
-                    drawable.setAlpha(179);
+                    drawable.setAlpha(200);
                 }
             } else {
-                drawable.setAlpha(mNotificationsAlpha);
+                drawable.setAlpha(255);
             }
             drawable.draw(canvas);
         }
@@ -116,8 +115,6 @@ public class NotificationBackgroundView extends View {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.NOTIFICATION_ALPHA), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.TRANSLUCENT_NOTIFICATIONS_PREFERENCE_KEY), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.TRANSLUCENT_NOTIFICATIONS_PRECENTAGE_PREFERENCE_KEY), false, this);
@@ -141,8 +138,6 @@ public class NotificationBackgroundView extends View {
 
         public void update() {
             ContentResolver resolver = mContext.getContentResolver();
-            mNotificationsAlpha = Settings.System.getIntForUser(resolver,
-                    Settings.System.NOTIFICATION_ALPHA, 255, UserHandle.USER_CURRENT);
             mTranslucentNotifications = Settings.System.getIntForUser(resolver,
                     Settings.System.TRANSLUCENT_NOTIFICATIONS_PREFERENCE_KEY, 0, UserHandle.USER_CURRENT) == 1;
             mTranslucencyPercentage = Settings.System.getInt(mContext.getContentResolver(),

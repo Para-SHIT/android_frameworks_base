@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ContentResolver;
 import android.database.ContentObserver;
+import android.graphics.PorterDuff.Mode;
 import android.os.Handler;
 import android.provider.Settings;
 import android.view.LayoutInflater;
@@ -38,6 +39,7 @@ import android.widget.ListView;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSDetailItemsList;
 import com.android.systemui.qs.QSTile;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 
 import cyanogenmod.app.StatusBarPanelCustomTile;
 
@@ -234,6 +236,10 @@ public class ExpandedDesktopTile extends QSTile<QSTile.BooleanState> {
             CheckedTextView label = (CheckedTextView) inflater.inflate(
                     android.R.layout.simple_list_item_single_choice, parent, false);
             label.setText(getStateLabelRes(getItem(position)));
+            if (BarBackgroundUpdater.mQsTileIconOverrideColor != 0) {
+                label.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor);
+                label.getCheckMarkDrawable().setColorFilter(BarBackgroundUpdater.mQsTileIconOverrideColor, Mode.SRC_ATOP);
+            }
             return label;
         }
     }

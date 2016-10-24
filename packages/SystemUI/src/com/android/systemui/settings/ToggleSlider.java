@@ -22,6 +22,7 @@ import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.drawable.RippleDrawable;
 import android.graphics.PorterDuff.Mode;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.View;
@@ -37,6 +38,7 @@ import com.android.internal.util.temasek.QSColorHelper;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardUpdateMonitorCallback;
 import com.android.systemui.R;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 import com.android.systemui.statusbar.policy.BrightnessMirrorController;
 
 public class ToggleSlider extends RelativeLayout {
@@ -55,6 +57,9 @@ public class ToggleSlider extends RelativeLayout {
     private ToggleSlider mMirror;
     private BrightnessMirrorController mMirrorController;
 
+    private int mOverrideIconColor = 0;
+    public Handler mHandler;
+
     private KeyguardUpdateMonitorCallback mCallback = new KeyguardUpdateMonitorCallback() {
         @Override
         public void onScreenTurnedOff(int why) {
@@ -72,12 +77,13 @@ public class ToggleSlider extends RelativeLayout {
 
     public ToggleSlider(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-
+        mHandler = new Handler();
         View.inflate(context, R.layout.status_bar_toggle_slider, this);
 
         final Resources res = context.getResources();
         final TypedArray a = context.obtainStyledAttributes(
                 attrs, R.styleable.ToggleSlider, defStyle, 0);
+        final int rippleColor = QSColorHelper.getRippleColor(mContext);
 
         mToggle = (CompoundButton) findViewById(R.id.toggle);
         mToggle.setOnCheckedChangeListener(mCheckListener);
@@ -88,6 +94,33 @@ public class ToggleSlider extends RelativeLayout {
         mLabel = (TextView) findViewById(R.id.label);
         mLabel.setText(a.getString(R.styleable.ToggleSlider_text));
 
+        BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+
+            @Override
+            public void onUpdateQsTileIconColor(final int previousIconColor,
+                final int iconColor) {
+                mOverrideIconColor = iconColor;
+                mHandler.post(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (mOverrideIconColor != 0 && mSlider != null) {
+                            mSlider.getThumb().setColorFilter(mOverrideIconColor, Mode.SRC_ATOP);
+                            mSlider.getProgressDrawable().setColorFilter(mOverrideIconColor, Mode.SRC_ATOP);
+                            mSlider.invalidate();
+                        } else {
+                            mSlider.getThumb().clearColorFilter();
+                            mSlider.getProgressDrawable().clearColorFilter();
+                            mSlider.invalidate();
+                        }
+                        updateRippleColor(rippleColor);
+                        postInvalidate();
+                    }
+
+                });
+            }
+
+        });
         a.recycle();
     }
 
@@ -171,10 +204,15 @@ public class ToggleSlider extends RelativeLayout {
         final int sliderColor = QSColorHelper.getBrightnessSliderColor(mContext);
         final int sliderEmptyColor = QSColorHelper.getBrightnessSliderEmptyColor(mContext);
         final int sliderIconColor = QSColorHelper.getBrightnessSliderIconColor(mContext);
-        if (mQSCSwitch !=0) {
-        	mSlider.getThumb().setColorFilter(sliderIconColor, Mode.MULTIPLY);
-        	mSlider.setProgressBackgroundTintList(ColorStateList.valueOf(sliderEmptyColor));
-            mSlider.setProgressTintList(ColorStateList.valueOf(sliderColor));
+        if (mQSCSwitch != 0) {
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
+        	    mSlider.getThumb().setColorFilter(sliderIconColor, Mode.MULTIPLY);
+        	    mSlider.setProgressBackgroundTintList(ColorStateList.valueOf(sliderEmptyColor));
+                mSlider.setProgressTintList(ColorStateList.valueOf(sliderColor));
+            } else {
+        	    mSlider.getThumb().setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
+                mSlider.getProgressDrawable().setColorFilter(mOverrideIconColor, Mode.SRC_ATOP);
+            }
             updateRippleColor(rippleColor);
         }
     }
@@ -191,7 +229,11 @@ public class ToggleSlider extends RelativeLayout {
             rippleColor
         };
         ColorStateList color = new ColorStateList(states, colors);
-        sliderRipple.setColor(color);
+        if (!BarBackgroundUpdater.mQsTileEnabled) {
+            sliderRipple.setColor(color);
+        } else {
+            sliderRipple.setColor(ColorStateList.valueOf(mOverrideIconColor));
+        }
         mSlider.setBackground(sliderRipple);
     }
 

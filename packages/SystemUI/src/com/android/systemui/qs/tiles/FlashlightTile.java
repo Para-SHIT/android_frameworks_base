@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.ContentObserver;
+import android.graphics.PorterDuff.Mode;
 import android.hardware.TorchManager;
 import android.os.SystemClock;
 import android.net.Uri;
@@ -30,11 +31,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckedTextView;
 import android.widget.ListView;
 
 import com.android.systemui.R;
 import com.android.systemui.qs.QSDetailItemsList;
 import com.android.systemui.qs.QSTile;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 import cyanogenmod.app.StatusBarPanelCustomTile;
 
 import java.util.Arrays;
@@ -246,6 +249,11 @@ public class FlashlightTile extends QSTile<QSTile.BooleanState> implements
 
             view.setMinimumHeight(mContext.getResources() .getDimensionPixelSize(
                     R.dimen.qs_detail_item_height));
+            CheckedTextView label = (CheckedTextView)view.findViewById(android.R.id.text1);
+            if (BarBackgroundUpdater.mQsTileIconOverrideColor != 0) {
+                label.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor);
+                label.getCheckMarkDrawable().setColorFilter(BarBackgroundUpdater.mQsTileIconOverrideColor, Mode.SRC_ATOP);
+            }
 
             return view;
         }

@@ -40,6 +40,7 @@ import com.android.internal.util.temasek.QSColorHelper;
 
 import com.android.systemui.FontSizeUtils;
 import com.android.systemui.R;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 
 /**
  * Quick settings common detail view with line items.
@@ -51,6 +52,8 @@ public class QSDetailItems extends FrameLayout {
     private final Context mContext;
     private final H mHandler = new H();
 
+    private BarBackgroundUpdater bg;
+    public int mColor = 0;
     private String mTag;
     private Callback mCallback;
     private boolean mItemsVisible = true;
@@ -95,6 +98,21 @@ public class QSDetailItems extends FrameLayout {
         mMaxItems = getResources().getInteger(
                 R.integer.quick_settings_detail_max_item_count);
         setMinHeightInItems(mMaxItems);
+        BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+
+            @Override
+            public void onUpdateQsTileColor(final int previousIconColor,
+                final int iconColor) {
+                mColor = iconColor;
+                if (mColor != 0) {
+                    setBackgroundColor(mColor);
+                    postInvalidate();
+                } else {
+                    return;
+                }
+            }
+
+        });
     }
 
     @Override
@@ -120,8 +138,13 @@ public class QSDetailItems extends FrameLayout {
         mEmptyIcon.setImageResource(icon);
         mEmptyText.setText(text);
         if (mQSCSwitch) {
-            mEmptyIcon.setColorFilter(mIconColor, Mode.MULTIPLY);
-            mEmptyText.setTextColor(mEmptyTextColor);
+            if (!bg.mQsTileEnabled) {
+                mEmptyIcon.setColorFilter(mIconColor, Mode.MULTIPLY);
+                mEmptyText.setTextColor(mEmptyTextColor);
+            } else {
+                mEmptyIcon.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
+                mEmptyText.setTextColor(bg.mQsTileIconOverrideColor);
+            }
         }
         mEmptyText.setTypeface(QSPanel.mFontStyle);
     }
@@ -139,6 +162,9 @@ public class QSDetailItems extends FrameLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        if (bg.mQsTileOverrideColor != 0) {
+            setBackgroundColor(bg.mQsTileOverrideColor);
+        }
         if (DEBUG) Log.d(mTag, "onAttachedToWindow");
     }
 
@@ -203,12 +229,20 @@ public class QSDetailItems extends FrameLayout {
             iv.getOverlay().add(item.overlay);
         }
         if (mQSCSwitch) {
-            iv.setColorFilter(mIconColor, Mode.MULTIPLY);
+            if (!bg.mQsTileEnabled) {
+                iv.setColorFilter(mIconColor, Mode.MULTIPLY);
+            } else {
+                iv.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
+            }
         }
         final TextView title = (TextView) view.findViewById(android.R.id.title);
         title.setText(item.line1);
         if (mQSCSwitch) {
-            title.setTextColor(mTextColor);
+            if (!bg.mQsTileEnabled) {
+                title.setTextColor(mTextColor);
+            } else {
+                title.setTextColor(bg.mQsTileIconOverrideColor);
+            }
         }
         title.setTypeface(QSPanel.mFontStyle);
         final TextView summary = (TextView) view.findViewById(android.R.id.summary);
@@ -216,6 +250,13 @@ public class QSDetailItems extends FrameLayout {
         title.setMaxLines(twoLines ? 1 : 2);
         summary.setVisibility(twoLines ? VISIBLE : GONE);
         summary.setText(twoLines ? item.line2 : null);
+        if (mQSCSwitch) {
+            if (!bg.mQsTileEnabled) {
+                summary.setTextColor(mTextColor);
+            } else {
+                summary.setTextColor(bg.mQsTileIconOverrideColor);
+            }
+        }
         summary.setTypeface(QSPanel.mFontStyle);
         view.setMinimumHeight(mContext.getResources() .getDimensionPixelSize(
                 twoLines ? R.dimen.qs_detail_item_height_twoline : R.dimen.qs_detail_item_height));
@@ -230,7 +271,11 @@ public class QSDetailItems extends FrameLayout {
         final ImageView disconnect = (ImageView) view.findViewById(android.R.id.icon2);
         disconnect.setVisibility(item.canDisconnect ? VISIBLE : GONE);
         if (mQSCSwitch) {
-            disconnect.setColorFilter(mIconColor, Mode.MULTIPLY);
+            if (!bg.mQsTileEnabled) {
+                disconnect.setColorFilter(mIconColor, Mode.MULTIPLY);
+            } else {
+                disconnect.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
+            }
         }
         disconnect.setOnClickListener(new OnClickListener() {
             @Override

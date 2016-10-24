@@ -63,9 +63,9 @@ public class BatteryMeterView extends View implements DemoMode,
     private float mSubpixelSmoothingLeft;
     private float mSubpixelSmoothingRight;
 
-    private int framekolor = 0;
+    private int mBgColor = 0;
+    private int mColor = 0;
     private int mOverrideIconColor = 0;
-    private int kolor = 0;
 
     public static enum BatteryMeterMode {
         BATTERY_METER_GONE,
@@ -266,15 +266,13 @@ public class BatteryMeterView extends View implements DemoMode,
 
             @Override
             public void onUpdateStatusBarIconColor(final int previousIconColor,
-                    final int iconColor) {
-
+                final int iconColor) {
                 mOverrideIconColor = iconColor;
-                boolean b = mOverrideIconColor == 0xFFFFFFFF;
+                boolean doOverride = mOverrideIconColor == 0xFFFFFFFF;
 
-                    kolor = (b ? 0xFF000000 : 0xFFFFFFFF);
-                    framekolor = (b ? 0x66FFFFFF : 0x66000000);
-                    postInvalidate();
-
+                mBgColor = (doOverride ? 0x66FFFFFF : 0x66000000);
+                mColor = (doOverride ? 0xFF000000 : 0xFFFFFFFF);
+                postInvalidate();
             }
 
         });
@@ -587,10 +585,10 @@ public class BatteryMeterView extends View implements DemoMode,
             mFrame.top += mSubpixelSmoothingLeft;
             mFrame.right -= mSubpixelSmoothingRight;
             mFrame.bottom -= mSubpixelSmoothingRight;
-            mFramePaint.setColor(doOverride ? framekolor : 0x66FFFFFF);
+            mFramePaint.setColor(doOverride ? mBgColor : 0x66FFFFFF);
 
             // set the battery charging color
-            final int color = tracker.plugged ? (doOverride ? mOverrideIconColor : kolor) :
+            final int color = tracker.plugged ? (doOverride ? mOverrideIconColor : mColor) :
                 getColorForLevel(level);
             mBatteryPaint.setColor(color);
 
@@ -661,7 +659,7 @@ public class BatteryMeterView extends View implements DemoMode,
                             mBoltFrame.left + mBoltPoints[0] * mBoltFrame.width(),
                             mBoltFrame.top + mBoltPoints[1] * mBoltFrame.height());
                 }
-                mBoltPaint.setColor(doOverride ? kolor : 0xB2000000);
+                mBoltPaint.setColor(doOverride ? mColor : 0xB2000000);
 
                 float boltPct = mHorizontal ?
                         (mBoltFrame.left - levelTop) / (mBoltFrame.left - mBoltFrame.right) :
@@ -691,7 +689,7 @@ public class BatteryMeterView extends View implements DemoMode,
                                 : (tracker.level == 100 ? full : nofull)));
                 mTextHeight = -mTextPaint.getFontMetrics().ascent;
 
-                mTextPaint.setColor(doOverride ? kolor : 0xFF000000);
+                mTextPaint.setColor(doOverride ? mColor : 0xFF000000);
 
                 pctText = String.valueOf(SINGLE_DIGIT_PERCENT ? (level/10) : level);
                 pctX = mWidth * 0.5f;
@@ -907,7 +905,7 @@ public class BatteryMeterView extends View implements DemoMode,
             } else {
                 paint.setPathEffect(null);
             }
-            mBackPaint.setColor(doOverride ? framekolor : 0x66FFFFFF);
+            mBackPaint.setColor(doOverride ? mBgColor : 0x66FFFFFF);
 
             // draw thin gray ring first
             canvas.drawArc(drawRect, 270, 360, false, mBackPaint);
@@ -922,7 +920,7 @@ public class BatteryMeterView extends View implements DemoMode,
                 canvas.drawText("?", textX, mTextY, mTextPaint);
 
             } else if (tracker.plugged) {
-                mBoltPaint.setColor(doOverride ? mOverrideIconColor : kolor);
+                mBoltPaint.setColor(doOverride ? mOverrideIconColor : mColor);
                 canvas.drawPath(mBoltPath, mBoltPaint);
             } else {
                 if (level > mCriticalLevel

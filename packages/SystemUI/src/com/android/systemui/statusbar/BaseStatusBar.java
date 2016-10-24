@@ -440,8 +440,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                             Settings.System.NOTIFICATION_APP_ICON_BG_COLOR))) {
                         UpdateNotificationIconColors(entry);
                     } else if (uri.equals(Settings.System.getUriFor(
-                            Settings.System.NOTIFICATION_ALPHA))
-                        || uri.equals(Settings.System.getUriFor(
                             Settings.System.TRANSLUCENT_NOTIFICATIONS_PREFERENCE_KEY))
                         || uri.equals(Settings.System.getUriFor(
                             Settings.System.TRANSLUCENT_NOTIFICATIONS_PRECENTAGE_PREFERENCE_KEY))) {
@@ -740,9 +738,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                 mNotificationColorSettingsObserver);
         mContext.getContentResolver().registerContentObserver(
                 Settings.System.getUriFor(Settings.System.NOTIFICATION_ICON_COLOR), false,
-                mNotificationColorSettingsObserver);
-        mContext.getContentResolver().registerContentObserver(
-                Settings.System.getUriFor(Settings.System.NOTIFICATION_ALPHA), false,
                 mNotificationColorSettingsObserver);
         mContext.getContentResolver().registerContentObserver(
                 Settings.System.getUriFor(Settings.System.TRANSLUCENT_NOTIFICATIONS_PREFERENCE_KEY), false,

@@ -19,6 +19,8 @@ package com.android.systemui.qs;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.graphics.PorterDuff.Mode;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.text.TextUtils.TruncateAt;
 import android.view.Gravity;
@@ -28,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.systemui.R;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 
 import java.util.Objects;
 
@@ -47,12 +50,15 @@ public class QSDualTileLabel extends LinearLayout {
     private final ImageView mFirstLineCaret;
     private final TextView mSecondLine;
     private final int mHorizontalPaddingPx;
+    private Handler mHandler;
+    private int mOverrideIconColor = 0;
 
     private String mText;
 
     public QSDualTileLabel(Context context) {
         super(context);
         mContext = context;
+        mHandler = new Handler();
         setOrientation(LinearLayout.VERTICAL);
 
         mHorizontalPaddingPx = mContext.getResources()
@@ -86,6 +92,27 @@ public class QSDualTileLabel extends LinearLayout {
                     rescheduleUpdateText();
                 }
             }
+        });
+        BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+
+            @Override
+            public void onUpdateQsTileIconColor(final int previousIconColor,
+                final int iconColor) {
+                mOverrideIconColor = iconColor;
+                mHandler.post(new Runnable(){
+
+                    @Override
+                    public void run() {
+                        if (mOverrideIconColor != 0 && mFirstLine != null && mSecondLine != null && mFirstLineCaret != null) {
+                            setTextColor(mOverrideIconColor);
+                        } else {
+                            return;
+                        }
+                    }
+
+                });
+            }
+
         });
     }
 
@@ -149,8 +176,14 @@ public class QSDualTileLabel extends LinearLayout {
         post(mUpdateText);
     }
 
+    public void updateImage() {
+        mFirstLineCaret.setColorFilter(mOverrideIconColor, Mode.SRC_ATOP);
+        mFirstLineCaret.invalidate();
+    }
+
     private void updateText() {
         if (getWidth() == 0) return;
+        updateImage();
         if (TextUtils.isEmpty(mText)) {
             mFirstLine.setText(null);
             mSecondLine.setText(null);

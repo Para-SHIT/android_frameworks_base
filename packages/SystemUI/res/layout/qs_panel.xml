@@ -23,7 +23,7 @@
         android:paddingBottom="8dp"
         android:elevation="2dp">
 
-    <ImageView
+    <com.android.systemui.statusbar.phone.QsTileImage
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/cm_panel_logo"

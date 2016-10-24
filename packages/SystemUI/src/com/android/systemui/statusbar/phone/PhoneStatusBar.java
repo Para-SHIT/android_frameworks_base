@@ -194,7 +194,6 @@ import com.android.systemui.statusbar.ExpandableNotificationRow;
 import com.android.systemui.statusbar.GestureRecorder;
 import com.android.systemui.statusbar.KeyguardIndicationController;
 import com.android.systemui.statusbar.MediaExpandableNotificationRow;
-import com.android.systemui.statusbar.NotificationBackgroundView;
 import com.android.systemui.statusbar.NotificationData;
 import com.android.systemui.statusbar.NotificationData.Entry;
 import com.android.systemui.statusbar.NotificationOverflowContainer;
@@ -477,10 +476,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private int mBlurRadius;
     private boolean mTranslucentQuickSettings;
     private boolean mBlurredStatusBarExpandedEnabled;
-    private boolean mTranslucentNotifications;
     private boolean mTranslucentRecents;
-    private int mQSTranslucencyPercentage;
-    private int mNotTranslucencyPercentage;
 
     private LinearLayout mGreetingLabelLayout;
     private DsbText mGreetingLabel;
@@ -732,16 +728,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.BLUR_RADIUS_PREFERENCE_KEY), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.TRANSLUCENT_QUICK_SETTINGS_PREFERENCE_KEY), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_EXPANDED_ENABLED_PREFERENCE_KEY), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.TRANSLUCENT_NOTIFICATIONS_PREFERENCE_KEY), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.TRANSLUCENT_QUICK_SETTINGS_PRECENTAGE_PREFERENCE_KEY), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.TRANSLUCENT_NOTIFICATIONS_PRECENTAGE_PREFERENCE_KEY), false, this,
-                    UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.RECENT_APPS_ENABLED_PREFERENCE_KEY), false, this,
                     UserHandle.USER_ALL);
@@ -858,12 +845,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 || uri.equals(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_GREETING_COLOR))) {
                 updateGreetingLabelSettings();
-            } else if (uri.equals(Settings.System.getUriFor(
-                Settings.System.TRANSLUCENT_QUICK_SETTINGS_PREFERENCE_KEY))) {
-                mTranslucentQuickSettings = Settings.System.getIntForUser(mContext.getContentResolver(),
-                    Settings.System.TRANSLUCENT_QUICK_SETTINGS_PREFERENCE_KEY,
-                        0, UserHandle.USER_CURRENT) == 1;
-                DontStressOnRecreate();
             } else if (uri.equals(Settings.System.getUriFor(
                 Settings.System.RECENT_APPS_ENABLED_PREFERENCE_KEY))) {
                 mTranslucentRecents = Settings.System.getIntForUser(mContext.getContentResolver(),
@@ -1026,20 +1007,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.BLUR_SCALE_PREFERENCE_KEY, 10);
             mBlurRadius = Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.BLUR_RADIUS_PREFERENCE_KEY, 5);
-            mTranslucentQuickSettings =  Settings.System.getIntForUser(resolver,
-                    Settings.System.TRANSLUCENT_QUICK_SETTINGS_PREFERENCE_KEY, 0, UserHandle.USER_CURRENT) == 1;
             mBlurredStatusBarExpandedEnabled = Settings.System.getIntForUser(resolver,
                     Settings.System.STATUS_BAR_EXPANDED_ENABLED_PREFERENCE_KEY, 0, UserHandle.USER_CURRENT) == 1;
-            mTranslucentNotifications = Settings.System.getIntForUser(resolver,
-                    Settings.System.TRANSLUCENT_NOTIFICATIONS_PREFERENCE_KEY, 0, UserHandle.USER_CURRENT) == 1;
             mTranslucentRecents = Settings.System.getIntForUser(resolver,
                     Settings.System.RECENT_APPS_ENABLED_PREFERENCE_KEY, 0, UserHandle.USER_CURRENT) == 1;
-            mQSTranslucencyPercentage = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.TRANSLUCENT_QUICK_SETTINGS_PRECENTAGE_PREFERENCE_KEY, 60);
-            mNotTranslucencyPercentage = Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.TRANSLUCENT_NOTIFICATIONS_PRECENTAGE_PREFERENCE_KEY, 70);
-            //updatePreferences(this.mContext);
-            //RecentsActivity.startBlurTask();
         }
     }
 

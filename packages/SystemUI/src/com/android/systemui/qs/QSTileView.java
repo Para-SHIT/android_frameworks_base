@@ -25,6 +25,7 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Animatable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.graphics.PorterDuff.Mode;
@@ -47,6 +48,8 @@ import com.android.internal.util.temasek.QSColorHelper;
 import com.android.systemui.FontSizeUtils;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile.State;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
+import com.android.systemui.statusbar.phone.QsTileImage;
 
 import java.util.Objects;
 
@@ -65,6 +68,8 @@ public class QSTileView extends ViewGroup {
     private final int mDualTileVerticalPaddingPx;
     private final View mTopBackgroundView;
 
+    private int mOverrideIconColor = 0;
+
     private TextView mLabel;
     private QSDualTileLabel mDualLabel;
     private int mLabelColor;
@@ -76,6 +81,9 @@ public class QSTileView extends ViewGroup {
     private OnLongClickListener mLongClick;
     private Drawable mTileBackground;
     private RippleDrawable mRipple;
+
+    public int mColorTextOff = 0;
+    public int mColorTextOn = 0;
 
     public QSTileView(Context context) {
         super(context);
@@ -105,6 +113,45 @@ public class QSTileView extends ViewGroup {
         setClickable(true);
 
         updateTopPadding();
+        BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+
+            @Override
+            public void onUpdateQsTileIconColor(final int previousIconColor,
+                final int iconColor) {
+                mOverrideIconColor = iconColor;
+                mHandler.post(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (mOverrideIconColor != 0) {
+                            if (mOverrideIconColor == 0xFF000000) {
+                                mColorTextOn = mOverrideIconColor;
+                                mColorTextOff = 0xFF101010;
+                            } else if (mOverrideIconColor == 0xFFFFFFFF) {
+                                mColorTextOn = mOverrideIconColor;
+                                mColorTextOff = 0xFFEEEEEE;
+                            }
+
+                            if (mLabel != null && mIcon != null) {
+                                mLabel.invalidate();
+                                mIcon.invalidate();
+                                labelView().invalidate();
+
+                                postInvalidate();
+                            }
+
+                            mDivider.setBackgroundColor(mOverrideIconColor);
+                        } else {
+                            mDivider.setBackgroundColor(res.getColor(R.color.qs_tile_divider));
+                        }
+                        setRippleColor();
+                        postInvalidate();
+                    }
+
+                });
+            }
+
+        });
     }
 
     void updateDimens(Resources res, float scaleFactor) {
@@ -162,9 +209,13 @@ public class QSTileView extends ViewGroup {
             mDualLabel.setBackgroundResource(R.drawable.btn_borderless_rect);
             mDualLabel.setFirstLineCaret(res.getDrawable(R.drawable.qs_dual_tile_caret));
             if (mQSCSwitch) {
-                mDualLabel.setTextColor(mLabelColor);
+                if (!BarBackgroundUpdater.mQsTileEnabled) {
+                    mDualLabel.setTextColor(mLabelColor);
+                } else {
+                    mDualLabel.setTextColor(mOverrideIconColor);
+                }
             } else {
-                mDualLabel.setTextColor(res.getColor(R.color.qs_tile_text));
+                mDualLabel.setTextColor(mOverrideIconColor != 0 ? mOverrideIconColor : res.getColor(R.color.qs_tile_text));
             }
             mDualLabel.setPadding(0, mDualTileVerticalPaddingPx, 0, mDualTileVerticalPaddingPx);
             mDualLabel.setTypeface(QSPanel.mFontStyle);
@@ -184,9 +235,13 @@ public class QSTileView extends ViewGroup {
             mLabel = new TextView(mContext);
             mLabel.setId(android.R.id.title);
             if (mQSCSwitch) {
-                mLabel.setTextColor(mLabelColor);
+                if (!BarBackgroundUpdater.mQsTileEnabled) {
+                    mLabel.setTextColor(mLabelColor);
+                } else {
+                    mLabel.setTextColor(mOverrideIconColor);
+                }
             } else {
-                mLabel.setTextColor(res.getColor(R.color.qs_tile_text));
+                mLabel.setTextColor(mOverrideIconColor != 0 ? mOverrideIconColor : res.getColor(R.color.qs_tile_text));
             }
             mLabel.setGravity(Gravity.CENTER_HORIZONTAL);
             mLabel.setMinLines(2);
@@ -245,10 +300,18 @@ public class QSTileView extends ViewGroup {
     public void setLabelColor() {
         updateColors();
         if (mLabel != null) {
-            mLabel.setTextColor(mLabelColor);
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
+                mLabel.setTextColor(mLabelColor);
+            } else {
+                mLabel.setTextColor(mOverrideIconColor);
+            }
         }
         if (mDualLabel != null) {
-            mDualLabel.setTextColor(mLabelColor);
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
+                mDualLabel.setTextColor(mLabelColor);
+            } else {
+                mDualLabel.setTextColor(mOverrideIconColor);
+            }
         }
     }
 
@@ -256,7 +319,11 @@ public class QSTileView extends ViewGroup {
         if (mIcon instanceof ImageView) {
             updateColors();
             ImageView iv = (ImageView) mIcon;
-            iv.setColorFilter(mIconColor, Mode.MULTIPLY);
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
+                iv.setColorFilter(mIconColor, Mode.MULTIPLY);
+            } else {
+                iv.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
+            }
         }
     }
 
@@ -284,7 +351,11 @@ public class QSTileView extends ViewGroup {
         ColorStateList color = new ColorStateList(states, colors);
 
         if (rd instanceof RippleDrawable) {
-            rd.setColor(color);
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
+                rd.setColor(color);
+            } else {
+                rd.setColor(ColorStateList.valueOf(mOverrideIconColor));
+            }
         }
     }
 
@@ -304,11 +375,15 @@ public class QSTileView extends ViewGroup {
 
     protected View createIcon() {
         updateColors();
-        final ImageView icon = new ImageView(mContext);
+        final QsTileImage icon = new QsTileImage(mContext);
         icon.setId(android.R.id.icon);
         icon.setScaleType(ScaleType.CENTER_INSIDE);
         if (mQSCSwitch) {
-            icon.setColorFilter(mIconColor, Mode.MULTIPLY);
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
+                icon.setColorFilter(mIconColor, Mode.MULTIPLY);
+            } else {
+                icon.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
+            }
         }
         return icon;
     }
@@ -390,7 +465,7 @@ public class QSTileView extends ViewGroup {
 
     protected void handleStateChanged(QSTile.State state) {
         if (mIcon instanceof ImageView) {
-            setIcon((ImageView) mIcon, state);
+            setIcon((QsTileImage) mIcon, state);
         }
         if (mDual) {
             mDualLabel.setText(state.label);
@@ -399,7 +474,8 @@ public class QSTileView extends ViewGroup {
             if (!Objects.equals(state.enabled, mDualLabel.isEnabled())) {
                 mTopBackgroundView.setEnabled(state.enabled);
                 mDualLabel.setEnabled(state.enabled);
-                mDualLabel.setTextColor(mContext.getResources().getColor(state.enabled ?
+                mDualLabel.setTextColor(mOverrideIconColor != 0 ? state.enabled ? mColorTextOn : mColorTextOff :
+                        mContext.getResources().getColor(state.enabled ?
                         R.color.qs_tile_text : R.color.qs_tile_text_disabled));
             }
         } else {
@@ -407,13 +483,14 @@ public class QSTileView extends ViewGroup {
             setContentDescription(state.contentDescription);
             if (!Objects.equals(state.enabled, mLabel.isEnabled())) {
                 mLabel.setEnabled(state.enabled);
-                mLabel.setTextColor(mContext.getResources().getColor(state.enabled ?
+                mLabel.setTextColor(mOverrideIconColor != 0 ? state.enabled ? mColorTextOn : mColorTextOff :
+                        mContext.getResources().getColor(state.enabled ?
                         R.color.qs_tile_text : R.color.qs_tile_text_disabled));
             }
         }
     }
 
-    protected void setIcon(ImageView iv, QSTile.State state) {
+    protected void setIcon(QsTileImage iv, QSTile.State state) {
         if (!Objects.equals(state.icon, iv.getTag(R.id.qs_icon_tag))) {
             Drawable d = state.icon != null ? state.icon.getDrawable(mContext) : null;
             if (d != null && state.autoMirrorDrawable) {
@@ -432,7 +509,7 @@ public class QSTileView extends ViewGroup {
             if (state.enabled) {
                 iv.setColorFilter(null);
             } else {
-                iv.setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
+                iv.setColorFilter(mColorTextOff, PorterDuff.Mode.MULTIPLY);
             }
         }
     }

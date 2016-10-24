@@ -19,6 +19,8 @@ package com.android.systemui.qs;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.PorterDuff.Mode;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -34,6 +36,7 @@ import android.widget.ListView;
 
 import android.widget.TextView;
 import com.android.systemui.R;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 
 import cyanogenmod.app.CustomTile;
 
@@ -45,6 +48,8 @@ import java.util.List;
 public class QSDetailItemsList extends LinearLayout {
     private static final String TAG = "QSDetailItemsList";
 
+    private Handler mHandler;
+    private int mOverrideIconColor;
     private ListView mListView;
     private View mEmpty;
     private TextView mEmptyText;
@@ -82,6 +87,7 @@ public class QSDetailItemsList extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mHandler = new Handler();
         mListView = (ListView) findViewById(android.R.id.list);
         mListView.setOnTouchListener(new OnTouchListener() {
             // Setting on Touch Listener for handling the touch inside ScrollView
@@ -97,10 +103,35 @@ public class QSDetailItemsList extends LinearLayout {
         mEmptyText = (TextView) mEmpty.findViewById(android.R.id.title);
         mEmptyIcon = (ImageView) mEmpty.findViewById(android.R.id.icon);
         mListView.setEmptyView(mEmpty);
+        BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+
+            @Override
+            public void onUpdateQsTileIconColor(final int previousIconColor,
+                final int iconColor) {
+                mOverrideIconColor = iconColor;
+                mHandler.post(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (mOverrideIconColor != 0 && mEmptyIcon != null && mEmptyText != null) {
+                            mEmptyText.setTextColor(mOverrideIconColor);
+                            mEmptyIcon.setColorFilter(mOverrideIconColor, Mode.SRC_ATOP);
+
+                            mEmptyText.invalidate();
+                            mEmptyIcon.invalidate();
+                        }
+                    }
+
+                });
+            }
+
+        });
     }
 
     public static class QSCustomDetailListAdapter extends ArrayAdapter<CustomTile.ExpandedItem> {
         private String mPackage;
+        private Handler mHandler;
+        private int mOverrideIconColor = 0;
 
         public QSCustomDetailListAdapter(String externalPackage, Context context,
                 List<CustomTile.ExpandedItem> objects) {
@@ -111,6 +142,7 @@ public class QSDetailItemsList extends LinearLayout {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
+            mHandler = new Handler();
             LinearLayout view = (LinearLayout) inflater.inflate(
                     R.layout.qs_detail_item, parent, false);
 
@@ -147,6 +179,33 @@ public class QSDetailItemsList extends LinearLayout {
             view.setMinimumHeight(getContext().getResources().getDimensionPixelSize(
                     twoLines ? R.dimen.qs_detail_item_height_twoline
                             : R.dimen.qs_detail_item_height));
+            BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+
+                @Override
+                public void onUpdateQsTileIconColor(final int previousIconColor,
+                    final int iconColor) {
+                    mOverrideIconColor = iconColor;
+                    mHandler.post(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            if (mOverrideIconColor != 0) {
+                                iv.setColorFilter(mOverrideIconColor, Mode.SRC_ATOP);
+                                title.setTextColor(mOverrideIconColor);
+                                summary.setTextColor(mOverrideIconColor);
+                                iv2.setColorFilter(mOverrideIconColor, Mode.SRC_ATOP);
+
+                                iv.invalidate();
+                                title.invalidate();
+                                summary.invalidate();
+                                iv2.invalidate();
+                            }
+                        }
+
+                    });
+                }
+
+            });
             return view;
         }
     }
@@ -164,6 +223,8 @@ public class QSDetailItemsList extends LinearLayout {
 
     public static class QSDetailListAdapter extends ArrayAdapter<QSDetailItems.Item> {
         private QSDetailItems.Callback mCallback;
+        private Handler mHandler;
+        public int mOverrideIconColor = 0;
 
         public QSDetailListAdapter(Context context, List<QSDetailItems.Item> objects) {
             super(context, R.layout.qs_detail_item, objects);
@@ -176,6 +237,7 @@ public class QSDetailItemsList extends LinearLayout {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
+            mHandler= new Handler();
             LinearLayout view = (LinearLayout) inflater.inflate(
                     R.layout.qs_detail_item, parent, false);
 
@@ -210,6 +272,33 @@ public class QSDetailItemsList extends LinearLayout {
                         mCallback.onDetailItemDisconnect(item);
                     }
                 }
+            });
+            BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+
+                @Override
+                public void onUpdateQsTileIconColor(final int previousIconColor,
+                    final int iconColor) {
+                    mOverrideIconColor = iconColor;
+                    mHandler.post(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            if (mOverrideIconColor != 0) {
+                                iv.setColorFilter(mOverrideIconColor, Mode.SRC_ATOP);
+                                title.setTextColor(mOverrideIconColor);
+                                summary.setTextColor( mOverrideIconColor);
+                                disconnect.setColorFilter(mOverrideIconColor, Mode.SRC_ATOP);
+
+                                iv.invalidate();
+                                title.invalidate();
+                                summary.invalidate();
+                                disconnect.invalidate();
+                            }
+                        }
+
+                    });
+                }
+
             });
             return view;
         }

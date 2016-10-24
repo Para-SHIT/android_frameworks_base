@@ -44,6 +44,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewStub;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -104,6 +105,10 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
     private static int mBlurLightColorFilter;
     private static RecentsActivity mRecentsActivity;
     private static FrameLayout mRecentsActivityRootView;
+
+    public int[] id = {0, R.anim.bounce, R.anim.slow_fade_in, R.anim.grow_from_top, R.anim.grow_from_center, R.anim.grow_from_bottom,
+        R.anim.grow_from_left, R.anim.grow_from_right,  R.anim.push_down_in, R.anim.push_up_in, R.anim.push_left_in,
+        R.anim.push_right_in, R.anim.last_app_in, R.anim.rotate, R.anim.turn_in, R.anim.zoom_in};
 
     // Search AppWidget
     RecentsAppWidgetHost mAppWidgetHost;
@@ -819,6 +824,13 @@ public class RecentsActivity extends Activity implements RecentsView.RecentsView
         ReferenceCountedTrigger t = new ReferenceCountedTrigger(this, null, null, null);
         ViewAnimation.TaskViewEnterContext ctx = new ViewAnimation.TaskViewEnterContext(t);
         mRecentsView.startEnterRecentsAnimation(ctx);
+        int a = Settings.System.getInt(this.getContentResolver(), Settings.System.RECENTS_ENTER_ANIMATIONS, 0);
+        int anim = id[a];
+        if (anim == 0) {
+            return;
+        } else {
+            mRecentsView.startAnimation(AnimationUtils.loadAnimation(this, anim));
+        }
         if (mConfig.searchBarAppWidgetId >= 0) {
             final WeakReference<RecentsAppWidgetHost.RecentsAppWidgetHostCallbacks> cbRef =
                     new WeakReference<RecentsAppWidgetHost.RecentsAppWidgetHostCallbacks>(

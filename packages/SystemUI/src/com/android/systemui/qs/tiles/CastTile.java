@@ -28,6 +28,7 @@ import com.android.systemui.R;
 import com.android.systemui.qs.QSDetailItems;
 import com.android.systemui.qs.QSDetailItems.Item;
 import com.android.systemui.qs.QSTile;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 import com.android.systemui.statusbar.policy.CastController;
 import com.android.systemui.statusbar.policy.CastController.CastDevice;
 import com.android.systemui.statusbar.policy.KeyguardMonitor;
@@ -240,6 +241,9 @@ public class CastTile extends QSTile<QSTile.BooleanState> {
                 }
             }
             mItems.setItems(items);
+            if (BarBackgroundUpdater.mQsTileOverrideColor != 0) {
+                mItems.setBackgroundColor(BarBackgroundUpdater.mQsTileOverrideColor);
+            }
         }
 
         @Override

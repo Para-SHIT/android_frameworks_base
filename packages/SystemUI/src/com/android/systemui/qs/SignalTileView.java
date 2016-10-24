@@ -29,6 +29,8 @@ import com.android.internal.util.temasek.QSColorHelper;
 
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile.SignalState;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
+import com.android.systemui.statusbar.phone.QsTileImage;
 
 /** View that represents a custom quick settings tile for displaying signal info (wifi/cell). **/
 public final class SignalTileView extends QSTileView {
@@ -36,14 +38,15 @@ public final class SignalTileView extends QSTileView {
     private static final long SHORT_DURATION = DEFAULT_DURATION / 3;
 
     private FrameLayout mIconFrame;
-    private ImageView mSignal;
-    private ImageView mOverlay;
-    private ImageView mIn;
-    private ImageView mOut;
+    private QsTileImage mSignal;
+    private QsTileImage mOverlay;
+    private QsTileImage mIn;
+    private QsTileImage mOut;
     private int mIconColor;
     private boolean mQSCSwitch = false;
 
     private int mWideOverlayIconStartPadding;
+    private BarBackgroundUpdater bg;
 
     public SignalTileView(Context context) {
         super(context);
@@ -55,12 +58,16 @@ public final class SignalTileView extends QSTileView {
                 R.dimen.wide_type_icon_start_padding_qs);
     }
 
-    private ImageView addTrafficView(int icon) {
+    private QsTileImage addTrafficView(int icon) {
         updateIconColor();
-        final ImageView traffic = new ImageView(mContext);
+        final QsTileImage traffic = new QsTileImage(mContext);
         traffic.setImageResource(icon);
         if (mQSCSwitch) {
-            traffic.setColorFilter(mIconColor, Mode.MULTIPLY);
+            if (!bg.mQsTileEnabled) {
+                traffic.setColorFilter(mIconColor, Mode.MULTIPLY);
+            } else {
+                traffic.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
+            }
         }
         traffic.setAlpha(0f);
         addView(traffic);
@@ -71,14 +78,22 @@ public final class SignalTileView extends QSTileView {
     protected View createIcon() {
         updateIconColor();
         mIconFrame = new FrameLayout(mContext);
-        mSignal = new ImageView(mContext);
+        mSignal = new QsTileImage(mContext);
         if (mQSCSwitch) {
-            mSignal.setColorFilter(mIconColor, Mode.MULTIPLY);
+            if (!bg.mQsTileEnabled) {
+                mSignal.setColorFilter(mIconColor, Mode.MULTIPLY);
+            } else {
+                mSignal.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
+            }
         }
         mIconFrame.addView(mSignal);
-        mOverlay = new ImageView(mContext);
+        mOverlay = new QsTileImage(mContext);
         if (mQSCSwitch) {
-            mOverlay.setColorFilter(mIconColor, Mode.MULTIPLY);
+            if (!bg.mQsTileEnabled) {
+                mOverlay.setColorFilter(mIconColor, Mode.MULTIPLY);
+            } else {
+                mOverlay.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
+            }
         }
         mIconFrame.addView(mOverlay, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         return mIconFrame;
@@ -167,10 +182,17 @@ public final class SignalTileView extends QSTileView {
     public void setIconColor() {
         updateIconColor();
         if (mQSCSwitch) {
-            mSignal.setColorFilter(mIconColor, Mode.MULTIPLY);
-            mOverlay.setColorFilter(mIconColor, Mode.MULTIPLY);
-            mIn.setColorFilter(mIconColor, Mode.MULTIPLY);
-            mOut.setColorFilter(mIconColor, Mode.MULTIPLY);
+            if (!bg.mQsTileEnabled) {
+                mSignal.setColorFilter(mIconColor, Mode.MULTIPLY);
+                mOverlay.setColorFilter(mIconColor, Mode.MULTIPLY);
+                mIn.setColorFilter(mIconColor, Mode.MULTIPLY);
+                mOut.setColorFilter(mIconColor, Mode.MULTIPLY);
+            } else {
+                mSignal.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
+                mOverlay.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
+                mIn.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
+                mOut.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
+            }
         }
     }
 }

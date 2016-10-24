@@ -25,7 +25,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.systemui.R;
-import com.android.systemui.qs.QSPanel;
 
 import java.util.Objects;
 
@@ -61,7 +60,6 @@ public class SegmentedButtons extends LinearLayout {
             final Object tag = c.getTag();
             final boolean selected = Objects.equals(mSelectedValue, tag);
             c.setSelected(selected);
-            c.setTypeface(QSPanel.mFontStyle);
             c.getCompoundDrawables()[1].setTint(mContext.getResources().getColor(selected
                     ? R.color.segmented_button_selected : R.color.segmented_button_unselected));
         }

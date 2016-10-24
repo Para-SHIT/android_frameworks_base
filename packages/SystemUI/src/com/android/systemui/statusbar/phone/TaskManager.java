@@ -63,6 +63,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.systemui.R;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 
 import com.android.internal.util.temasek.FontHelper;
 import com.android.internal.util.temasek.RandomColorHelper;
@@ -85,6 +86,8 @@ public class TaskManager {
     private static final int MSG_START_TASK = 3;
     private final int MAX_TASK_NUM = 100;
     private final int FLOAT_VIEW_DISPLAY_TIME = 2000;
+
+    public int mOverrideIconColor = 0;
 
     private Context mContext;
     private TaskManagerHandler mHandler = new TaskManagerHandler();
@@ -121,6 +124,32 @@ public class TaskManager {
             public void onClick(View v) {
                 mHandler.sendEmptyMessage(MSG_KILL_ALL);
             }
+        });
+        BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+
+            @Override
+            public void onUpdateQsTileIconColor(final int previousIconColor,
+                final int iconColor) {
+                mOverrideIconColor = iconColor;
+                mHandler.post(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (mOverrideIconColor != 0) {
+                            if (taskManagerTitle != null && killAllButton != null) {
+                                taskManagerTitle.setTextColor(mOverrideIconColor);
+                                killAllButton.getBackground().setColorFilter(mOverrideIconColor, Mode.SRC_ATOP);
+                                taskManagerTitle.invalidate();
+                                killAllButton.invalidate();
+                            }
+                        } else {
+                            return;
+                        }
+                    }
+
+                });
+            }
+
         });
     }
 
@@ -173,11 +202,17 @@ public class TaskManager {
                 (TextView) mTaskManagerPanel.findViewById(R.id.memory_usage_text);
         final ProgressBar memoryUsageBar =
                 (ProgressBar)mTaskManagerPanel.findViewById(R.id.memory_usage_Bar);
-        memoryUsageBar.setProgressTintList(sliderColor);
-        memoryUsageBar.setProgressBackgroundTintList(sliderInactiveColor);
+        if (!BarBackgroundUpdater.mQsTileEnabled) {
+            memoryUsageText.setTextColor(memoryTextColor);
+            memoryUsageBar.setProgressTintList(sliderColor);
+            memoryUsageBar.setProgressBackgroundTintList(sliderInactiveColor);
+        } else {
+            memoryUsageText.setTextColor(mOverrideIconColor);
+            memoryUsageBar.setProgressTintList(ColorStateList.valueOf(mOverrideIconColor));
+            memoryUsageBar.setProgressBackgroundTintList(ColorStateList.valueOf(mOverrideIconColor));
+        }
         memoryUsageBar.setScaleY(mBarThickness);
         refreshMemoryusageText(memoryUsageText);
-        memoryUsageText.setTextColor(memoryTextColor);
         refreshMemoryUsageBar(memoryUsageBar);
         refreshTitleBox();
         getTaskFontStyle();
@@ -225,7 +260,11 @@ public class TaskManager {
         final ColorStateList taskTextColor = TMColorHelper.getTaskTextColorList(mContext);
         taskNameTextView = (TextView) itemView.findViewById(R.id.task_name);
         taskNameTextView.setText(taskName);
-        taskNameTextView.setTextColor(taskTextColor);
+        if (!BarBackgroundUpdater.mQsTileEnabled) {
+            taskNameTextView.setTextColor(taskTextColor);
+        } else {
+            taskNameTextView.setTextColor(mOverrideIconColor);
+        }
         taskNameTextView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -239,7 +278,11 @@ public class TaskManager {
         });
         final ColorStateList killTaskColor = TMColorHelper.getTaskKillIconColorList(mContext);
         ImageView killButton = (ImageView) itemView.findViewById(R.id.kill_task);
-        killButton.setImageTintList(killTaskColor);
+        if (!BarBackgroundUpdater.mQsTileEnabled) {
+            killButton.setImageTintList(killTaskColor);
+        } else {
+            killButton.setColorFilter(mOverrideIconColor);
+        }
         killButton.setImageTintMode(Mode.MULTIPLY);
         killButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -261,8 +304,13 @@ public class TaskManager {
     private void refreshTitleBox() {
         final ColorStateList titleTextColor = TMColorHelper.getTaskTitleTextColorList(mContext);
         final ColorStateList killAllTextColor = TMColorHelper.getKillAllTextColorList(mContext);
-        taskManagerTitle.setTextColor(titleTextColor);
-        killAllButton.setTextColor(killAllTextColor);
+        if (!BarBackgroundUpdater.mQsTileEnabled) {
+            taskManagerTitle.setTextColor(titleTextColor);
+            killAllButton.setTextColor(killAllTextColor);
+        } else {
+            taskManagerTitle.setTextColor(mOverrideIconColor);
+            killAllButton.setTextColor(mOverrideIconColor);
+        }
     }
 
     private void refreshMemoryusageText(TextView textView) {

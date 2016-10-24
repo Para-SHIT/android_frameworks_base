@@ -18,6 +18,7 @@ package com.android.systemui.qs.tiles;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff.Mode;
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,7 @@ import android.widget.ListView;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSDetailItemsList;
 import com.android.systemui.qs.QSTile;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 import com.android.systemui.statusbar.policy.KeyguardMonitor;
 import com.android.systemui.statusbar.policy.LocationController;
 import com.android.systemui.statusbar.policy.LocationController.LocationSettingsChangeCallback;
@@ -224,6 +226,10 @@ public class LocationTile extends QSTile<QSTile.BooleanState> {
             CheckedTextView label = (CheckedTextView) inflater.inflate(
                     android.R.layout.simple_list_item_single_choice, parent, false);
             label.setText(getStateLabelRes(getItem(position)));
+            if (BarBackgroundUpdater.mQsTileIconOverrideColor != 0) {
+                label.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor);
+                label.getCheckMarkDrawable().setColorFilter(BarBackgroundUpdater.mQsTileIconOverrideColor, Mode.SRC_ATOP);
+            }
             return label;
         }
     }

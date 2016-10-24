@@ -23,16 +23,19 @@ import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.PorterDuff.Mode;
 import android.net.Uri;
 import android.provider.Settings;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckedTextView;
 import android.widget.ListView;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSDetailItemsList;
 import com.android.systemui.qs.QSTile;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 import cyanogenmod.app.StatusBarPanelCustomTile;
 
 import java.util.ArrayList;
@@ -271,6 +274,11 @@ public class ScreenTimeoutTile extends QSTile<ScreenTimeoutTile.TimeoutState> {
 
             view.setMinimumHeight(mContext.getResources() .getDimensionPixelSize(
                     R.dimen.qs_detail_item_height));
+            CheckedTextView label = (CheckedTextView)view.findViewById(android.R.id.text1);
+            if (BarBackgroundUpdater.mQsTileIconOverrideColor != 0) {
+                label.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor);
+                label.getCheckMarkDrawable().setColorFilter(BarBackgroundUpdater.mQsTileIconOverrideColor, Mode.SRC_ATOP);
+            }
 
             return view;
         }

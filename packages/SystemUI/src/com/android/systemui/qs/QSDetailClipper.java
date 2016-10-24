@@ -23,6 +23,8 @@ import android.graphics.drawable.TransitionDrawable;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
+
 /** Helper for quick settings detail panel clip animations. **/
 public class QSDetailClipper {
 
@@ -82,6 +84,11 @@ public class QSDetailClipper {
 
         public void onAnimationEnd(Animator animation) {
             mAnimator = null;
+            if (BarBackgroundUpdater.mQsTileOverrideColor != 0) {
+                mBackground.setTint(BarBackgroundUpdater.mQsTileOverrideColor);
+            } else {
+                mBackground.invalidateSelf();
+            }
         }
     };
 

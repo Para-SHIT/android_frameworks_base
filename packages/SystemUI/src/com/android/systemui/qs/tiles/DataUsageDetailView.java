@@ -35,6 +35,7 @@ import com.android.systemui.R;
 import com.android.systemui.qs.QSPanel;
 import com.android.systemui.qs.DataUsageGraph;
 import com.android.systemui.qs.QSTile;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 import com.android.systemui.statusbar.policy.NetworkController;
 
 
@@ -52,6 +53,8 @@ public class DataUsageDetailView extends LinearLayout {
     private final DecimalFormat FORMAT = new DecimalFormat("#.##");
 
     private boolean mQSCSwitch = false;
+
+    private BarBackgroundUpdater bg;
 
     public DataUsageDetailView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -111,12 +114,24 @@ public class DataUsageDetailView extends LinearLayout {
         final TextView title = (TextView) findViewById(android.R.id.title);
         title.setText(titleId);
         if (mQSCSwitch) {
-            title.setTextColor(textColor);
+            if (!bg.mQsTileEnabled) {
+                title.setTextColor(textColor);
+            } else {
+                title.setTextColor(bg.mQsTileIconOverrideColor);
+            }
         }
         title.setTypeface(QSPanel.mFontStyle);
         final TextView usage = (TextView) findViewById(R.id.usage_text);
         usage.setText(formatBytes(bytes));
-        usage.setTextColor(res.getColor(usageColor));
+        if (mQSCSwitch) {
+            if (!bg.mQsTileEnabled) {
+                usage.setTextColor(textColor);
+            } else {
+                usage.setTextColor(bg.mQsTileIconOverrideColor);
+            }
+        } else {
+            usage.setTextColor(bg.mQsTileIconOverrideColor != 0 ? bg.mQsTileIconOverrideColor : res.getColor(usageColor));
+        }
         usage.setTypeface(QSPanel.mFontStyle);
         final DataUsageGraph graph = (DataUsageGraph) findViewById(R.id.usage_graph);
         graph.setLevels(info.limitLevel, info.warningLevel, info.usageLevel);
@@ -135,30 +150,54 @@ public class DataUsageDetailView extends LinearLayout {
             }
         });
         if (mQSCSwitch) {
-            carrier.setTextColor(textColor);
-        } else {
-            final TextView period = (TextView) findViewById(R.id.usage_period_text);
-            period.setText(info.period);
+            if (!bg.mQsTileEnabled) {
+                carrier.setTextColor(textColor);
+            } else {
+                carrier.setTextColor(bg.mQsTileIconOverrideColor);
+            }
         }
         carrier.setTypeface(QSPanel.mFontStyle);
+        final TextView period = (TextView) findViewById(R.id.usage_period_text);
+        period.setText(info.period);
+        if (mQSCSwitch) {
+            if (!bg.mQsTileEnabled) {
+                period.setTextColor(secondaryTextColor);
+            } else {
+                period.setTextColor(bg.mQsTileIconOverrideColor);
+            }
+        }
+        period.setTypeface(QSPanel.mFontStyle);
         final TextView infoTop = (TextView) findViewById(R.id.usage_info_top_text);
         infoTop.setVisibility(top != null ? View.VISIBLE : View.GONE);
         infoTop.setText(top);
         if (mQSCSwitch) {
-            infoTop.setTextColor(textColor);
-            final TextView period = (TextView) findViewById(R.id.usage_period_text);
-            period.setText(info.period);
-            period.setTextColor(secondaryTextColor);
-            period.setTypeface(QSPanel.mFontStyle);
+            if (!bg.mQsTileEnabled) {
+                infoTop.setTextColor(textColor);
+            } else {
+                infoTop.setTextColor(bg.mQsTileIconOverrideColor);
+            }
         }
         infoTop.setTypeface(QSPanel.mFontStyle);
         final TextView infoBottom = (TextView) findViewById(R.id.usage_info_bottom_text);
         infoBottom.setVisibility(bottom != null ? View.VISIBLE : View.GONE);
         infoBottom.setText(bottom);
         if (mQSCSwitch) {
-            infoBottom.setTextColor(secondaryTextColor);
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
+                infoBottom.setTextColor(secondaryTextColor);
+            } else {
+                infoBottom.setTextColor(bg.mQsTileIconOverrideColor);
+            }
         }
         infoBottom.setTypeface(QSPanel.mFontStyle);
+
+        if (bg.mQsTileIconOverrideColor != 0) {
+            title.setTextColor(bg.mQsTileIconOverrideColor);
+            carrier.setTextColor(bg.mQsTileIconOverrideColor);
+            period.setTextColor(bg.mQsTileIconOverrideColor);
+            infoTop.setTextColor(bg.mQsTileIconOverrideColor);
+            infoBottom.setTextColor(bg.mQsTileIconOverrideColor);
+        }
+
     }
 
     private String formatBytes(long bytes) {
