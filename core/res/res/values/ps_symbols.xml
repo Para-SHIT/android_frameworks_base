@@ -15,44 +15,50 @@
      limitations under the License.
 -->
 <resources>
-    <!-- Screen Recording -->
-    <java-symbol type="bool" name="config_enableRegionScreenshotChord" />
+  <!-- Screen Recording -->
+  <java-symbol type="bool" name="config_enableRegionScreenshotChord" />
 
-    <!-- Quick settings tiles columns and rows config -->
-    <java-symbol type="integer" name="config_qs_num_rows_landscape_default"/>
+  <!-- Quick settings tiles columns and rows config -->
+  <java-symbol type="integer" name="config_qs_num_rows_landscape_default"/>
 
-    <!-- Slim recent app screen-->
-    <java-symbol type="integer" name="config_recentDefaultDur" />
-    <java-symbol type="integer" name="config_recentExitDur" />
-    <java-symbol type="style" name="Animation.RecentScreen" />
-    <java-symbol type="style" name="Animation.RecentScreen.Left" />
-    <java-symbol type="anim" name="recent_screen_enter" />
-    <java-symbol type="anim" name="recent_screen_enter_left" />
-    <java-symbol type="anim" name="recent_screen_fade_out" />
+  <!-- Slim recent app screen-->
+  <java-symbol type="integer" name="config_recentDefaultDur" />
+  <java-symbol type="integer" name="config_recentExitDur" />
+  <java-symbol type="style" name="Animation.RecentScreen" />
+  <java-symbol type="style" name="Animation.RecentScreen.Left" />
+  <java-symbol type="anim" name="recent_screen_enter" />
+  <java-symbol type="anim" name="recent_screen_enter_left" />
+  <java-symbol type="anim" name="recent_screen_fade_out" />
 
-    <!-- Power menu animation  -->
-    <java-symbol type="style" name="PowerMenuBottomAnimation" />
-    <java-symbol type="style" name="PowerMenuTopAnimation" />
-    <java-symbol type="style" name="PowerMenuRotateAnimation" />
-    <java-symbol type="style" name="PowerMenuXylonAnimation" />
-    <java-symbol type="style" name="PowerMenuTranslucentAnimation" />
-    <java-symbol type="style" name="PowerMenuTnAnimation" />
-    <java-symbol type="style" name="PowerMenuflyAnimation" />
-    <java-symbol type="style" name="PowerMenuCardAnimation" />
+  <!-- Power menu animation  -->
+  <java-symbol type="style" name="PowerMenuBottomAnimation" />
+  <java-symbol type="style" name="PowerMenuTopAnimation" />
+  <java-symbol type="style" name="PowerMenuRotateAnimation" />
+  <java-symbol type="style" name="PowerMenuXylonAnimation" />
+  <java-symbol type="style" name="PowerMenuTranslucentAnimation" />
+  <java-symbol type="style" name="PowerMenuTnAnimation" />
+  <java-symbol type="style" name="PowerMenuflyAnimation" />
+  <java-symbol type="style" name="PowerMenuCardAnimation" />
 
-    <!-- Toast Animation -->
-    <java-symbol type="style" name="Animation.Toast.Fade" />
-    <java-symbol type="style" name="Animation.Toast.SlideRight" />
-    <java-symbol type="style" name="Animation.Toast.SlideLeft" />
-    <java-symbol type="style" name="Animation.Toast.Xylon" />
-    <java-symbol type="style" name="Animation.Toast.Toko" />
-    <java-symbol type="style" name="Animation.Toast.Tn" />
-    <java-symbol type="style" name="Animation.Toast.Honami" />
-    <java-symbol type="style" name="Animation.Toast.FastFade" />
-    <java-symbol type="style" name="Animation.Toast.GrowFade" />
-    <java-symbol type="style" name="Animation.Toast.GrowFadeCenter" />
-    <java-symbol type="style" name="Animation.Toast.GrowFadeBottom" />
-    <java-symbol type="style" name="Animation.Toast.Translucent" />
-    <java-symbol type="style" name="Animation.Toast.SlideRightLeft" />
-    <java-symbol type="style" name="Animation.Toast.SlideLeftRight" />
+  <!-- Toast Animation -->
+  <java-symbol type="style" name="Animation.Toast.Fade" />
+  <java-symbol type="style" name="Animation.Toast.SlideRight" />
+  <java-symbol type="style" name="Animation.Toast.SlideLeft" />
+  <java-symbol type="style" name="Animation.Toast.Xylon" />
+  <java-symbol type="style" name="Animation.Toast.Toko" />
+  <java-symbol type="style" name="Animation.Toast.Tn" />
+  <java-symbol type="style" name="Animation.Toast.Honami" />
+  <java-symbol type="style" name="Animation.Toast.FastFade" />
+  <java-symbol type="style" name="Animation.Toast.GrowFade" />
+  <java-symbol type="style" name="Animation.Toast.GrowFadeCenter" />
+  <java-symbol type="style" name="Animation.Toast.GrowFadeBottom" />
+  <java-symbol type="style" name="Animation.Toast.Translucent" />
+  <java-symbol type="style" name="Animation.Toast.SlideRightLeft" />
+  <java-symbol type="style" name="Animation.Toast.SlideLeftRight" />
+
+  <!-- Pocket Lock -->
+  <java-symbol type="layout" name="pocket_lock_view_layout" />
+  <java-symbol type="id" name="pocket_hint_container" />
+  <java-symbol type="id" name="pocket_hint_image" />
+  <java-symbol type="id" name="pocket_hint_message" />
 </resources>
