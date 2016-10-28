@@ -65,8 +65,7 @@ public class QSFooter implements OnClickListener, DialogInterface.OnClickListene
     private boolean mQSCSwitch = false;
     private int mIconColor;
     private int mTextColor;
-
-    private BarBackgroundUpdater bg;
+    private int mOverrideIconColor;
 
     public QSFooter(QSPanel qsPanel, Context context) {
         mRootView = LayoutInflater.from(context)
@@ -77,6 +76,29 @@ public class QSFooter implements OnClickListener, DialogInterface.OnClickListene
         mContext = context;
         mMainHandler = new Handler();
         updateColors();
+        BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+
+            @Override
+            public void onUpdateQsTileIconColor(final int previousIconColor,
+                final int iconColor) {
+                mOverrideIconColor = iconColor;
+                mMainHandler.post(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (mOverrideIconColor != 0) {
+                            mFooterText.setTextColor(mOverrideIconColor);
+                            mFooterIcon.setColorFilter(mOverrideIconColor, Mode.SRC_ATOP);
+
+                            mFooterText.invalidate();
+                            mFooterIcon.invalidate();
+                        }
+                    }
+
+                });
+            }
+
+        });
     }
 
     public void setHost(QSTileHost host) {
@@ -256,10 +278,10 @@ public class QSFooter implements OnClickListener, DialogInterface.OnClickListene
             if (mFooterTextId != 0) {
                 mFooterText.setText(mFooterTextId);
                 if (mQSCSwitch) {
-                    if (!bg.mQsTileEnabled) {
+                    if (!BarBackgroundUpdater.mQsTileEnabled) {
                         mFooterText.setTextColor(mTextColor);
                     } else {
-                        mFooterText.setTextColor(bg.mQsTileIconOverrideColor);
+                        mFooterText.setTextColor(mOverrideIconColor);
                     }
                 }
                 mFooterText.setTypeface(QSPanel.mFontStyle);
@@ -267,10 +289,10 @@ public class QSFooter implements OnClickListener, DialogInterface.OnClickListene
             mRootView.setVisibility(mIsVisible ? View.VISIBLE : View.GONE);
             mFooterIcon.setVisibility(mIsIconVisible ? View.VISIBLE : View.INVISIBLE);
             if (mQSCSwitch) {
-                if (!bg.mQsTileEnabled) {
+                if (!BarBackgroundUpdater.mQsTileEnabled) {
                     mFooterIcon.setColorFilter(mIconColor, Mode.MULTIPLY);
                 } else {
-                    mFooterIcon.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
+                    mFooterIcon.setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
                 }
             }
         }

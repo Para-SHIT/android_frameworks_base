@@ -1240,7 +1240,7 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
                     Settings.System.DOUBLE_TAP_SLEEP_NAVBAR, 0,
                     UserHandle.USER_CURRENT) == 1);
             mNavButtonsRotation = (Settings.System.getIntForUser(resolver,
-                    Settings.System.NAV_BUTTONS_ROTATION, 1,
+                    Settings.System.NAV_BUTTONS_ROTATION, 0,
                     UserHandle.USER_CURRENT) == 1);
             // reset saved side button visibilities
             for (int i = 0; i < mSideButtonVisibilities.length; i++) {

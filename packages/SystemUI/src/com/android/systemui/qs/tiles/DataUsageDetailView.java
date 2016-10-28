@@ -54,8 +54,6 @@ public class DataUsageDetailView extends LinearLayout {
 
     private boolean mQSCSwitch = false;
 
-    private BarBackgroundUpdater bg;
-
     public DataUsageDetailView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
@@ -114,23 +112,23 @@ public class DataUsageDetailView extends LinearLayout {
         final TextView title = (TextView) findViewById(android.R.id.title);
         title.setText(titleId);
         if (mQSCSwitch) {
-            if (!bg.mQsTileEnabled) {
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
                 title.setTextColor(textColor);
             } else {
-                title.setTextColor(bg.mQsTileIconOverrideColor);
+                title.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor);
             }
         }
         title.setTypeface(QSPanel.mFontStyle);
         final TextView usage = (TextView) findViewById(R.id.usage_text);
         usage.setText(formatBytes(bytes));
         if (mQSCSwitch) {
-            if (!bg.mQsTileEnabled) {
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
                 usage.setTextColor(textColor);
             } else {
-                usage.setTextColor(bg.mQsTileIconOverrideColor);
+                usage.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor);
             }
         } else {
-            usage.setTextColor(bg.mQsTileIconOverrideColor != 0 ? bg.mQsTileIconOverrideColor : res.getColor(usageColor));
+            usage.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor != 0 ? BarBackgroundUpdater.mQsTileIconOverrideColor : res.getColor(usageColor));
         }
         usage.setTypeface(QSPanel.mFontStyle);
         final DataUsageGraph graph = (DataUsageGraph) findViewById(R.id.usage_graph);
@@ -150,20 +148,20 @@ public class DataUsageDetailView extends LinearLayout {
             }
         });
         if (mQSCSwitch) {
-            if (!bg.mQsTileEnabled) {
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
                 carrier.setTextColor(textColor);
             } else {
-                carrier.setTextColor(bg.mQsTileIconOverrideColor);
+                carrier.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor);
             }
         }
         carrier.setTypeface(QSPanel.mFontStyle);
         final TextView period = (TextView) findViewById(R.id.usage_period_text);
         period.setText(info.period);
         if (mQSCSwitch) {
-            if (!bg.mQsTileEnabled) {
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
                 period.setTextColor(secondaryTextColor);
             } else {
-                period.setTextColor(bg.mQsTileIconOverrideColor);
+                period.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor);
             }
         }
         period.setTypeface(QSPanel.mFontStyle);
@@ -171,10 +169,10 @@ public class DataUsageDetailView extends LinearLayout {
         infoTop.setVisibility(top != null ? View.VISIBLE : View.GONE);
         infoTop.setText(top);
         if (mQSCSwitch) {
-            if (!bg.mQsTileEnabled) {
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
                 infoTop.setTextColor(textColor);
             } else {
-                infoTop.setTextColor(bg.mQsTileIconOverrideColor);
+                infoTop.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor);
             }
         }
         infoTop.setTypeface(QSPanel.mFontStyle);
@@ -185,17 +183,17 @@ public class DataUsageDetailView extends LinearLayout {
             if (!BarBackgroundUpdater.mQsTileEnabled) {
                 infoBottom.setTextColor(secondaryTextColor);
             } else {
-                infoBottom.setTextColor(bg.mQsTileIconOverrideColor);
+                infoBottom.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor);
             }
         }
         infoBottom.setTypeface(QSPanel.mFontStyle);
 
-        if (bg.mQsTileIconOverrideColor != 0) {
-            title.setTextColor(bg.mQsTileIconOverrideColor);
-            carrier.setTextColor(bg.mQsTileIconOverrideColor);
-            period.setTextColor(bg.mQsTileIconOverrideColor);
-            infoTop.setTextColor(bg.mQsTileIconOverrideColor);
-            infoBottom.setTextColor(bg.mQsTileIconOverrideColor);
+        if (BarBackgroundUpdater.mQsTileIconOverrideColor != 0) {
+            title.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor);
+            carrier.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor);
+            period.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor);
+            infoTop.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor);
+            infoBottom.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor);
         }
 
     }

@@ -34,7 +34,6 @@ public class DataUsageGraph extends View {
     private int mUsageColor;
     private int mOverlimitColor;
     private int mWarningColor;
-    private int mOverrideIconColor;
     private final int mMarkerWidth;
     private final RectF mTmpRect = new RectF();
     private final Paint mTmpPaint = new Paint();
@@ -45,6 +44,9 @@ public class DataUsageGraph extends View {
     private long mMaxLevel;
 
     public Handler mHandler;
+    private int mBgColor = 0;
+    private int mColor = 0;
+    private int mOverrideIconColor = 0;
 
     public DataUsageGraph(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -61,18 +63,11 @@ public class DataUsageGraph extends View {
             public void onUpdateQsTileIconColor(final int previousIconColor,
                 final int iconColor) {
                 mOverrideIconColor = iconColor;
-                mHandler.post(new Runnable() {
+                boolean doOverride = mOverrideIconColor == 0xFFFFFFFF;
 
-                    @Override
-                    public void run() {
-                        if (mOverrideIconColor != 0) {
-                            mUsageColor = mOverrideIconColor;
-                        } else {
-                            return;
-                        }
-                    }
-
-                });
+                mBgColor = (doOverride ? 0x33FFFFFF : 0x33000000);
+                mColor = (doOverride ? 0xFF000000 : 0xFF80CBC4);
+                postInvalidate();
             }
 
         });
@@ -95,6 +90,7 @@ public class DataUsageGraph extends View {
         final int w = getWidth();
         final int h = getHeight();
 
+        final boolean doOverride = mOverrideIconColor != 0;
         final boolean overLimit = mLimitLevel > 0 && mUsageLevel > mLimitLevel;
         float usageRight = w * (mUsageLevel / (float) mMaxLevel);
         if (overLimit) {
@@ -109,20 +105,20 @@ public class DataUsageGraph extends View {
         } else {
             // draw track
             r.set(0, 0, w, h);
-            p.setColor(mTrackColor);
+            p.setColor(doOverride ? mBgColor : mTrackColor);
             canvas.drawRect(r, p);
         }
 
         // draw usage
         r.set(0, 0, usageRight, h);
-        p.setColor(mUsageColor);
+        p.setColor(doOverride ? mOverrideIconColor : mColor);
         canvas.drawRect(r, p);
 
         // draw warning marker
         float warningLeft = w * (mWarningLevel / (float) mMaxLevel) - mMarkerWidth / 2;
         warningLeft = Math.min(Math.max(warningLeft, 0), w - mMarkerWidth);
         r.set(warningLeft, 0, warningLeft + mMarkerWidth, h);
-        p.setColor(mWarningColor);
+        p.setColor(doOverride ? mOverrideIconColor : mWarningColor);
         canvas.drawRect(r, p);
     }
 }

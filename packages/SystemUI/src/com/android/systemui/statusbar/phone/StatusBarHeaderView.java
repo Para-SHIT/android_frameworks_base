@@ -1444,7 +1444,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             if (showingDetail) {
                 mQsDetailHeaderTitle.setText(detail.getTitle());
                 if (mQSCSwitch) {
-                    if(!BarBackgroundUpdater.mQsTileEnabled) {
+                    if(!BarBackgroundUpdater.mHeaderEnabled && dhs) {
                         mQsDetailHeaderTitle.setTextColor(QSColorHelper.getTextColor(mContext));
                     } else {
                         mQsDetailHeaderTitle.setTextColor(mOverrideIconColor);

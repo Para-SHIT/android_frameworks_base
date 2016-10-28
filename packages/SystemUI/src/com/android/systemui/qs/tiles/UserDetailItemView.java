@@ -20,6 +20,7 @@ import com.android.internal.util.ArrayUtils;
 import com.android.internal.util.temasek.QSColorHelper;
 import com.android.systemui.FontSizeUtils;
 import com.android.systemui.R;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 import com.android.systemui.statusbar.phone.UserAvatarView;
 
 import android.content.Context;
@@ -28,6 +29,7 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -44,6 +46,8 @@ import com.android.systemui.qs.QSPanel;
  */
 public class UserDetailItemView extends LinearLayout {
 
+    private Handler mHandler;
+    private int mOverrideIconColor;
     private UserAvatarView mAvatar;
     private TextView mName;
     private Typeface mRegularTypeface;
@@ -102,6 +106,7 @@ public class UserDetailItemView extends LinearLayout {
 
     @Override
     protected void onFinishInflate() {
+        mHandler = new Handler();
         mAvatar = (UserAvatarView) findViewById(R.id.user_picture);
         mName = (TextView) findViewById(R.id.user_name);
         if (mRegularTypeface == null) {
@@ -111,6 +116,29 @@ public class UserDetailItemView extends LinearLayout {
             mActivatedTypeface = mName.getTypeface();
         }
         updateTypeface();
+        BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+
+            @Override
+            public void onUpdateQsTileIconColor(final int previousIconColor,
+                final int iconColor) {
+                mOverrideIconColor = iconColor;
+                mHandler.post(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (mOverrideIconColor != 0) {
+                            boolean activated = ArrayUtils.contains(getDrawableState(), android.R.attr.state_activated);
+                            int NormalOverride = mOverrideIconColor;
+                            int DeactivatedOverride = (102 << 24) | (NormalOverride & 0x00ffffff); // Text color normal with a transparency of 40%
+                            mName.setTextColor(activated ? NormalOverride : DeactivatedOverride);
+                            mName.invalidate();
+                        }
+                    }
+
+                });
+            }
+
+        });
     }
 
     @Override
@@ -134,11 +162,17 @@ public class UserDetailItemView extends LinearLayout {
         boolean mQSCSwitch = Settings.System.getInt(getContext().getContentResolver(),
                 Settings.System.QS_COLOR_SWITCH, 0) == 1;
         if (mQSCSwitch) {
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
             int textColorNormal = QSColorHelper.getTextColor(mContext);
             int textColorActivated = getContext().getResources().getColor(
                     R.color.system_accent_color);
             int textColorDeactivated = (102 << 24) | (textColorNormal & 0x00ffffff); // Text color normal with a transparency of 40%
             mName.setTextColor(activated ? textColorActivated : textColorDeactivated);
+            } else {
+            int textColorNormalOverride = BarBackgroundUpdater.mQsTileIconOverrideColor;
+            int textColorDeactivatedOverride = (102 << 24) | (textColorNormalOverride & 0x00ffffff); // Text color normal with a transparency of 40%
+            mName.setTextColor(activated ? textColorNormalOverride : textColorDeactivatedOverride);
+            }
         }
     }
 

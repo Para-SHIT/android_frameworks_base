@@ -52,7 +52,6 @@ public class QSDetailItems extends FrameLayout {
     private final Context mContext;
     private final H mHandler = new H();
 
-    private BarBackgroundUpdater bg;
     public int mColor = 0;
     private String mTag;
     private Callback mCallback;
@@ -138,12 +137,12 @@ public class QSDetailItems extends FrameLayout {
         mEmptyIcon.setImageResource(icon);
         mEmptyText.setText(text);
         if (mQSCSwitch) {
-            if (!bg.mQsTileEnabled) {
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
                 mEmptyIcon.setColorFilter(mIconColor, Mode.MULTIPLY);
                 mEmptyText.setTextColor(mEmptyTextColor);
             } else {
-                mEmptyIcon.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
-                mEmptyText.setTextColor(bg.mQsTileIconOverrideColor);
+                mEmptyIcon.setColorFilter(BarBackgroundUpdater.mQsTileIconOverrideColor, Mode.MULTIPLY);
+                mEmptyText.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor);
             }
         }
         mEmptyText.setTypeface(QSPanel.mFontStyle);
@@ -162,8 +161,8 @@ public class QSDetailItems extends FrameLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if (bg.mQsTileOverrideColor != 0) {
-            setBackgroundColor(bg.mQsTileOverrideColor);
+        if (BarBackgroundUpdater.mQsTileOverrideColor != 0) {
+            setBackgroundColor(BarBackgroundUpdater.mQsTileOverrideColor);
         }
         if (DEBUG) Log.d(mTag, "onAttachedToWindow");
     }
@@ -229,19 +228,19 @@ public class QSDetailItems extends FrameLayout {
             iv.getOverlay().add(item.overlay);
         }
         if (mQSCSwitch) {
-            if (!bg.mQsTileEnabled) {
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
                 iv.setColorFilter(mIconColor, Mode.MULTIPLY);
             } else {
-                iv.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
+                iv.setColorFilter(BarBackgroundUpdater.mQsTileIconOverrideColor, Mode.MULTIPLY);
             }
         }
         final TextView title = (TextView) view.findViewById(android.R.id.title);
         title.setText(item.line1);
         if (mQSCSwitch) {
-            if (!bg.mQsTileEnabled) {
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
                 title.setTextColor(mTextColor);
             } else {
-                title.setTextColor(bg.mQsTileIconOverrideColor);
+                title.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor);
             }
         }
         title.setTypeface(QSPanel.mFontStyle);
@@ -251,10 +250,10 @@ public class QSDetailItems extends FrameLayout {
         summary.setVisibility(twoLines ? VISIBLE : GONE);
         summary.setText(twoLines ? item.line2 : null);
         if (mQSCSwitch) {
-            if (!bg.mQsTileEnabled) {
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
                 summary.setTextColor(mTextColor);
             } else {
-                summary.setTextColor(bg.mQsTileIconOverrideColor);
+                summary.setTextColor(BarBackgroundUpdater.mQsTileIconOverrideColor);
             }
         }
         summary.setTypeface(QSPanel.mFontStyle);
@@ -271,10 +270,10 @@ public class QSDetailItems extends FrameLayout {
         final ImageView disconnect = (ImageView) view.findViewById(android.R.id.icon2);
         disconnect.setVisibility(item.canDisconnect ? VISIBLE : GONE);
         if (mQSCSwitch) {
-            if (!bg.mQsTileEnabled) {
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
                 disconnect.setColorFilter(mIconColor, Mode.MULTIPLY);
             } else {
-                disconnect.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
+                disconnect.setColorFilter(BarBackgroundUpdater.mQsTileIconOverrideColor, Mode.MULTIPLY);
             }
         }
         disconnect.setOnClickListener(new OnClickListener() {

@@ -615,15 +615,11 @@ final class UiModeManagerService extends SystemService
                                 Settings.System.NOTIFICATION_BG_COLOR, 0xff1b1f23);
                         Settings.System.putInt(mContext.getContentResolver(),
                                 Settings.System.NOTIFICATION_TEXT_COLOR, 0xffffffff);
-                        Settings.System.putInt(mContext.getContentResolver(),
-                                Settings.System.QS_BACKGROUND_COLOR, 0xff1b1f23);
                     } else {
                         Settings.System.putInt(mContext.getContentResolver(),
                                 Settings.System.NOTIFICATION_BG_COLOR, 0xffffffff);
                         Settings.System.putInt(mContext.getContentResolver(),
                                 Settings.System.NOTIFICATION_TEXT_COLOR, 0xff000000);
-                        Settings.System.putInt(mContext.getContentResolver(),
-                                Settings.System.QS_BACKGROUND_COLOR, 0xff263238);
                     }
                 }
             } catch (RemoteException e) {

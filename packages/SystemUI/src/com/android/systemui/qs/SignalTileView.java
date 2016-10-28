@@ -46,7 +46,6 @@ public final class SignalTileView extends QSTileView {
     private boolean mQSCSwitch = false;
 
     private int mWideOverlayIconStartPadding;
-    private BarBackgroundUpdater bg;
 
     public SignalTileView(Context context) {
         super(context);
@@ -63,10 +62,10 @@ public final class SignalTileView extends QSTileView {
         final QsTileImage traffic = new QsTileImage(mContext);
         traffic.setImageResource(icon);
         if (mQSCSwitch) {
-            if (!bg.mQsTileEnabled) {
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
                 traffic.setColorFilter(mIconColor, Mode.MULTIPLY);
             } else {
-                traffic.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
+                traffic.setColorFilter(BarBackgroundUpdater.mQsTileIconOverrideColor, Mode.MULTIPLY);
             }
         }
         traffic.setAlpha(0f);
@@ -80,19 +79,19 @@ public final class SignalTileView extends QSTileView {
         mIconFrame = new FrameLayout(mContext);
         mSignal = new QsTileImage(mContext);
         if (mQSCSwitch) {
-            if (!bg.mQsTileEnabled) {
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
                 mSignal.setColorFilter(mIconColor, Mode.MULTIPLY);
             } else {
-                mSignal.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
+                mSignal.setColorFilter(BarBackgroundUpdater.mQsTileIconOverrideColor, Mode.MULTIPLY);
             }
         }
         mIconFrame.addView(mSignal);
         mOverlay = new QsTileImage(mContext);
         if (mQSCSwitch) {
-            if (!bg.mQsTileEnabled) {
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
                 mOverlay.setColorFilter(mIconColor, Mode.MULTIPLY);
             } else {
-                mOverlay.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
+                mOverlay.setColorFilter(BarBackgroundUpdater.mQsTileIconOverrideColor, Mode.MULTIPLY);
             }
         }
         mIconFrame.addView(mOverlay, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
@@ -182,16 +181,16 @@ public final class SignalTileView extends QSTileView {
     public void setIconColor() {
         updateIconColor();
         if (mQSCSwitch) {
-            if (!bg.mQsTileEnabled) {
+            if (!BarBackgroundUpdater.mQsTileEnabled) {
                 mSignal.setColorFilter(mIconColor, Mode.MULTIPLY);
                 mOverlay.setColorFilter(mIconColor, Mode.MULTIPLY);
                 mIn.setColorFilter(mIconColor, Mode.MULTIPLY);
                 mOut.setColorFilter(mIconColor, Mode.MULTIPLY);
             } else {
-                mSignal.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
-                mOverlay.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
-                mIn.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
-                mOut.setColorFilter(bg.mQsTileIconOverrideColor, Mode.MULTIPLY);
+                mSignal.setColorFilter(BarBackgroundUpdater.mQsTileIconOverrideColor, Mode.MULTIPLY);
+                mOverlay.setColorFilter(BarBackgroundUpdater.mQsTileIconOverrideColor, Mode.MULTIPLY);
+                mIn.setColorFilter(BarBackgroundUpdater.mQsTileIconOverrideColor, Mode.MULTIPLY);
+                mOut.setColorFilter(BarBackgroundUpdater.mQsTileIconOverrideColor, Mode.MULTIPLY);
             }
         }
     }
