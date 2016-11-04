@@ -562,7 +562,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mHasSoftInput = false;
     boolean mTranslucentDecorEnabled = true;
     boolean mUseTvRouting;
-    int mBackKillTimeout;
+    int mCustomBackKillTimeout;
 
     int mDeviceHardwareKeys;
 
@@ -1154,6 +1154,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.Secure.getUriFor(
                     Settings.Secure.NAVIGATION_BAR_WIDTH), false, this,
+                    UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.Secure.getUriFor(
+                    Settings.Secure.KILL_APP_LONGPRESS_TIMEOUT), false, this,
                     UserHandle.USER_ALL);
             updateSettings();
         }
@@ -2144,7 +2147,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
         mDeviceHardwareKeys = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_deviceHardwareKeys);
-        mBackKillTimeout = mContext.getResources().getInteger(
+        mCustomBackKillTimeout = mContext.getResources().getInteger(
                 com.android.internal.R.integer.config_backKillTimeout);
 
         updateKeyAssignments();
@@ -2564,6 +2567,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mIncallBackBehavior = Settings.Secure.getIntForUser(resolver,
                     Settings.Secure.INCALL_BACK_BUTTON_BEHAVIOR,
                     Settings.Secure.INCALL_BACK_BUTTON_BEHAVIOR_DEFAULT,
+                    UserHandle.USER_CURRENT);
+            mCustomBackKillTimeout = Settings.Secure.getIntForUser(resolver,
+                    Settings.Secure.KILL_APP_LONGPRESS_TIMEOUT, mCustomBackKillTimeout,
                     UserHandle.USER_CURRENT);
 
             // Configure wake gesture.
@@ -4191,7 +4197,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             if (unpinActivity(true) || CMSettings.Secure.getInt(mContext.getContentResolver(),
                     CMSettings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1) {
                 if (down && repeatCount == 0) {
-                    mHandler.postDelayed(mBackLongPress, mBackKillTimeout);
+                    mHandler.postDelayed(mBackLongPress, mCustomBackKillTimeout);
                 }
             }
         }

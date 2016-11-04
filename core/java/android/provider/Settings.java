@@ -7207,6 +7207,12 @@ public final class Settings {
         public static final String QS_COLUMNS_LANDSCAPE = "qs_columns_landscape";
 
         /**
+         * Timeout of long-pressing the Back button
+         * @hide
+         */
+        public static final String KILL_APP_LONGPRESS_TIMEOUT = "kill_app_longpress_timeout";
+
+        /**
          * This are the settings to be backed up.
          *
          * NOTE: Settings are backed up and restored in the order they appear
