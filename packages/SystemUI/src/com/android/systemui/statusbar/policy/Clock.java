@@ -39,6 +39,7 @@ import android.view.View;
 import com.android.systemui.DemoMode;
 import com.android.systemui.R;
 import com.android.systemui.cm.UserContentObserver;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -121,6 +122,8 @@ public class Clock implements DemoMode {
     private boolean mDemoMode;
     private boolean mAttached;
 
+    private int mOverrideIconColor = 0;
+
     class SettingsObserver extends UserContentObserver {
         SettingsObserver(Handler handler) {
             super(handler);
@@ -197,6 +200,23 @@ public class Clock implements DemoMode {
         } else {
             updateClock();
         }
+        BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+
+            @Override
+            public void onUpdateStatusBarIconColor(final int previousIconColor,
+                final int iconColor) {
+                mOverrideIconColor = iconColor;
+                handler.post(new Runnable(){
+
+                    @Override
+                    public void run(){
+                        updateSettings();
+                    }
+
+                });
+            }
+
+        });
     }
 
     private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
@@ -422,7 +442,9 @@ public class Clock implements DemoMode {
                 UserHandle.USER_CURRENT);
         if (clockColor == Integer.MIN_VALUE) {
             // flag to reset the color
-            clockColor = defaultColor;
+            if (!BarBackgroundUpdater.mStatusEnabled) {
+                clockColor = defaultColor;
+            }
         }
 
         second = new TimerTask()
@@ -444,7 +466,11 @@ public class Clock implements DemoMode {
         timer.schedule(second, 0, 1001);
 
         getFontStyle(mClockFontStyle);
-        mClockView.setTextColor(clockColor);
+        if (!BarBackgroundUpdater.mStatusEnabled) {
+            mClockView.setTextColor(clockColor);
+        } else {
+            mClockView.setTextColor(BarBackgroundUpdater.mStatusBarIconOverrideColor);
+        }
         mClockView.setTextSize(mClockFontSize);
         updateClock();
     }

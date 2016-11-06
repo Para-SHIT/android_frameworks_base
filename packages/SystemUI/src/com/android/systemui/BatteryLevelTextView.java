@@ -18,15 +18,16 @@ package com.android.systemui;
 
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.widget.TextView;
 
-import com.android.systemui.statusbar.phone.DsbText;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 import com.android.systemui.statusbar.policy.BatteryController;
 import com.android.systemui.statusbar.policy.BatteryStateRegistar;
 
-public class BatteryLevelTextView extends DsbText implements
+public class BatteryLevelTextView extends TextView implements
         BatteryController.BatteryStateChangeCallback{
 
     private BatteryStateRegistar mBatteryStateRegistar;
@@ -39,11 +40,35 @@ public class BatteryLevelTextView extends DsbText implements
     private int mStyle;
     private int mPercentMode;
 
+    private int mOverrideIconColor = 0;
+    private static Handler mHandler;
+
     public BatteryLevelTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mHandler = new Handler();
         // setBatteryStateRegistar (if called) will made the view visible and ready to be hidden
         // if the view shouldn't be displayed. Otherwise this view should be hidden from start.
         mRequestedVisibility = GONE;
+        BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
+
+            @Override
+            public void onUpdateStatusBarIconColor(final int previousIconColor,
+                final int iconColor) {
+                mOverrideIconColor = iconColor;
+                mHandler.post(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (mOverrideIconColor != 0) {
+                            setTextColor(mOverrideIconColor);
+                            invalidate();
+                        }
+                    }
+
+                });
+            }
+
+        });
     }
 
     public void setForceShown(boolean forceShow) {

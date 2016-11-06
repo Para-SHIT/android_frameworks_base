@@ -60,7 +60,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1" />
 
-            <com.android.systemui.statusbar.phone.DsbText
+            <TextView
                 android:id="@+id/status_bar_greeting_label"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -91,7 +91,7 @@
                 android:layout_height="match_parent"
                 >
 
-                <com.android.systemui.statusbar.phone.DsbImage
+                <ImageView
                     android:id="@+id/left_temasek_logo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
                     android:visibility="gone"
                     />
 
-                <com.android.systemui.statusbar.phone.DsbText
+                <TextView
                     android:id="@+id/left_clock"
                     android:textAppearance="@style/TextAppearance.StatusBar.Clock"
                     android:layout_width="wrap_content"
@@ -112,7 +112,7 @@
                     android:visibility="gone"
                     />
 
-               <com.android.systemui.statusbar.widget.CarrierLabel
+                <com.android.systemui.statusbar.widget.CarrierLabel
                     android:id="@+id/statusbar_carrier_text"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
@@ -123,7 +123,7 @@
                     android:singleLine="true"
                     />
 
-                <com.android.systemui.statusbar.phone.DsbText
+                <TextView
                     android:id="@+id/left_weather_temp"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
@@ -155,17 +155,17 @@
             android:orientation="horizontal"
             >
 
-             <com.android.systemui.statusbar.phone.DsbImage
-                 android:id="@+id/before_icons_temasek_logo"
-                 android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:paddingEnd="2dip"
-                 android:src="@drawable/ic_status_bar_logo"
-                 android:scaleType="center"
-                 android:visibility="gone"
-                 />
+            <ImageView
+                android:id="@+id/before_icons_temasek_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingEnd="2dip"
+                android:src="@drawable/ic_status_bar_logo"
+                android:scaleType="center"
+                android:visibility="gone"
+                />
 
-              <com.android.systemui.statusbar.policy.NetworkTraffic
+            <com.android.systemui.statusbar.policy.NetworkTraffic
                 android:id="@+id/networkTraffic"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -173,7 +173,7 @@
                 android:fontFamily="sans-serif-condensed"
                 android:gravity="right|center_vertical"/>
 
-            <com.android.systemui.statusbar.phone.DsbText
+            <TextView
                 android:id="@+id/weather_temp"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -203,7 +203,7 @@
                android:textSize="@dimen/battery_level_text_size"
                android:visibility="gone" />
 
-            <com.android.systemui.statusbar.phone.DsbText
+            <TextView
                 android:id="@+id/clock"
                 android:textAppearance="@style/TextAppearance.StatusBar.Clock"
                 android:layout_width="wrap_content"
@@ -214,7 +214,7 @@
                 android:visibility="gone"
                 />
 
-            <com.android.systemui.statusbar.phone.DsbImage
+            <ImageView
                 android:id="@+id/temasek_logo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -235,7 +235,7 @@
         android:layout_height="match_parent"
         >
 
-        <com.android.systemui.statusbar.phone.DsbImage
+        <ImageView
             android:id="@+id/center_temasek_logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -245,7 +245,7 @@
             android:visibility="gone"
             />
 
-        <com.android.systemui.statusbar.phone.DsbText
+        <TextView
             android:id="@+id/center_clock"
             android:textAppearance="@style/TextAppearance.StatusBar.Clock"
             android:layout_width="wrap_content"

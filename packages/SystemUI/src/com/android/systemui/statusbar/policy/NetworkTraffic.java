@@ -11,7 +11,6 @@ import android.content.res.Resources;
 import android.database.ContentObserver;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.graphics.PorterDuff;
 import android.graphics.PorterDuff.Mode;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -235,21 +234,19 @@ public class NetworkTraffic extends TextView {
         updateSettings();
         BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
-                @Override
-                public void onUpdateStatusBarIconColor(final int previousIconColor,
-                    final int iconColor) {
-                    mOverrideIconColor = iconColor;
+            @Override
+            public void onUpdateStatusBarIconColor(final int previousIconColor,
+                final int iconColor) {
+                mOverrideIconColor = iconColor;
+                mHandler.post(new Runnable() {
 
-                    mHandler.post(new Runnable(){
+                    @Override
+                    public void run() {
+                        updateSettings();
+                    }
 
-                        @Override
-                        public void run(){
-                            updateSettings();
-                        }
-
-                    });
-
-                }
+                });
+            }
 
         });
     }
@@ -317,13 +314,13 @@ public class NetworkTraffic extends TextView {
 
         if (mNetworkTrafficColor == Integer.MIN_VALUE
             || mNetworkTrafficColor == -2) {
-            if(!BarBackgroundUpdater.mStatusEnabled){
+            if (!BarBackgroundUpdater.mStatusEnabled) {
                 mNetworkTrafficColor = defaultColor;
             }
         }
-        if(!BarBackgroundUpdater.mStatusEnabled){
+        if (!BarBackgroundUpdater.mStatusEnabled) {
             setTextColor(mNetworkTrafficColor);
-        }else{
+        } else {
             setTextColor(mOverrideIconColor);
         }
         updateTrafficDrawable();
@@ -383,10 +380,10 @@ public class NetworkTraffic extends TextView {
             }
             if (intTrafficDrawable != 0) {
                 drw = getContext().getResources().getDrawable(intTrafficDrawable);
-                if(!BarBackgroundUpdater.mStatusEnabled){
-                    drw.setColorFilter(mNetworkTrafficColor, PorterDuff.Mode.SRC_ATOP);
-                }else{
-                    drw.setColorFilter(mOverrideIconColor, PorterDuff.Mode.SRC_ATOP);
+                if (!BarBackgroundUpdater.mStatusEnabled) {
+                    drw.setColorFilter(mNetworkTrafficColor, Mode.SRC_ATOP);
+                } else {
+                    drw.setColorFilter(mOverrideIconColor, Mode.SRC_ATOP);
                 }
             }
         } else {

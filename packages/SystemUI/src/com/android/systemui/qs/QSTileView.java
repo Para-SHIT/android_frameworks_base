@@ -136,16 +136,14 @@ public class QSTileView extends ViewGroup {
                                 mLabel.invalidate();
                                 mIcon.invalidate();
                                 labelView().invalidate();
-
                                 postInvalidate();
                             }
-
-                            mDivider.setBackgroundColor(mOverrideIconColor);
+                            int mDividerOverride = (102 << 24) | (mOverrideIconColor & 0x00ffffff);
+                            mDivider.setBackgroundColor(mDividerOverride);
                         } else {
-                            mDivider.setBackgroundColor(res.getColor(R.color.qs_tile_divider));
+                            return;
                         }
                         setRippleColor();
-                        postInvalidate();
                     }
 
                 });
