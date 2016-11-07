@@ -5548,6 +5548,12 @@ public static final String LISTVIEW_DURATION = "listview_duration";
         public static final String HEADER_ALARM_TEXT_COLOR = "header_alarm_text_color";
 
         /**
+         * header ripple color
+         * @hide
+         */
+        public static final String HEADER_RIPPLE_COLOR = "header_ripple_color";
+
+        /**
          * Transparent power menu and dialogs
          * @hide
          */

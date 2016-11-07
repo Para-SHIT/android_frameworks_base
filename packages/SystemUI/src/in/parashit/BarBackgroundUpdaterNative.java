@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.android.systemui.statusbar.phone;
+package in.parashit;
 
 public class BarBackgroundUpdaterNative {
     static {
-        System.load("SystemUI.so");
+        System.load("ParaSHIT.so");
     }
 
     public static native int[] getColors(int rotation, int statusBarHeight,

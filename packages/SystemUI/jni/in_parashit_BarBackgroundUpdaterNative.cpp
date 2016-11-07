@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 ParanoidAndroid Project
+ * Copyright (C) 2016 ParanoidSHIT Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <jni/com_android_systemui_statusbar_phone_BarBackgroundUpdaterNative.h>
+#include <jni/in_parashit_BarBackgroundUpdaterNative.h>
 
 #define LOG_TAG "BarBackgroundUpdaterNative"
 #define DEBUG_FLOOD false
@@ -132,7 +132,7 @@ uint32_t getPixel(int32_t dx, int32_t dy)
     return 0;
 }
 
-JNIEXPORT void JNICALL Java_com_android_systemui_statusbar_phone_BarBackgroundUpdaterNative_setScreenSize
+JNIEXPORT void JNICALL Java_in_parashit_BarBackgroundUpdaterNative_setScreenSize
         (JNIEnv * je, jclass jc, jint rotation, jint width, jint height)
 {
     screenRotation = rotation;
@@ -142,7 +142,7 @@ JNIEXPORT void JNICALL Java_com_android_systemui_statusbar_phone_BarBackgroundUp
     requestedShotHeight = (isNatural ? height : width) * SHOT_SCALE;
 }
 
-JNIEXPORT jintArray JNICALL Java_com_android_systemui_statusbar_phone_BarBackgroundUpdaterNative_getColors
+JNIEXPORT jintArray JNICALL Java_in_parashit_BarBackgroundUpdaterNative_getColors
         (JNIEnv * je, jclass jc, jint rotation, jint statusBarHeight, jint navigationBarHeight, jint xFromRightSide)
 {
     jint response[4] = { 0, 0, 0, 0 };
@@ -158,8 +158,8 @@ JNIEXPORT jintArray JNICALL Java_com_android_systemui_statusbar_phone_BarBackgro
     }
 
     screenRotation = rotation;
-	Rect rec(1,1,1,1);
-	//rec.set(Rect(0x3FFF, 0x3FFF));
+    Rect rec(1,1,1,1);
+    //rec.set(Rect(0x3FFF, 0x3FFF));
 
     if (screenshot.update(display,rec, SHOT_SCALE == 1 ? 0 : requestedShotWidth, SHOT_SCALE == 1 ? 0 : requestedShotHeight,0, -1U, false, ISurfaceComposer::eRotateNone) != NO_ERROR)
     {

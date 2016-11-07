@@ -270,7 +270,7 @@ public class BatteryMeterView extends View implements DemoMode,
                 mOverrideIconColor = iconColor;
                 boolean doOverride = mOverrideIconColor == 0xFFFFFFFF;
 
-                mBgColor = (doOverride ? 0x66FFFFFF : 0x66000000);
+                mBgColor = (doOverride ? mFrameColor : 0x66000000);
                 mColor = (doOverride ? 0xFF000000 : 0xFFFFFFFF);
                 postInvalidate();
             }
@@ -585,7 +585,7 @@ public class BatteryMeterView extends View implements DemoMode,
             mFrame.top += mSubpixelSmoothingLeft;
             mFrame.right -= mSubpixelSmoothingRight;
             mFrame.bottom -= mSubpixelSmoothingRight;
-            mFramePaint.setColor(doOverride ? mBgColor : 0x66FFFFFF);
+            mFramePaint.setColor(doOverride ? mBgColor : mFrameColor);
 
             // set the battery charging color
             final int color = tracker.plugged ? (doOverride ? mOverrideIconColor : mColor) :

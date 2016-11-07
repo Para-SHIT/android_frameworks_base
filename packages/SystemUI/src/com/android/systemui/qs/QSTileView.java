@@ -23,12 +23,11 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
+import android.graphics.PorterDuff.Mode;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
-import android.graphics.PorterDuff.Mode;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -49,7 +48,6 @@ import com.android.systemui.FontSizeUtils;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile.State;
 import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
-import com.android.systemui.statusbar.phone.QsTileImage;
 
 import java.util.Objects;
 
@@ -316,7 +314,7 @@ public class QSTileView extends ViewGroup {
     public void setIconColor() {
         if (mIcon instanceof ImageView) {
             updateColors();
-            ImageView iv = (ImageView) mIcon;
+            QSTileViewImage iv = (QSTileViewImage) mIcon;
             if (!BarBackgroundUpdater.mQsTileEnabled) {
                 iv.setColorFilter(mIconColor, Mode.MULTIPLY);
             } else {
@@ -373,7 +371,7 @@ public class QSTileView extends ViewGroup {
 
     protected View createIcon() {
         updateColors();
-        final QsTileImage icon = new QsTileImage(mContext);
+        final QSTileViewImage icon = new QSTileViewImage(mContext);
         icon.setId(android.R.id.icon);
         icon.setScaleType(ScaleType.CENTER_INSIDE);
         if (mQSCSwitch) {
@@ -391,7 +389,7 @@ public class QSTileView extends ViewGroup {
         final TypedArray ta = mContext.obtainStyledAttributes(attrs);
         final Drawable d = ta.getDrawable(0);
         ta.recycle();
-	return d;
+        return d;
     }
 
     private Drawable newTileBackground() {
@@ -463,7 +461,7 @@ public class QSTileView extends ViewGroup {
 
     protected void handleStateChanged(QSTile.State state) {
         if (mIcon instanceof ImageView) {
-            setIcon((QsTileImage) mIcon, state);
+            setIcon((QSTileViewImage) mIcon, state);
         }
         if (mDual) {
             mDualLabel.setText(state.label);
@@ -488,7 +486,7 @@ public class QSTileView extends ViewGroup {
         }
     }
 
-    protected void setIcon(QsTileImage iv, QSTile.State state) {
+    protected void setIcon(QSTileViewImage iv, QSTile.State state) {
         if (!Objects.equals(state.icon, iv.getTag(R.id.qs_icon_tag))) {
             Drawable d = state.icon != null ? state.icon.getDrawable(mContext) : null;
             if (d != null && state.autoMirrorDrawable) {
@@ -507,7 +505,7 @@ public class QSTileView extends ViewGroup {
             if (state.enabled) {
                 iv.setColorFilter(null);
             } else {
-                iv.setColorFilter(mColorTextOff, PorterDuff.Mode.MULTIPLY);
+                iv.setColorFilter(mColorTextOff, Mode.MULTIPLY);
             }
         }
     }

@@ -44,14 +44,7 @@ import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Display;
 import android.view.GestureDetector;
-import android.view.Gravity;
-import android.view.MotionEvent;
-import android.view.Surface;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.view.*;
 import android.view.animation.AccelerateInterpolator;
@@ -106,7 +99,7 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
     final Display mDisplay;
     View mCurrentView = null;
     View[] mRotatedViews = new View[4];
-    private int mOverrideIconColor = 0;
+
     int mBarSize;
     boolean mVertical;
     boolean mScreenOn;
@@ -116,7 +109,7 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
     int mDisabledFlags = 0;
     int mNavigationIconHints = 0;
 
-    private BackButtonDrawable mBackIcon, mBackLandIcon;
+    private Drawable mBackIcon, mBackLandIcon, mBackAltIcon, mBackAltLandIcon;
     private Drawable mRecentIcon;
     private Drawable mRecentLandIcon;
     private Drawable mHomeIcon, mHomeLandIcon;
@@ -143,6 +136,8 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
     private final NavigationBarTransitions mBarTransitions;
 
     private boolean mDoubleTapToSleep;
+
+    private int mOverrideIconColor = 0;
 
     /**
      * Tracks the current visibilities of the far left (R.id.one) and right (R.id.sev) buttons
@@ -336,7 +331,7 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
         getIcons(res);
 
         mBarTransitions = new NavigationBarTransitions(this);
-        BarBackgroundUpdater . addListener( new BarBackgroundUpdater.UpdateListener( this) {
+        BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
             @Override
             public void onUpdateNavigationBarIconColor(final int previousIconColor,
@@ -344,7 +339,6 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
                 mOverrideIconColor = iconColor;
 
                 generateButtonColorsAnimatorSet();
-
             }
 
         });
@@ -369,40 +363,43 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
 
     private void generateButtonColorsAnimatorSet () {
         final ImageView[] buttons = new ImageView[] {
-            (ImageView) getRecentsButton(),
-            (ImageView) getMenuButton(),
-            (ImageView) getImeSwitchButton() ,
             (ImageView) getBackButton(),
             (ImageView) getHomeButton(),
+            (ImageView) getRecentsButton(),
+            (ImageView) getMenuButton(),
+            (ImageView) getImeSwitchButton(),
             (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_DPAD_LEFT)),
             (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_DPAD_RIGHT)),
             (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_POWER)),
             (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_SEARCH)),
             (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_EMPTY)),
             (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_ALWAYS_MENU)),
+            (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_CONDITIONAL_MENU)),
             (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_MENU_BIG)),
             (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_NOTIFICATIONS)),
             (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_SCREENSHOT)),
             (ImageView) (mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_EXPAND))
         };
 
-        for ( final ImageView button : buttons) {
+        for (final ImageView button : buttons) {
             if (button != null) {
                 if (mOverrideIconColor == 0 ) {
-                    mHandler . post( new Runnable() {
+                    mHandler.post(new Runnable() {
 
                         @Override
                         public void run() {
-                            button . setColorFilter( null);
+                            button.setColorFilter(null);
                         }
+
                     });
                 } else {
-                    mHandler . post( new Runnable() {
+                    mHandler.post(new Runnable() {
 
                         @Override
                         public void run() {
-                            button . setColorFilter(mOverrideIconColor);
+                            button.setColorFilter(mOverrideIconColor);
                         }
+
                     });
                 }
             }
@@ -508,23 +505,23 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
     }
 
     public View getRecentsButton() {
-        return mCurrentView == null ? null :mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_RECENT);
+        return mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_RECENT);
     }
 
     public View getMenuButton() {
-        return mCurrentView == null ? null :mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_CONDITIONAL_MENU);
+        return mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_CONDITIONAL_MENU);
     }
 
     public View getBackButton() {
-        return mCurrentView == null ? null :mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_BACK);
+        return mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_BACK);
     }
 
     public View getHomeButton() {
-        return mCurrentView == null ? null :mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_HOME);
+        return mCurrentView == null ? null : mCurrentView.findViewWithTag(NavbarEditor.NAVBAR_HOME);
     }
 
     public View getImeSwitchButton() {
-        return mCurrentView == null ? null :mCurrentView.findViewById(R.id.ime_switcher);
+        return mCurrentView == null ? null : mCurrentView.findViewById(R.id.ime_switcher);
     }
 
     public ViewGroup getNavButtons() {
@@ -532,8 +529,10 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
     }
 
     private void getIcons(Resources res) {
-        mBackIcon = new BackButtonDrawable(res.getDrawable(R.drawable.ic_sysbar_back));
-        mBackLandIcon = new BackButtonDrawable(res.getDrawable(R.drawable.ic_sysbar_back_land));
+        mBackIcon = res.getDrawable(R.drawable.ic_sysbar_back);
+        mBackLandIcon = res.getDrawable(R.drawable.ic_sysbar_back_land);
+        mBackAltIcon = res.getDrawable(R.drawable.ic_sysbar_back_ime);
+        mBackAltLandIcon = res.getDrawable(R.drawable.ic_sysbar_back_ime_land);
         mRecentIcon = res.getDrawable(R.drawable.ic_sysbar_recent);
         mRecentLandIcon = res.getDrawable(R.drawable.ic_sysbar_recent_land);
         mHomeIcon = res.getDrawable(R.drawable.ic_sysbar_home);
@@ -600,10 +599,9 @@ public class NavigationBarView extends LinearLayout implements BaseStatusBar.Nav
 
         mNavigationIconHints = hints;
 
-        ((ImageView)getBackButton()).setImageDrawable(null);
-        ((ImageView)getBackButton()).setImageDrawable(mVertical ? mBackLandIcon : mBackIcon);
-        mBackLandIcon.setImeVisible(backAlt);
-        mBackIcon.setImeVisible(backAlt);
+        ((ImageView)getBackButton()).setImageDrawable(backAlt
+                ? (mVertical ? mBackAltLandIcon : mBackAltIcon)
+                : (mVertical ? mBackLandIcon : mBackIcon));
 
         ((ImageView)getRecentsButton()).setImageDrawable(mVertical ? mRecentLandIcon : mRecentIcon);
         ((ImageView)getHomeButton()).setImageDrawable(mVertical ? mHomeLandIcon : mHomeIcon);

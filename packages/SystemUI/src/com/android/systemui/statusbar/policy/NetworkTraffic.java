@@ -1,6 +1,19 @@
+/*
+ * Copyright (C) 2015 Temasek
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.android.systemui.statusbar.policy;
-
-import java.text.DecimalFormat;
 
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -29,21 +42,21 @@ import android.widget.TextView;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 
+import java.text.DecimalFormat;
 /*
-*
-* Seeing how an Integer object in java requires at least 16 Bytes, it seemed awfully wasteful
-* to only use it for a single boolean. 32-bits is plenty of room for what we need it to do.
-*
-*/
+ *
+ * Seeing how an Integer object in java requires at least 16 Bytes, it seemed awfully wasteful
+ * to only use it for a single boolean. 32-bits is plenty of room for what we need it to do.
+ *
+ */
 public class NetworkTraffic extends TextView {
     public static final int MASK_UP = 0x00000001;        // Least valuable bit
     public static final int MASK_DOWN = 0x00000002;      // Second least valuable bit
     public static final int MASK_UNIT = 0x00000004;      // Third least valuable bit
     public static final int MASK_PERIOD = 0xFFFF0000;    // Most valuable 16 bits
-    public final Handler mHandler;
+
     private static final int KILOBIT = 1000;
     private static final int KILOBYTE = 1024;
-    private int mOverrideIconColor = 0;
 
     private static DecimalFormat decimalFormat = new DecimalFormat("##0.#");
     static {
@@ -51,6 +64,7 @@ public class NetworkTraffic extends TextView {
         decimalFormat.setMaximumFractionDigits(1);
     }
 
+    private final Handler mHandler;
     private int mState = 0;
     private boolean mAttached;
     private long totalRxBytes;
@@ -65,6 +79,7 @@ public class NetworkTraffic extends TextView {
     private boolean mHideArrow;
     private int mAutoHideThreshold;
     private int mNetworkTrafficColor;
+    private int mOverrideIconColor = 0;
 
     private Handler mTrafficHandler = new Handler() {
         @Override

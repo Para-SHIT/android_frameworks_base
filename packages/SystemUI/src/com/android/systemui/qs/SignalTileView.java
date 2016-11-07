@@ -23,14 +23,12 @@ import android.graphics.PorterDuff.Mode;
 import android.provider.Settings;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import com.android.internal.util.temasek.QSColorHelper;
 
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile.SignalState;
 import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
-import com.android.systemui.statusbar.phone.QsTileImage;
 
 /** View that represents a custom quick settings tile for displaying signal info (wifi/cell). **/
 public final class SignalTileView extends QSTileView {
@@ -38,10 +36,10 @@ public final class SignalTileView extends QSTileView {
     private static final long SHORT_DURATION = DEFAULT_DURATION / 3;
 
     private FrameLayout mIconFrame;
-    private QsTileImage mSignal;
-    private QsTileImage mOverlay;
-    private QsTileImage mIn;
-    private QsTileImage mOut;
+    private QSTileViewImage mSignal;
+    private QSTileViewImage mOverlay;
+    private QSTileViewImage mIn;
+    private QSTileViewImage mOut;
     private int mIconColor;
     private boolean mQSCSwitch = false;
 
@@ -57,9 +55,9 @@ public final class SignalTileView extends QSTileView {
                 R.dimen.wide_type_icon_start_padding_qs);
     }
 
-    private QsTileImage addTrafficView(int icon) {
+    private QSTileViewImage addTrafficView(int icon) {
         updateIconColor();
-        final QsTileImage traffic = new QsTileImage(mContext);
+        final QSTileViewImage traffic = new QSTileViewImage(mContext);
         traffic.setImageResource(icon);
         if (mQSCSwitch) {
             if (!BarBackgroundUpdater.mQsTileEnabled) {
@@ -77,7 +75,7 @@ public final class SignalTileView extends QSTileView {
     protected View createIcon() {
         updateIconColor();
         mIconFrame = new FrameLayout(mContext);
-        mSignal = new QsTileImage(mContext);
+        mSignal = new QSTileViewImage(mContext);
         if (mQSCSwitch) {
             if (!BarBackgroundUpdater.mQsTileEnabled) {
                 mSignal.setColorFilter(mIconColor, Mode.MULTIPLY);
@@ -86,7 +84,7 @@ public final class SignalTileView extends QSTileView {
             }
         }
         mIconFrame.addView(mSignal);
-        mOverlay = new QsTileImage(mContext);
+        mOverlay = new QSTileViewImage(mContext);
         if (mQSCSwitch) {
             if (!BarBackgroundUpdater.mQsTileEnabled) {
                 mOverlay.setColorFilter(mIconColor, Mode.MULTIPLY);

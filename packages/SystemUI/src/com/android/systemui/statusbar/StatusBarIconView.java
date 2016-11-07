@@ -38,12 +38,13 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 
 import com.android.internal.statusbar.StatusBarIcon;
+
 import com.android.systemui.R;
 import com.android.systemui.cm.UserContentObserver;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 
 public class StatusBarIconView extends AnimatedImageView {
     private static final String TAG = "StatusBarIconView";
@@ -93,29 +94,29 @@ public class StatusBarIconView extends AnimatedImageView {
        
         BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
-                @Override
-                public void onUpdateStatusBarIconColor(final int previousIconColor,
-                    final int iconColor) {
-                    mOverrideIconColor = iconColor;
+            @Override
+            public void onUpdateStatusBarIconColor(final int previousIconColor,
+                final int iconColor) {
+                mOverrideIconColor = iconColor;
+                if (mOverrideIconColor == 0) {
+                    mHandler.post(new Runnable() {
 
-                    if (mOverrideIconColor == 0) {
-                        mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            setColorFilter(null);
+                        }
+                    });
+                } else {
+                    mHandler.post(new Runnable() {
 
-                            @Override
-                            public void run() {
-                                setColorFilter(null);
-                            }
-                        });
-                    } else {
-                        mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            setColorFilter(mOverrideIconColor);
+                        }
 
-                            @Override
-                            public void run() {
-                                setColorFilter(mOverrideIconColor);
-                            }
-                        });
-                    }
+                    });
                 }
+            }
 
         });
 
@@ -140,32 +141,30 @@ public class StatusBarIconView extends AnimatedImageView {
        
         BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
-                @Override
-                public void onUpdateStatusBarIconColor(final int previousIconColor,
-                    final int iconColor) {
-                    mOverrideIconColor = iconColor;
+            @Override
+            public void onUpdateStatusBarIconColor(final int previousIconColor,
+                final int iconColor) {
+                mOverrideIconColor = iconColor;
+                if (mOverrideIconColor == 0) {
+                    mHandler.post(new Runnable() {
 
-                    if (mOverrideIconColor == 0) {
-                        mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            setColorFilter(null);
+                        }
 
-                            @Override
-                            public void run() {
-                                setColorFilter(null);
-                            }
+                    });
+                } else {
+                    mHandler.post(new Runnable() {
 
-                        });
-                    } else {
-                        mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            setColorFilter(mOverrideIconColor);
+                        }
 
-                            @Override
-                            public void run() {
-                                setColorFilter(mOverrideIconColor);
-                            }
-
-                        });
-
-                    }
+                    });
                 }
+            }
 
         });
 

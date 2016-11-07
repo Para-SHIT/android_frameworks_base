@@ -31,11 +31,11 @@ import android.provider.Settings;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
+
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile;
 import com.android.systemui.qs.QSTileView;
-import com.android.systemui.statusbar.phone.QsTileImage;
+import com.android.systemui.qs.QSTileViewImage;
 import com.android.systemui.statusbar.policy.KeyguardMonitor;
 import com.android.systemui.statusbar.policy.MediaMonitor;
 import com.pheelicks.visualizer.AudioData;
@@ -50,7 +50,7 @@ public class VisualizerTile extends QSTile<QSTile.State> implements KeyguardMoni
 
     private KeyguardMonitor mKeyguardMonitor;
     private VisualizerView mVisualizer;
-    private QsTileImage mStaticVisualizerIcon;
+    private QSTileViewImage mStaticVisualizerIcon;
     private boolean mLinked;
     private boolean mListening;
     private boolean mPowerSaveModeEnabled;
@@ -143,9 +143,9 @@ public class VisualizerTile extends QSTile<QSTile.State> implements KeyguardMoni
                         r.getInteger(R.integer.visualizer_db_fuzz_factor))
                 );
 
-                mStaticVisualizerIcon = new QsTileImage(mContext);
+                mStaticVisualizerIcon = new QSTileViewImage(mContext);
                 mStaticVisualizerIcon.setId(android.R.id.icon);
-                mStaticVisualizerIcon.setScaleType(QsTileImage.ScaleType.CENTER_INSIDE);
+                mStaticVisualizerIcon.setScaleType(QSTileViewImage.ScaleType.CENTER_INSIDE);
                 mStaticVisualizerIcon.setImageResource(R.drawable.ic_qs_visualizer_static);
                 mStaticVisualizerIcon.setVisibility(View.VISIBLE);
                 mStaticVisualizerIcon.setAlpha(0.f);

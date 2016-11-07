@@ -23,7 +23,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.ContentObserver;
 import android.os.Handler;
-import com.android.internal.util.temasek.temasekUtils;
 import android.os.UserHandle;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
@@ -34,14 +33,15 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.android.internal.telephony.TelephonyIntents;
+import com.android.internal.util.temasek.temasekUtils;
+
+import com.android.systemui.R;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 import com.android.systemui.utils.SpnOverride;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
-
-import com.android.systemui.R;
-import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 
 public class CarrierLabel extends TextView {
 
@@ -49,10 +49,11 @@ public class CarrierLabel extends TextView {
     private boolean mAttached;
     private static boolean isCN;
     private int mCarrierFontSize = 14;
+    private int mOverrideIconColor = 0;
 
     protected int mCarrierColor = getResources().getColor(R.color.kg_carrier_text);
+
     public final Handler mHandler;
-    private int mOverrideIconColor = 0;
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -97,16 +98,14 @@ public class CarrierLabel extends TextView {
             public void onUpdateStatusBarIconColor(final int previousIconColor,
                 final int iconColor) {
                 mOverrideIconColor = iconColor;
-
                 mHandler.post(new Runnable() {
-                                        
+
                     @Override
                     public void run() {
                         updateColor();
                     }
 
                 });
-
             }
 
         });

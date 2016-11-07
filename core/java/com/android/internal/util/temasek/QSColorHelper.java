@@ -51,6 +51,13 @@ public class QSColorHelper {
         return colorToUse;
     }
 
+    public static int getHeaderRippleColor(Context context) {
+        int color = Settings.System.getInt(context.getContentResolver(),
+                Settings.System.HEADER_RIPPLE_COLOR, WHITE);
+        int colorToUse =  (74 << 24) | (color & 0x00ffffff);
+        return colorToUse;
+    }
+
     public static int getTextColor(Context context) {
         return Settings.System.getInt(context.getContentResolver(),
                 Settings.System.QS_TEXT_COLOR, WHITE);

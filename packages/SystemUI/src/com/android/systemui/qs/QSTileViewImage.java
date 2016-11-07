@@ -13,38 +13,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.android.systemui.statusbar.phone;
+package com.android.systemui.qs;
 
 import android.content.Context;
-import android.graphics.*;
+import android.graphics.PorterDuff.Mode;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-public class QsTileImage extends ImageView {   
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
+
+public class QSTileViewImage extends ImageView {
+
     private Handler mHandler;
     private int mOverrideIconColor = 0;
-    ImageView iv;
+
     static Context mContext;
 
-    public QsTileImage(Context c) {
-        super(c);
-        init(c);
+    ImageView iv;
+
+    public QSTileViewImage(Context context) {
+        super(context);
+        init(context);
     }
 
-    public QsTileImage(Context c, AttributeSet as) {
-        super(c, as);
-        init(c);
+    public QSTileViewImage(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
     }
 
-    public QsTileImage(Context c, AttributeSet as, int d) {
-        super(c, as, d);
-        init(c);
+    public QSTileViewImage(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        init(context);
     }
 
-    public void init(Context c) {
+    public void init(Context context) {
         iv = this;
-        mContext = c;
+        mContext = context;
         mHandler = new Handler();
 
         BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
@@ -58,7 +63,7 @@ public class QsTileImage extends ImageView {
                     @Override
                     public void run() {
                         if (iv != null) {
-                            apdet(mOverrideIconColor);
+                            updateColor(mOverrideIconColor);
                         }
                     }
 
@@ -69,13 +74,13 @@ public class QsTileImage extends ImageView {
 
     }
 
-    public void apdet(final int targetColor) {
+    public void updateColor(final int targetColor) {
         mHandler.post(new Runnable() {
 
             @Override
             public void run() {
                 if (iv != null) {
-                    iv.setColorFilter(targetColor, PorterDuff.Mode.SRC_ATOP);
+                    iv.setColorFilter(targetColor, Mode.SRC_ATOP);
                     invalidate();
                 }
             }

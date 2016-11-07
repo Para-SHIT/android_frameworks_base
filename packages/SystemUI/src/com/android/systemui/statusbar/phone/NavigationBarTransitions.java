@@ -28,6 +28,7 @@ import android.provider.Settings;
 import android.os.UserHandle;
 import android.database.ContentObserver;
 import android.net.Uri;
+
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.policy.KeyButtonView;
@@ -46,7 +47,6 @@ public final class NavigationBarTransitions extends BarTransitions {
 
     public NavigationBarTransitions(NavigationBarView view) {
         super(view,new NavigationBarBackgroundDrawable(view.getContext()));
-
         mView = view;
         mBarService = IStatusBarService.Stub.asInterface(
                 ServiceManager.getService(Context.STATUS_BAR_SERVICE));
@@ -224,10 +224,9 @@ public final class NavigationBarTransitions extends BarTransitions {
 
         public NavigationBarBackgroundDrawable(final Context context) {
             super(context, R.drawable.nav_background, R.color.navigation_bar_background_opaque,
-                  R.color.navigation_bar_background_semi_transparent,
-                  R.color.navigation_bar_background_transparent,
-                  com.android.internal.R.color.battery_saver_mode_color);
-
+                    R.color.navigation_bar_background_semi_transparent,
+                    R.color.navigation_bar_background_transparent,
+                    com.android.internal.R.color.battery_saver_mode_color);
             mContext = context;
 
             final GradientObserver obs = new GradientObserver(this, new Handler());
@@ -243,7 +242,6 @@ public final class NavigationBarTransitions extends BarTransitions {
                 @Override
                 public void onUpdateNavigationBarColor(final int previousColor,
                     final int color) {
-
                     mOverrideColor = color;
 
                     generateAnimator();
@@ -287,15 +285,15 @@ public final class NavigationBarTransitions extends BarTransitions {
         private final NavigationBarBackgroundDrawable mDrawable;
 
         private GradientObserver(final NavigationBarBackgroundDrawable drawable,
-                final Handler handler) {
+            final Handler handler) {
             super(handler);
             mDrawable = drawable;
         }
 
         @Override
         public void onChange(final boolean selfChange) {
-            mDrawable.setOverrideGradientAlpha(Settings.System.getInt(
-            mDrawable.mContext.getContentResolver(), Settings.System.DYNAMIC_SYSTEM_BARS_GRADIENT_STATE, 0) == 1 ? 0xff : 0);
+            mDrawable.setOverrideGradientAlpha(Settings.System.getInt(mDrawable.mContext.getContentResolver(),
+                Settings.System.DYNAMIC_SYSTEM_BARS_GRADIENT_STATE, 0) == 1 ? 0xff : 0);
         }
     }
 }

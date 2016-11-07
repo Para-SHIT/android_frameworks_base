@@ -18,7 +18,8 @@ package com.android.systemui.statusbar.phone;
 
 import android.content.Context;
 import android.database.ContentObserver;
-import android.graphics.*;
+import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.UserHandle;
@@ -29,31 +30,34 @@ import android.widget.ImageView;
 public class NavbarDsbImage extends ImageView {
 
     private Handler mHandler;
-    private int mOverrideIconColor = 0;
-    ImageView iv;
-    static boolean ena;
-    static Context mContext;
     private SettingsObserver mObserver = null;
+    private int mOverrideIconColor = 0;
 
-    public NavbarDsbImage(Context c) {
-        super(c);
-        init(c);
+    static boolean mEnable;
+    static Context mContext;
+
+    ImageView iv;
+
+    public NavbarDsbImage(Context context) {
+        super(context);
+        init(context);
     }
 
-    public NavbarDsbImage(Context c, AttributeSet as) {
-        super(c, as);
-        init(c);
+    public NavbarDsbImage(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
     }
 
-    public NavbarDsbImage(Context c, AttributeSet as, int d) {
-        super(c, as, d);
-        init(c);
+    public NavbarDsbImage(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        init(context);
     }
 
-    public void init(Context c) {
+    public void init(Context context) {
         iv = this;
-        mContext = c;
+        mContext = context;
         mHandler = new Handler();
+
         if (mContext != null) {
             if (mObserver != null) {
                 mContext.getContentResolver().unregisterContentObserver(mObserver);
@@ -66,10 +70,11 @@ public class NavbarDsbImage extends ImageView {
 
         mContext.getContentResolver().registerContentObserver(
             Settings.System.getUriFor(Settings.System.DYNAMIC_NAVIGATION_BAR_STATE),
-            false, mObserver);
+                false, mObserver);
 
-        ena = Settings.System.getIntForUser(mContext.getContentResolver(),
-            Settings.System.DYNAMIC_NAVIGATION_BAR_STATE, 0, UserHandle.USER_CURRENT) == 1;
+        mEnable = Settings.System.getIntForUser(mContext.getContentResolver(),
+            Settings.System.DYNAMIC_NAVIGATION_BAR_STATE, 0,
+                UserHandle.USER_CURRENT) == 1;
 
         BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
@@ -78,8 +83,7 @@ public class NavbarDsbImage extends ImageView {
                 final int iconColor) {
                 mOverrideIconColor = iconColor;
 
-                apdet(mOverrideIconColor);
-
+                updateColor(mOverrideIconColor);
             }
 
         });
@@ -87,16 +91,16 @@ public class NavbarDsbImage extends ImageView {
     }
 
     public boolean enable() {
-        return ena;
+        return mEnable;
     }
 
-    public void apdet(final int targetColor) {
+    public void updateColor(final int targetColor) {
         mHandler.post(new Runnable() {
 
             @Override
             public void run() {
                 if (iv != null) {
-                    iv.setColorFilter(enable() ? targetColor : Color.WHITE, PorterDuff.Mode.MULTIPLY);
+                    iv.setColorFilter(enable() ? targetColor : Color.WHITE, Mode.MULTIPLY);
                     invalidate();
                 } else {
                     iv.setColorFilter(null);
@@ -107,18 +111,18 @@ public class NavbarDsbImage extends ImageView {
     }
 
     private class SettingsObserver extends ContentObserver {
-        private final NavbarDsbImage ndi;
-        private SettingsObserver(final NavbarDsbImage nd, final Handler handler) {
+        private final NavbarDsbImage mNavbarDsbImage;
+        private SettingsObserver(final NavbarDsbImage navbardsbimage, final Handler handler) {
             super(handler);
-            ndi = nd;
+            mNavbarDsbImage = navbardsbimage;
         }
 
         @Override
         public final void onChange(final boolean selfChange) {
-            ndi.ena = Settings.System.getInt(ndi.mContext.getContentResolver(),
+            mNavbarDsbImage.mEnable = Settings.System.getInt(mNavbarDsbImage.mContext.getContentResolver(),
                 Settings.System.DYNAMIC_NAVIGATION_BAR_STATE, 0) == 1;
 
-            ndi.apdet(Settings.System.getInt(ndi.mContext.getContentResolver(),
+            mNavbarDsbImage.updateColor(Settings.System.getInt(mNavbarDsbImage.mContext.getContentResolver(),
                 Settings.System.DYNAMIC_NAVIGATION_BAR_STATE, 0) == 1 ? mOverrideIconColor : Color.WHITE);
         }
 

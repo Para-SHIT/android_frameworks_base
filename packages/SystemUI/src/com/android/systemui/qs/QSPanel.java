@@ -63,7 +63,6 @@ import com.android.systemui.settings.BrightnessController;
 import com.android.systemui.settings.ToggleSlider;
 import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 import com.android.systemui.statusbar.phone.QSTileHost;
-import com.android.systemui.statusbar.phone.QsTileImage;
 import com.android.systemui.statusbar.policy.BrightnessMirrorController;
 import cyanogenmod.app.StatusBarPanelCustomTile;
 import cyanogenmod.providers.CMSettings;
@@ -160,7 +159,7 @@ public class QSPanel extends ViewGroup {
                 0, UserHandle.USER_CURRENT) == 1;
 
         mBrightnessController = new BrightnessController(getContext(),
-                (QsTileImage) findViewById(R.id.brightness_icon),
+                (QSTileViewImage) findViewById(R.id.brightness_icon),
                 (ToggleSlider) findViewById(R.id.brightness_slider));
 
         mDetailDoneButton.setOnClickListener(new OnClickListener() {
@@ -205,7 +204,7 @@ public class QSPanel extends ViewGroup {
             mContext.getContentResolver(), Settings.System.BRIGHTNESS_ICON,
                 0, UserHandle.USER_CURRENT) == 1;
         ToggleSlider brightnessSlider = (ToggleSlider) findViewById(R.id.brightness_slider);
-        QsTileImage brightnessIcon = (QsTileImage) findViewById(R.id.brightness_icon);
+        QSTileViewImage brightnessIcon = (QSTileViewImage) findViewById(R.id.brightness_icon);
         if (brightnessSlider != null) {
             if (mBrightnessSliderEnabled) {
                 mBrightnessView.setVisibility(VISIBLE);
@@ -229,7 +228,7 @@ public class QSPanel extends ViewGroup {
     }
 
     public void updatecolors() {
-        QsTileImage brightnessIcon = (QsTileImage) findViewById(R.id.brightness_icon);
+        QSTileViewImage brightnessIcon = (QSTileViewImage) findViewById(R.id.brightness_icon);
         mQSCSwitch = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.QS_COLOR_SWITCH, 0) == 1;
         int mIconColor = Settings.System.getInt(mContext.getContentResolver(),

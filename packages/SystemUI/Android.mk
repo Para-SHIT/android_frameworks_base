@@ -17,6 +17,7 @@ LOCAL_STATIC_JAVA_LIBRARIES := Keyguard \
 LOCAL_JAVA_LIBRARIES := telephony-common
 
 LOCAL_PACKAGE_NAME := SystemUI
+LOCAL_JNI_SHARED_LIBRARIES := ParaSHIT
 LOCAL_CERTIFICATE := platform
 LOCAL_PRIVILEGED_MODULE := true
 
@@ -38,14 +39,14 @@ include $(CLEAR_VARS)
 LOCAL_MODULE_TAGS := optional
 
 LOCAL_SRC_FILES := \
-    jni/com_android_systemui_statusbar_phone_BarBackgroundUpdaterNative.cpp
+    jni/in_parashit_BarBackgroundUpdaterNative.cpp
 
 LOCAL_SHARED_LIBRARIES := \
     libutils \
     libgui \
     liblog
 
-LOCAL_MODULE := SystemUI
+LOCAL_MODULE := ParaSHIT
 # LOCAL_CERTIFICATE := platform
 # LOCAL_PRIVILEGED_MODULE := true
 

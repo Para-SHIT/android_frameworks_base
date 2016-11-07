@@ -22,30 +22,20 @@ import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.database.ContentObserver;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.RippleDrawable;
-import android.net.Uri;
 import android.os.Handler;
-import android.os.Process;
-import android.os.SystemClock;
-import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.LinearInterpolator;
 
 import com.android.systemui.R;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 public class BarTransitions {
@@ -53,7 +43,7 @@ public class BarTransitions {
     private static final boolean DEBUG_COLORS = false;
 
     public static final boolean HIGH_END = ActivityManager.isHighEndGfx();
-    public static Context mContext;
+
     public static final int MODE_OPAQUE = 0;
     public static final int MODE_SEMI_TRANSPARENT = 1;
     public static final int MODE_TRANSLUCENT = 2;
@@ -66,6 +56,8 @@ public class BarTransitions {
     public static final int LIGHTS_IN_DURATION = 250;
     public static final int LIGHTS_OUT_DURATION = 750;
     public static final int BACKGROUND_DURATION = 200;
+
+    public static Context mContext;
 
     private final String mTag;
     private final View mView;
@@ -177,8 +169,8 @@ public class BarTransitions {
 
         private int mGradientAlphaStart;
         private int mColorStart;
+        private Context cont;
         private Resources res;
-        private Context kontek;
         private int mGradientResourceId;
         private final int mOpaqueColorResourceId;
         private final int mSemiTransparentColorResourceId;
@@ -188,12 +180,12 @@ public class BarTransitions {
         public BarBackgroundDrawable(final Context context, final int gradientResourceId,
                 final int opaqueColorResourceId,final int semiTransparentColorResourceId,
                 final int transparentColorResourceId, final int warningColorResourceId) {
+            cont = context;
             res = context.getResources();
-            kontek = context;
             mHandler = new Handler();
+            mGradientResourceId = gradientResourceId;
             mOpaqueColorResourceId = opaqueColorResourceId;
             mSemiTransparentColorResourceId = semiTransparentColorResourceId;
-            mGradientResourceId = gradientResourceId;
             mTransparentColorResourceId = transparentColorResourceId;
             mWarningColorResourceId = warningColorResourceId;
             updateResources(res);
@@ -262,7 +254,7 @@ public class BarTransitions {
             mWarning = res.getColor(mWarningColorResourceId);
 
             final Rect bounds = mGradient == null ? new Rect() : mGradient.getBounds();
-            mGradient = res.getDrawable(mGradientResourceId, kontek.getTheme());
+            mGradient = res.getDrawable(mGradientResourceId, cont.getTheme());
             mGradient.setBounds(bounds);
 
             setCurrentColor(getTargetColor());
@@ -280,7 +272,7 @@ public class BarTransitions {
         }
 
         protected int getColorSemiTransparent() {
-            return  mSemiTransparent;
+            return mSemiTransparent;
         }
 
         protected int getColorTransparent() {
@@ -299,41 +291,11 @@ public class BarTransitions {
             return getTargetColor(mCurrentMode);
         }
 
-        private boolean isena() {
+        private boolean isenable() {
             return BarBackgroundUpdater.mStatusEnabled || BarBackgroundUpdater.mNavigationEnabled;
         }
 
-        public boolean ls() {
-            return NotificationPanelView.mKeyguardShowing;
-        }
-
-        public boolean isps() {
-            boolean b = false;
-            boolean ps = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.DYNAMIC_TRANSPARENT_PS, 0) == 1;
-            final Intent intent = new Intent(Intent.ACTION_MAIN);
-
-            final ActivityManager am = (ActivityManager) mContext
-                  .getSystemService(Activity.ACTIVITY_SERVICE);
-            List<RunningAppProcessInfo> apps = am.getRunningAppProcesses();
-            for (RunningAppProcessInfo appInfo : apps) {
-
-                // Make sure it's a foreground user application (not system,
-                // root, phone, etc.)
-                if (appInfo.pkgList != null && (appInfo.pkgList.length > 0)) {
-                    for (String pkg : appInfo.pkgList) {
-                        if (pkg.equals("com.android.vending")) {
-                             return b = ps ? true : false;
-                        } else {
-                             return b = false;
-                        }
-                    }
-                }
-            }
-            return b;
-        }
-
-        public boolean ishome(){
+        public boolean ishomescreen(){
             boolean b = false;
             final Intent intent = new Intent(Intent.ACTION_MAIN);
             String defaultHomePackage = "com.android.launcher";
@@ -362,22 +324,52 @@ public class BarTransitions {
             return b;
         }
 
+        public boolean islockscreen() {
+            return NotificationPanelView.mKeyguardShowing;
+        }
+
+        public boolean isplaystore() {
+            boolean b = false;
+            boolean ps = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.DYNAMIC_TRANSPARENT_PS, 0) == 1;
+            final Intent intent = new Intent(Intent.ACTION_MAIN);
+
+            final ActivityManager am = (ActivityManager) mContext
+                  .getSystemService(Activity.ACTIVITY_SERVICE);
+            List<RunningAppProcessInfo> apps = am.getRunningAppProcesses();
+            for (RunningAppProcessInfo appInfo : apps) {
+
+                // Make sure it's a foreground user application (not system,
+                // root, phone, etc.)
+                if (appInfo.pkgList != null && (appInfo.pkgList.length > 0)) {
+                    for (String pkg : appInfo.pkgList) {
+                        if (pkg.equals("com.android.vending")) {
+                             return b = ps ? true : false;
+                        } else {
+                             return b = false;
+                        }
+                    }
+                }
+            }
+            return b;
+        }
+
         private final int getTargetColor(final int mode) {
 
             switch (mode) {
                 case MODE_LIGHTS_OUT_TRANSPARENT:
-                    if (isena()) {
+                    if (isenable()) {
                         return getColorOpaque();
                     } else {
                         return getColorTransparent();
                     }
                 case MODE_TRANSPARENT:
-                    if (isena()) {
-                        if (ishome()) {
+                    if (isenable()) {
+                        if (ishomescreen()) {
                             return getColorTransparent();
-                        } else if (ls()) {
+                        } else if (islockscreen()) {
                             return getColorTransparent();
-                        } else if (isps()) {
+                        } else if (isplaystore()) {
                             return getColorTransparent();
                         } else {
                             return getColorOpaque();
@@ -386,10 +378,10 @@ public class BarTransitions {
                         return getColorTransparent();
                     }
                 case MODE_WARNING:
-                    if (isena()) {
-                        if (ishome()) {
+                    if (isenable()) {
+                        if (ishomescreen()) {
                             return getColorTransparent();
-                        } else if (ls()) {
+                        } else if (islockscreen()) {
                             return getColorTransparent();
                         } else {
                             return getColorOpaque();
@@ -398,13 +390,13 @@ public class BarTransitions {
                         return getColorwarning();
                     }
                 case MODE_TRANSLUCENT:
-                    if (isena()) {
+                    if (isenable()) {
                         return 0;
                     } else {
                         return getColorSemiTransparent();
                     }
                 case MODE_SEMI_TRANSPARENT:
-                    if (isena()) {
+                    if (isenable()) {
                         return getColorOpaque();
                     } else {
                         return getColorSemiTransparent();
@@ -497,21 +489,21 @@ public class BarTransitions {
 
             mHandler.post(new Runnable() {
 
-                    @Override
-                    public void run() {
-                        if (targetColor == mCurrentColor ) {
-                            // color value is not changing - only gradient alpha is changing
-                            setCurrentGradientAlpha(targetGradientAlpha);
-                        }
-
-                        if (targetGradientAlpha == mCurrentGradientAlpha ) {
-                            // gradient alpha is not changing - only color value is changing
-                            setCurrentColor(targetColor);
-                        }
-                        setCurrentColor(targetColor);
+                @Override
+                public void run() {
+                    if (targetColor == mCurrentColor ) {
+                        // color value is not changing - only gradient alpha is changing
                         setCurrentGradientAlpha(targetGradientAlpha);
-                        invalidateSelf();
                     }
+
+                    if (targetGradientAlpha == mCurrentGradientAlpha ) {
+                        // gradient alpha is not changing - only color value is changing
+                        setCurrentColor(targetColor);
+                    }
+                    setCurrentColor(targetColor);
+                    setCurrentGradientAlpha(targetGradientAlpha);
+                    invalidateSelf();
+                }
 
             });
 

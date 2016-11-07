@@ -35,12 +35,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.android.systemui.R;
+import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 import com.android.systemui.statusbar.policy.NetworkControllerImpl;
 import com.android.systemui.statusbar.policy.SecurityController;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 
 // Intimately tied to the design of res/layout/signal_cluster_view.xml
 public class SignalClusterView
@@ -91,80 +91,78 @@ public class SignalClusterView
        
         BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
-                @Override
-                public void onUpdateStatusBarIconColor(final int previousIconColor,
-                    final int iconColor) {
-                    mOverrideIconColor = iconColor;
+            @Override
+            public void onUpdateStatusBarIconColor(final int previousIconColor,
+                final int iconColor) {
+                mOverrideIconColor = iconColor;
+                if (mOverrideIconColor == 0) {
+                    mHandler.post(new Runnable() {
 
-                    if (mOverrideIconColor == 0) {
-                        mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mWifi != null) {
+                                mWifi.setColorFilter(null);
+                            }
+                            if (mVpn != null) {
+                                mVpn.setColorFilter(null);
+                            }
+                            if (mWifiActivity != null) {
+                                mWifiActivity.setColorFilter(null);
+                            }
+                            if (mAirplane != null) {
+                                mAirplane.setColorFilter(null);
+                            }
+                            for (PhoneState state : mPhoneStates) {
+                                if (state.mMobile != null) {
+                                    state.mMobile.setColorFilter(null);
+                                }
 
-                            @Override
-                            public void run() {
-                                if (mWifi != null) {
-                                    mWifi.setColorFilter(null);
+                                if (state.mMobileActivity != null) {
+                                    state.mMobileActivity.setColorFilter(null);
                                 }
-                                if (mVpn != null) {
-                                    mVpn.setColorFilter(null);
-                                }
-                                if (mWifiActivity != null) {
-                                    mWifiActivity.setColorFilter(null);
-                                }
-                                if (mAirplane != null) {
-                                    mAirplane.setColorFilter(null);
-                                }
-                                for (PhoneState state : mPhoneStates) {
-                                    if (state.mMobile != null) {
-                                        state.mMobile.setColorFilter(null);
-                                    }
 
-                                    if (state.mMobileActivity != null) {
-                                        state.mMobileActivity.setColorFilter(null);
-                                    }
-
-                                    if (state.mMobileType != null) {
-                                        state.mMobileType.setColorFilter(null);
-                                    }
+                                if (state.mMobileType != null) {
+                                    state.mMobileType.setColorFilter(null);
                                 }
                             }
+                        }
 
-                        });
-                    } else {
-                        mHandler.post(new Runnable() {
+                    });
+                } else {
+                    mHandler.post(new Runnable() {
 
-                            @Override
-                            public void run() {
-                                if (mWifi != null) {
-                                    mWifi.setColorFilter(mOverrideIconColor);
+                        @Override
+                        public void run() {
+                            if (mWifi != null) {
+                                mWifi.setColorFilter(mOverrideIconColor);
+                            }
+                            if (mVpn != null) {
+                                mVpn.setColorFilter(mOverrideIconColor);
+                            }
+                            if (mWifiActivity != null) {
+                                mWifiActivity.setColorFilter(mOverrideIconColor);
+                            }
+                            if (mAirplane != null) {
+                                mAirplane.setColorFilter(mOverrideIconColor);
+                            }
+                            for (PhoneState state : mPhoneStates) {
+                                if (state.mMobile != null) {
+                                    state.mMobile.setColorFilter(mOverrideIconColor);
                                 }
-                                if (mVpn != null) {
-                                    mVpn.setColorFilter(mOverrideIconColor);
-                                }
-                                if (mWifiActivity != null) {
-                                    mWifiActivity.setColorFilter(mOverrideIconColor);
-                                }
-                                if (mAirplane != null) {
-                                    mAirplane.setColorFilter(mOverrideIconColor);
-                                }
-                                for (PhoneState state : mPhoneStates) {
-                                    if (state.mMobile != null) {
-                                        state.mMobile.setColorFilter(mOverrideIconColor);
-                                    }
 
-                                    if (state.mMobileActivity != null) {
-                                        state.mMobileActivity.setColorFilter(mOverrideIconColor);
-                                    }
+                                if (state.mMobileActivity != null) {
+                                    state.mMobileActivity.setColorFilter(mOverrideIconColor);
+                                }
 
-                                    if (state.mMobileType != null) {
-                                        state.mMobileType.setColorFilter(mOverrideIconColor);
-                                    }
+                                if (state.mMobileType != null) {
+                                    state.mMobileType.setColorFilter(mOverrideIconColor);
                                 }
                             }
+                        }
 
-                        });
-
-                    }
+                    });
                 }
+            }
 
         });
 

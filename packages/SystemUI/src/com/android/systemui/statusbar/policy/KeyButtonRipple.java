@@ -21,7 +21,6 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.database.ContentObserver;
-import android.graphics.*;
 import android.graphics.Canvas;
 import android.graphics.CanvasProperty;
 import android.graphics.ColorFilter;
@@ -75,46 +74,59 @@ public class KeyButtonRipple extends Drawable {
 
     private final Handler mHandler;
     private SettingsObserver mObserver = null;
-    static boolean ena;
-    static Context mContext;
     private int mOverrideIconColor = 0;
     private int mRippleColor;
+
+    static boolean mEnable;
+    static Context mContext;
 
     public KeyButtonRipple(Context ctx, View targetView) {
         mContext = ctx;
         mHandler = new Handler();
         if (mContext != null) {
-
             if (mObserver != null) {
                 mContext.getContentResolver().unregisterContentObserver(mObserver);
             }
         }
-
         if (mObserver == null) {
             mObserver = new SettingsObserver(this,mHandler);
         }
-
         mContext.getContentResolver().registerContentObserver(
             Settings.System.getUriFor(Settings.System.DYNAMIC_NAVIGATION_BAR_STATE),
-            false, mObserver);
-        ena = Settings.System.getIntForUser(mContext.getContentResolver(),
+                false, mObserver);
+        mEnable = Settings.System.getIntForUser(mContext.getContentResolver(),
             Settings.System.DYNAMIC_NAVIGATION_BAR_STATE, 0, UserHandle.USER_CURRENT) == 1;
-
         mMaxWidth = ctx.getResources().getDimensionPixelSize(R.dimen.key_button_ripple_max_width);
         mTargetView = targetView;
         mRippleColor = ctx.getResources().getColor(R.color.navbutton_ripple_color);
-        BarBackgroundUpdater . addListener( new BarBackgroundUpdater.UpdateListener( this) {
+        BarBackgroundUpdater.addListener(new BarBackgroundUpdater.UpdateListener(this) {
 
             @Override
             public void onUpdateNavigationBarIconColor(final int previousIconColor,
                 final int iconColor ) {
                 mOverrideIconColor = iconColor;
 
-                apdet(mOverrideIconColor);
-
+                updateColor(mOverrideIconColor);
             }
 
         });
+    }
+
+    public void updateColor(final int targetColor) {
+        mHandler.post(new Runnable() {
+
+            @Override
+            public void run() {
+                if (mRipplePaint != null) {
+                    mRipplePaint.setColor(enable() ? targetColor : mRippleColor);
+                }
+            }
+
+        });
+    }
+
+    public boolean enable() {
+        return mEnable;
     }
 
     private Paint getRipplePaint() {
@@ -124,20 +136,6 @@ public class KeyButtonRipple extends Drawable {
             mRipplePaint.setColor(mRippleColor);
         }
         return mRipplePaint;
-    }
-
-    public void apdet(final int targetColor){
-        mHandler.post(new Runnable() {
-
-            @Override
-            public void run() {
-                if (mRipplePaint!= null) {
-                    mRipplePaint.setColor(enable()?targetColor:Color.WHITE);
-                }
-            }
-
-        });
-
     }
 
     private void drawSoftware(Canvas canvas) {
@@ -170,10 +168,6 @@ public class KeyButtonRipple extends Drawable {
         } else {
             drawSoftware(canvas);
         }
-    }
-
-    public boolean enable() {
-        return ena;
     }
 
     @Override
@@ -428,19 +422,18 @@ public class KeyButtonRipple extends Drawable {
     }
 
     private class SettingsObserver extends ContentObserver {
-        private final KeyButtonRipple kbr;
-        private SettingsObserver(final KeyButtonRipple br, final Handler handler) {
+        private final KeyButtonRipple mKeyButtonRipple;
+        private SettingsObserver(final KeyButtonRipple keybuttonripple, final Handler handler) {
             super(handler);
-            kbr = br;
+            mKeyButtonRipple = keybuttonripple;
         }
 
         @Override
         public final void onChange(final boolean selfChange) {
-            kbr.ena = Settings.System.getInt(kbr.mContext.getContentResolver(),
+            mKeyButtonRipple.mEnable = Settings.System.getInt(mKeyButtonRipple.mContext.getContentResolver(),
                 Settings.System.DYNAMIC_NAVIGATION_BAR_STATE, 0) == 1;
-            kbr.apdet(Settings.System.getInt(kbr.mContext.getContentResolver(),
-                Settings.System.DYNAMIC_NAVIGATION_BAR_STATE, 0) == 1 ? mOverrideIconColor:Color.WHITE);
+            mKeyButtonRipple.updateColor(Settings.System.getInt(mKeyButtonRipple.mContext.getContentResolver(),
+                Settings.System.DYNAMIC_NAVIGATION_BAR_STATE, 0) == 1 ? mOverrideIconColor : mRippleColor);
         }
-
     }
 }

@@ -47,6 +47,7 @@ import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -247,7 +248,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
     public static final int FONT_NOTOSERIF_BOLD_ITALIC = 24;
 
     private Handler mHandler;
-    private HeaderTransitions mHeaderTransitions;
+    private StatusBarHeaderTransitions mStatusBarHeaderTransitions;
     private int mOverrideIconColor = 0;
     boolean mDhs;
 
@@ -260,7 +261,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
     @Override
     protected void onAttachedToWindow() {
         // TODO: Implement this method
-        mHeaderTransitions.init();
+        mStatusBarHeaderTransitions.init();
         mDhs = true;
     }
 
@@ -268,7 +269,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
     protected void onFinishInflate() {
         super.onFinishInflate();
         mHandler = new Handler();
-        mHeaderTransitions = new HeaderTransitions(this);
+        mStatusBarHeaderTransitions = new StatusBarHeaderTransitions(this);
         mSystemIconsSuperContainer = findViewById(R.id.system_icons_super_container);
         mSystemIconsContainer = (ViewGroup) findViewById(R.id.system_icons_container);
         mSystemIconsSuperContainer.setOnClickListener(this);
@@ -325,6 +326,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         updateVisibilities();
         updateClockScale();
         updateAvatarScale();
+        updateRipple();
         addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right,
@@ -353,7 +355,22 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             public void onUpdateHeaderIconColor(final int previousIconColor,
                 final int iconColor) {
                 mOverrideIconColor = iconColor;
+                mHandler.post(new Runnable() {
 
+                    @Override
+                    public void run() {
+                        if (mOverrideIconColor != 0) {
+                            if (mOverrideIconColor == 0xFF000000) {
+                                mQsDetailHeaderProgress.setBackgroundColor(0x99000000);
+                            } else if (mOverrideIconColor == 0xFFFFFFFF) {
+                                mQsDetailHeaderProgress.setBackgroundColor(0x99FFFFFF);
+                            }
+                        } else {
+                            return;
+                        }
+                    }
+
+                });
                 updateDynamicHeaderColor();
             }
 
@@ -376,6 +393,9 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
                     mDateCollapsed.setTextColor(mDetailColor);
                     mEmergencyCallsOnly.setTextColor(EmergencyCallsOnly);
                     mQsDetailHeaderTitle.setTextColor(QSColorHelper.getTextColor(mContext));
+                    mQsDetailHeaderSwitch.getThumbDrawable().clearColorFilter();
+                    mQsDetailHeaderSwitch.getTrackDrawable().clearColorFilter();
+                    mQsDetailHeaderProgress.clearColorFilter();
                     ((ImageView)mSettingsButton).setColorFilter(mIconColor, Mode.MULTIPLY);
                     ((ImageView)mStatusBarPowerMenu).setColorFilter(mIconColor, Mode.MULTIPLY);
                     ((ImageView)mTaskManagerButton).setColorFilter(mIconColor, Mode.MULTIPLY);
@@ -387,7 +407,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
 
             });
         }
-        if (mOverrideIconColor != 0 && mDhs && BarBackgroundUpdater.mHeaderEnabled) {
+        if (BarBackgroundUpdater.mHeaderEnabled && mDhs && mOverrideIconColor != 0) {
             mHandler.post(new Runnable() {
 
                 @Override
@@ -408,6 +428,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
                     mQsDetailHeaderTitle.setTextColor(mOverrideIconColor);
                     mQsDetailHeaderSwitch.getThumbDrawable().setColorFilter(mOverrideIconColor, Mode.SRC_ATOP);
                     mQsDetailHeaderSwitch.getTrackDrawable().setColorFilter(mOverrideIconColor, Mode.SRC_ATOP);
+                    mQsDetailHeaderProgress.setColorFilter(mOverrideIconColor, Mode.SRC_ATOP);
                     ((ImageView)mSettingsButton).setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
                     ((ImageView)mStatusBarPowerMenu).setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
                     ((ImageView)mTaskManagerButton).setColorFilter(mOverrideIconColor, Mode.MULTIPLY);
@@ -422,7 +443,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
     }
 
     public BarTransitions getBarTransitions() {
-        return mHeaderTransitions;
+        return mStatusBarHeaderTransitions;
     }
 
     @Override
@@ -467,6 +488,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         setalarmtextcolor();
         setbatterytextcolor();
         updateIconColorSettings();
+        updateRipple();
     }
 
     @Override
@@ -599,6 +621,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
         requestCaptureValues();
         updateDynamicHeaderColor();
         updateIconColorSettings();
+        updateRipple();
         updateWeatherSettings();
         updateStatusBarPowerMenuVisibility();
     }
@@ -1525,6 +1548,8 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.DYNAMIC_HEADER_STATE), false, this,
                     UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.HEADER_RIPPLE_COLOR), false, this);
             update();
         }
 
@@ -1548,6 +1573,9 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
                 || uri.equals(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_EXPANDED_HEADER_SHOW_WEATHER_LOCATION))) {
                 updateWeatherSettings();
+            } else if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.HEADER_RIPPLE_COLOR))) {
+                updateRipple();
             }
             update();
         }
@@ -1616,6 +1644,7 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             setbatterytextcolor();
             updateDynamicHeaderColor();
             updateIconColorSettings();
+            updateRipple();
             hidepanelItems();
         }
     }
@@ -1647,6 +1676,50 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
     private void goToSleep() {
         PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         pm.goToSleep(SystemClock.uptimeMillis());
+    }
+
+    private void updateRipple() {
+        mMultiUserSwitch.setBackground(updateRippleColor(mContext.getDrawable(
+                R.drawable.ripple_drawable), false));
+        mSettingsButton.setBackground(updateRippleColor(mContext.getDrawable(
+                R.drawable.ripple_drawable), false));
+        mStatusBarPowerMenu.setBackground(updateRippleColor(mContext.getDrawable(
+                R.drawable.ripple_drawable), false));
+        mTaskManagerButton.setBackground(updateRippleColor(mContext.getDrawable(
+                R.drawable.ripple_drawable), false));
+        mSystemIconsSuperContainer.setBackground(updateRippleColor(mContext.getDrawable(
+                R.drawable.ripple_drawable), false));
+        mSystemIconsContainer.setBackground(updateRippleColor(mContext.getDrawable(
+                R.drawable.ripple_drawable), false));
+        mSystemIcons.setBackground(updateRippleColor(mContext.getDrawable(
+                R.drawable.ripple_drawable), false));
+        mClock.setBackground(updateRippleColor(mContext.getDrawable(
+                R.drawable.ripple_drawable), false));
+        mDateGroup.setBackground(updateRippleColor(mContext.getDrawable(
+                R.drawable.ripple_drawable), false));
+        mAlarmStatus.setBackground(updateRippleColor(mContext.getDrawable(
+                R.drawable.ripple_drawable), false));
+        mWeatherContainer.setBackground(updateRippleColor(mContext.getDrawable(
+                R.drawable.ripple_drawable), false));
+    }
+
+    private RippleDrawable updateRippleColor(Drawable rd, boolean applyRippleColor) {
+        RippleDrawable rippleHeader = (RippleDrawable) rd;
+        int states[][] = new int[][] {
+            new int[] {
+                com.android.internal.R.attr.state_enabled
+            }
+        };
+        int colors[] = new int[] {
+            QSColorHelper.getHeaderRippleColor(mContext)
+        };
+        ColorStateList color = new ColorStateList(states, colors);
+        if (!BarBackgroundUpdater.mHeaderEnabled && mDhs) {
+            rippleHeader.setColor(color);
+        } else {
+            rippleHeader.setColor(ColorStateList.valueOf(mOverrideIconColor));
+        }
+        return rippleHeader;
     }
    
     private void updateWeatherSettings() {

@@ -22,7 +22,6 @@ import android.widget.FrameLayout;
 
 import com.android.systemui.R;
 import com.android.systemui.statusbar.phone.BarTransitions;
-import com.android.systemui.statusbar.phone.QsTileTransitions;
 
 /**
  * Wrapper view with background which contains {@link QSPanel}
@@ -31,7 +30,7 @@ public class QSContainer extends FrameLayout {
 
     private int mHeightOverride = -1;
     private QSPanel mQSPanel;
-    private QsTileTransitions mQsTileTransitions;
+    private QSTransitions mQSTransitions;
 
     public QSContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -40,7 +39,7 @@ public class QSContainer extends FrameLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mQsTileTransitions = new QsTileTransitions(this);
+        mQSTransitions = new QSTransitions(this);
         mQSPanel = (QSPanel) findViewById(R.id.quick_settings_panel);
     }
 
@@ -53,11 +52,11 @@ public class QSContainer extends FrameLayout {
     @Override
     protected void onAttachedToWindow() {
         // TODO: Implement this method
-        mQsTileTransitions.init();
+        mQSTransitions.init();
     }
 
     public BarTransitions getBarTransitions() {
-        return mQsTileTransitions;
+        return mQSTransitions;
     }
 
     /**

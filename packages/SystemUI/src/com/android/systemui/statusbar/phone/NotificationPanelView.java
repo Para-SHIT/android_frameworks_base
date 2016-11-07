@@ -66,6 +66,7 @@ import com.android.systemui.cm.UserContentObserver;
 import com.android.systemui.qs.QSContainer;
 import com.android.systemui.qs.QSPanel;
 import com.android.systemui.qs.QSPanel.TileRecord;
+import com.android.systemui.qs.QSTileViewImage;
 import com.android.systemui.statusbar.*;
 import com.android.systemui.statusbar.ExpandableView;
 import com.android.systemui.statusbar.FlingAnimationUtils;
@@ -251,7 +252,7 @@ public class NotificationPanelView extends PanelView implements
     private LinearLayout mTaskManagerPanel;
 
     // QS panel logo
-    private QsTileImage mCMPanelLogo;
+    private QSTileViewImage mCMPanelLogo;
     private int mQSPanelLogo;
     private int mQSPanelLogoColor;
     private int mQSPanelLogoAlpha;
@@ -286,7 +287,7 @@ public class NotificationPanelView extends PanelView implements
         mKeyguardStatusView = (KeyguardStatusView) findViewById(R.id.keyguard_status_view);
         mQsContainer = (QSContainer) findViewById(R.id.quick_settings_container);
         mQsPanel = (QSPanel) findViewById(R.id.quick_settings_panel);
-        mCMPanelLogo = (QsTileImage) findViewById(R.id.cm_panel_logo);
+        mCMPanelLogo = (QSTileViewImage) findViewById(R.id.cm_panel_logo);
         mTaskManagerPanel = (LinearLayout) findViewById(R.id.task_manager_panel);
         mClockView = (TextView) findViewById(R.id.clock_view);
         mScrollView = (ObservableScrollView) findViewById(R.id.scroll_view);
@@ -1479,12 +1480,14 @@ public class NotificationPanelView extends PanelView implements
 
     public void startAnim(){
         mHandler.post(new Runnable() {
+
             @Override
             public void run() {
                 for (TileRecord tr : mQsPanel.mRecords) {
-				    mQsPanel.setAnimationTile(tr);
+                    mQsPanel.setAnimationTile(tr);
                 }
             }
+
         });
     }
 
@@ -1734,8 +1737,8 @@ public class NotificationPanelView extends PanelView implements
             image.setImageDrawable(res.getDrawable(
                 R.drawable.ic_tasklist_switch_normal));
         } else {
-            image.setImageDrawable(
-                    res.getDrawable(R.drawable.ic_quick_settings));
+            image.setImageDrawable(res.getDrawable(
+                R.drawable.ic_quick_settings));
         }
     }
 
