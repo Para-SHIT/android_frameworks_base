@@ -58,4 +58,7 @@
 
     <!-- Recents memory bar -->
     <string name="recents_free_ram">FREE RAM: %1$d MB</string>
+
+    <!-- statusbar items tuner -->
+    <string name="statusbar_icons_blacklist">Status bar icons</string>
 </resources>
