@@ -36,8 +36,6 @@ import android.view.Surface;
 import android.view.SurfaceControl;
 import android.view.WindowManager;
 
-import in.parashit.BarBackgroundUpdaterNative;
-
 import java.lang.Math;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;

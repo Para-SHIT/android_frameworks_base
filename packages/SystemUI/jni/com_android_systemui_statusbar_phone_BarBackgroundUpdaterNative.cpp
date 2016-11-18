@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <jni/in_parashit_BarBackgroundUpdaterNative.h>
+#include <jni/com_android_systemui_statusbar_phone_BarBackgroundUpdaterNative.h>
 
 #define LOG_TAG "BarBackgroundUpdaterNative"
 #define DEBUG_FLOOD false
@@ -132,7 +132,7 @@ uint32_t getPixel(int32_t dx, int32_t dy)
     return 0;
 }
 
-JNIEXPORT void JNICALL Java_in_parashit_BarBackgroundUpdaterNative_setScreenSize
+JNIEXPORT void JNICALL Java_com_android_systemui_statusbar_phone_BarBackgroundUpdaterNative_setScreenSize
         (JNIEnv * je, jclass jc, jint rotation, jint width, jint height)
 {
     screenRotation = rotation;
@@ -142,7 +142,7 @@ JNIEXPORT void JNICALL Java_in_parashit_BarBackgroundUpdaterNative_setScreenSize
     requestedShotHeight = (isNatural ? height : width) * SHOT_SCALE;
 }
 
-JNIEXPORT jintArray JNICALL Java_in_parashit_BarBackgroundUpdaterNative_getColors
+JNIEXPORT jintArray JNICALL Java_com_android_systemui_statusbar_phone_BarBackgroundUpdaterNative_getColors
         (JNIEnv * je, jclass jc, jint rotation, jint statusBarHeight, jint navigationBarHeight, jint xFromRightSide)
 {
     jint response[4] = { 0, 0, 0, 0 };
