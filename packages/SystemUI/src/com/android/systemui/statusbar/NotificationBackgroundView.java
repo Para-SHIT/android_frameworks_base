@@ -22,17 +22,28 @@ import android.graphics.Canvas;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
+import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.View;
+
+import com.android.systemui.statusbar.phone.NotificationPanelView;
+import com.android.systemui.tuner.TunerService;
 
 /**
  * A view that can be used for both the dimmed and normal background of an notification.
  */
-public class NotificationBackgroundView extends View {
+public class NotificationBackgroundView extends View implements TunerService.Tunable {
 
     private Drawable mBackground;
     private int mClipTopAmount;
     private int mActualHeight;
+    private static int mNotTranslucencyPercentage;
+    private static boolean mTranslucentNotifications;
+
+    private static final String TRANSLUCENT_NOTIFICATIONS_PREFERENCE_KEY =
+            "system:" + Settings.System.TRANSLUCENT_NOTIFICATIONS_PREFERENCE_KEY;
+    private static final String TRANSLUCENT_NOTIFICATIONS_PERCENTAGE_PREFERENCE_KEY =
+            "system:" + Settings.System.TRANSLUCENT_NOTIFICATIONS_PERCENTAGE_PREFERENCE_KEY;
 
     public NotificationBackgroundView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -46,8 +57,35 @@ public class NotificationBackgroundView extends View {
     private void draw(Canvas canvas, Drawable drawable) {
         if (drawable != null && mActualHeight > mClipTopAmount) {
             drawable.setBounds(0, mClipTopAmount, getWidth(), mActualHeight);
+
+            if (mTranslucentNotifications) {
+                if (drawable.getAlpha() != mNotTranslucencyPercentage)
+                    drawable.setAlpha(mNotTranslucencyPercentage);
+                if (NotificationPanelView.mKeyguardShowing) {
+                    drawable.setAlpha(179);
+                }
+                if (NotificationPanelView.mHeadsUpShowing || NotificationPanelView.mHeadsUpAnimatingAway) {
+                    drawable.setAlpha(255);
+                }
+            } else {
+                drawable.setAlpha(255);
+            }
             drawable.draw(canvas);
         }
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        TunerService.get(mContext).addTunable(this,
+                TRANSLUCENT_NOTIFICATIONS_PREFERENCE_KEY,
+                TRANSLUCENT_NOTIFICATIONS_PERCENTAGE_PREFERENCE_KEY);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        TunerService.get(mContext).removeTunable(this);
     }
 
     @Override
@@ -71,6 +109,28 @@ public class NotificationBackgroundView extends View {
         if (mBackground != null) {
             mBackground.setHotspot(x, y);
         }
+    }
+
+    @Override
+    public void onTuningChanged(String key, String newValue) {
+        switch (key) {
+            case TRANSLUCENT_NOTIFICATIONS_PREFERENCE_KEY:
+                 mTranslucentNotifications =
+                        newValue != null && Integer.parseInt(newValue) == 1;
+                setBlurSettings();
+                break;
+            case TRANSLUCENT_NOTIFICATIONS_PERCENTAGE_PREFERENCE_KEY:
+                mNotTranslucencyPercentage =
+                        newValue == null ? 70 : Integer.parseInt(newValue);
+                setBlurSettings();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void setBlurSettings() {
+        mNotTranslucencyPercentage = 255 - ((mNotTranslucencyPercentage * 255) / 100);
     }
 
     /**
