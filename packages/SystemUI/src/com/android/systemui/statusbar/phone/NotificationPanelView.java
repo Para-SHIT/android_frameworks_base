@@ -2499,6 +2499,8 @@ public class NotificationPanelView extends PanelView implements
                     Settings.System.BLUR_RADIUS_PREFERENCE_KEY), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_EXPANDED_ENABLED_PREFERENCE_KEY), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.ENABLE_TASK_MANAGER), false, this, UserHandle.USER_ALL);
             update();
         }
 
@@ -2568,6 +2570,9 @@ public class NotificationPanelView extends PanelView implements
             mBlurDarkColorFilter = Color.LTGRAY;
             mBlurMixedColorFilter = Color.GRAY;
             mBlurLightColorFilter = Color.DKGRAY;
+
+            mShowTaskManager = Settings.System.getIntForUser(resolver,
+                    Settings.System.ENABLE_TASK_MANAGER, 0, UserHandle.USER_CURRENT) == 1;
 
             if (mQSCSwitch) {
                 setQSColors();

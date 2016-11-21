@@ -1550,6 +1550,8 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.HEADER_RIPPLE_COLOR), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.ENABLE_TASK_MANAGER), false, this);
             update();
         }
 
@@ -1627,6 +1629,8 @@ public class StatusBarHeaderView extends RelativeLayout implements View.OnClickL
             tShadowColor = Settings.System.getIntForUser(resolver,
                 Settings.System.STATUS_BAR_CUSTOM_HEADER_TEXT_SHADOW_COLOR, 0,
                 UserHandle.USER_CURRENT);
+            mShowTaskManager = Settings.System.getIntForUser(resolver,
+                Settings.System.ENABLE_TASK_MANAGER, 0, currentUserId) == 1;
 
             setStatusBarHeaderFontStyle(mStatusBarHeaderFontStyle);
             setStatusBarWeatherFontStyle(mStatusBarHeaderWeatherFont);
