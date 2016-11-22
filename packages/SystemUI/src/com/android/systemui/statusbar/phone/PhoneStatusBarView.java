@@ -53,6 +53,7 @@ public class PhoneStatusBarView extends PanelBar {
 
     private int mShowCarrierLabel;
     private TextView mCarrierLabel;
+    private int mCarrierLabelSpot;
 
     private int mCarrierLabelFontStyle = FONT_NORMAL;
     public static final int FONT_NORMAL = 0;
@@ -112,6 +113,8 @@ public class PhoneStatusBarView extends PanelBar {
         ContentResolver resolver = getContext().getContentResolver();
         mShowCarrierLabel = Settings.System.getIntForUser(getContext().getContentResolver(),
                 Settings.System.STATUS_BAR_CUSTOM_CARRIER, 1, UserHandle.USER_CURRENT);
+        mCarrierLabelSpot = Settings.System.getIntForUser(getContext().getContentResolver(),
+                Settings.System.STATUS_BAR_CARRIER_SPOT, 0, UserHandle.USER_CURRENT);
         mCarrierLabelFontStyle = Settings.System.getIntForUser(resolver,
                 Settings.System.STATUS_BAR_CARRIER_FONT_STYLE, FONT_NORMAL,
                 UserHandle.USER_CURRENT);
@@ -119,7 +122,6 @@ public class PhoneStatusBarView extends PanelBar {
 
     @Override
     public void onFinishInflate() {
-        mCarrierLabel = (TextView) findViewById(R.id.statusbar_carrier_text);
         updateVisibilities();
         mBarTransitions.init();
     }
@@ -127,6 +129,15 @@ public class PhoneStatusBarView extends PanelBar {
     private void updateVisibilities() {
         ConnectivityManager cm = (ConnectivityManager)mContext.getSystemService(
                 Context.CONNECTIVITY_SERVICE);
+        clearCarrierView();
+
+        if (mCarrierLabelSpot == 0) {
+            mCarrierLabel = (TextView) findViewById(R.id.left_statusbar_carrier_text);
+        }
+        if (mCarrierLabelSpot == 1) {
+            mCarrierLabel = (TextView) findViewById(R.id.statusbar_carrier_text);
+        }
+
         if (mCarrierLabel != null) {
             if (cm.isNetworkSupported(ConnectivityManager.TYPE_MOBILE) != false){
                 if (mShowCarrierLabel == 2) {
@@ -138,11 +149,16 @@ public class PhoneStatusBarView extends PanelBar {
                 }
             } else {
                 mCarrierLabel.setVisibility(View.GONE);
-
             }
-            getFontStyle(mCarrierLabelFontStyle);
-
         }
+        getFontStyle(mCarrierLabelFontStyle);
+    }
+
+    public void clearCarrierView() {
+        mCarrierLabel = (TextView) findViewById(R.id.left_statusbar_carrier_text);
+        mCarrierLabel.setVisibility(View.GONE);
+        mCarrierLabel = (TextView) findViewById(R.id.statusbar_carrier_text);
+        mCarrierLabel.setVisibility(View.GONE);
     }
 
     public void getFontStyle(int font) {
@@ -384,6 +400,8 @@ public class PhoneStatusBarView extends PanelBar {
         super.onAttachedToWindow();
         getContext().getContentResolver().registerContentObserver(Settings.System.getUriFor(
                 "status_bar_custom_carrier"), false, mObserver);
+        getContext().getContentResolver().registerContentObserver(Settings.System.getUriFor(
+                "status_bar_carrier_spot"), false, mObserver);
         getContext().getContentResolver().registerContentObserver(Settings.System.getUriFor(
                 "status_bar_carrier_font_style"), false, mObserver);
 

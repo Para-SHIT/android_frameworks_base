@@ -60,32 +60,31 @@ public class KeyguardStatusBarView extends RelativeLayout {
 
     private KeyguardUserSwitcher mKeyguardUserSwitcher;
 
-     public static final int FONT_NORMAL = 0;
-     public static final int FONT_ITALIC = 1;
-     public static final int FONT_BOLD = 2;
-     public static final int FONT_BOLD_ITALIC = 3;
-     public static final int FONT_LIGHT = 4;
-     public static final int FONT_LIGHT_ITALIC = 5;
-     public static final int FONT_THIN = 6;
-     public static final int FONT_THIN_ITALIC = 7;
-     public static final int FONT_CONDENSED = 8;
-     public static final int FONT_CONDENSED_ITALIC = 9;
-     public static final int FONT_CONDENSED_LIGHT = 10;
-     public static final int FONT_CONDENSED_LIGHT_ITALIC = 11;
-     public static final int FONT_CONDENSED_BOLD = 12;
-     public static final int FONT_CONDENSED_BOLD_ITALIC = 13;
-     public static final int FONT_MEDIUM = 14;
-     public static final int FONT_MEDIUM_ITALIC = 15;
-     public static final int FONT_BLACK = 16;
-     public static final int FONT_BLACK_ITALIC = 17;
-     public static final int FONT_DANCINGSCRIPT = 18;
-     public static final int FONT_DANCINGSCRIPT_BOLD = 19;
-     public static final int FONT_COMINGSOON = 20;
-     public static final int FONT_NOTOSERIF = 21;
-     public static final int FONT_NOTOSERIF_ITALIC = 22;
-     public static final int FONT_NOTOSERIF_BOLD = 23;
-     public static final int FONT_NOTOSERIF_BOLD_ITALIC = 24;
-     private int mCarrierLabelFontStyle = FONT_NORMAL;
+    public static final int FONT_NORMAL = 0;
+    public static final int FONT_ITALIC = 1;
+    public static final int FONT_BOLD = 2;
+    public static final int FONT_BOLD_ITALIC = 3;
+    public static final int FONT_LIGHT = 4;
+    public static final int FONT_LIGHT_ITALIC = 5;
+    public static final int FONT_THIN = 6;
+    public static final int FONT_THIN_ITALIC = 7;
+    public static final int FONT_CONDENSED = 8;
+    public static final int FONT_CONDENSED_ITALIC = 9;
+    public static final int FONT_CONDENSED_LIGHT = 10;
+    public static final int FONT_CONDENSED_LIGHT_ITALIC = 11;
+    public static final int FONT_CONDENSED_BOLD = 12;
+    public static final int FONT_CONDENSED_BOLD_ITALIC = 13;
+    public static final int FONT_MEDIUM = 14;
+    public static final int FONT_MEDIUM_ITALIC = 15;
+    public static final int FONT_BLACK = 16;
+    public static final int FONT_BLACK_ITALIC = 17;
+    public static final int FONT_DANCINGSCRIPT = 18;
+    public static final int FONT_DANCINGSCRIPT_BOLD = 19;
+    public static final int FONT_COMINGSOON = 20;
+    public static final int FONT_NOTOSERIF = 21;
+    public static final int FONT_NOTOSERIF_ITALIC = 22;
+    public static final int FONT_NOTOSERIF_BOLD = 23;
+    public static final int FONT_NOTOSERIF_BOLD_ITALIC = 24;
 
     private int mSystemIconsSwitcherHiddenExpandedMargin;
     private Interpolator mFastOutSlowInInterpolator;
@@ -94,7 +93,9 @@ public class KeyguardStatusBarView extends RelativeLayout {
 
     private int mShowCarrierLabel;
     private TextView mCarrierLabel;
-	private int mTextColor = 0xffffffff;
+    private int mCarrierLabelSpot;
+    private int mCarrierLabelFontStyle = FONT_NORMAL;
+    private int mTextColor = 0xffffffff;
 
     private ContentObserver mObserver = new ContentObserver(new Handler()) {
         public void onChange(boolean selfChange, Uri uri) {
@@ -112,6 +113,8 @@ public class KeyguardStatusBarView extends RelativeLayout {
         ContentResolver resolver = getContext().getContentResolver();
         mShowCarrierLabel = Settings.System.getIntForUser(getContext().getContentResolver(),
                 Settings.System.STATUS_BAR_CUSTOM_CARRIER, 1, UserHandle.USER_CURRENT);
+        mCarrierLabelSpot = Settings.System.getIntForUser(getContext().getContentResolver(),
+                Settings.System.STATUS_BAR_CARRIER_SPOT, 0, UserHandle.USER_CURRENT);
         mCarrierLabelFontStyle = Settings.System.getIntForUser(resolver,
                 Settings.System.STATUS_BAR_CARRIER_FONT_STYLE, FONT_NORMAL,
                 UserHandle.USER_CURRENT);
@@ -123,7 +126,6 @@ public class KeyguardStatusBarView extends RelativeLayout {
         mSystemIconsSuperContainer = findViewById(R.id.system_icons_super_container);
         mMultiUserSwitch = (MultiUserSwitch) findViewById(R.id.multi_user_switch);
         mMultiUserAvatar = (ImageView) findViewById(R.id.multi_user_avatar);
-        mCarrierLabel = (TextView) findViewById(R.id.keyguard_carrier_text);
         mBatteryLevel = (BatteryLevelTextView) findViewById(R.id.battery_level_text);
         mDockBatteryLevel = (BatteryLevelTextView) findViewById(R.id.dock_battery_level_text);
         loadDimens();
@@ -153,8 +155,22 @@ public class KeyguardStatusBarView extends RelativeLayout {
             removeView(mMultiUserSwitch);
         }
 
+        mBatteryLevel.setVisibility(View.VISIBLE);
+        if (mDockBatteryLevel != null) {
+            mDockBatteryLevel.setVisibility(View.VISIBLE);
+        }
+
         ConnectivityManager cm = (ConnectivityManager)mContext.getSystemService(
                 Context.CONNECTIVITY_SERVICE);
+        clearCarrierView();
+
+        if (mCarrierLabelSpot == 0) {
+            mCarrierLabel = (TextView) findViewById(R.id.left_keyguard_carrier_text);
+        }
+        if (mCarrierLabelSpot == 1) {
+            mCarrierLabel = (TextView) findViewById(R.id.keyguard_carrier_text);
+        }
+
         if (mCarrierLabel != null) {
             if (cm.isNetworkSupported(ConnectivityManager.TYPE_MOBILE) != false){
                 if (mShowCarrierLabel == 1) {
@@ -168,13 +184,15 @@ public class KeyguardStatusBarView extends RelativeLayout {
                 mCarrierLabel.setVisibility(View.GONE);
             }
         }
+        getFontStyle(mCarrierLabelFontStyle);
+    }
 
-        mBatteryLevel.setVisibility(View.VISIBLE);
-        if (mDockBatteryLevel != null) {
-            mDockBatteryLevel.setVisibility(View.VISIBLE);
-        }
-		getFontStyle(mCarrierLabelFontStyle);
-	}
+    public void clearCarrierView() {
+        mCarrierLabel = (TextView) findViewById(R.id.left_keyguard_carrier_text);
+        mCarrierLabel.setVisibility(View.GONE);
+        mCarrierLabel = (TextView) findViewById(R.id.keyguard_carrier_text);
+        mCarrierLabel.setVisibility(View.GONE);
+    }
 
     public void getFontStyle(int font) {
          switch (font) {
@@ -418,6 +436,8 @@ public class KeyguardStatusBarView extends RelativeLayout {
         super.onAttachedToWindow();
         getContext().getContentResolver().registerContentObserver(Settings.System.getUriFor(
                 "status_bar_custom_carrier"), false, mObserver);
+        getContext().getContentResolver().registerContentObserver(Settings.System.getUriFor(
+                "status_bar_carrier_spot"), false, mObserver);
         getContext().getContentResolver().registerContentObserver(Settings.System.getUriFor(
                 "status_bar_carrier_font_style"), false, mObserver);
     }

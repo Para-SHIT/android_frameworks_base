@@ -4587,7 +4587,13 @@ public final class Settings {
          * 2 = Show only on statusbar
          * 3 = Show on keyguard and statusbar
          */
-        public static final String STATUS_BAR_CUSTOM_CARRIER = "status_bar_custom_carrier"; 
+        public static final String STATUS_BAR_CUSTOM_CARRIER = "status_bar_custom_carrier";
+
+        /**
+         * Custom carrier label placement
+         * @hide
+         */
+        public static final String STATUS_BAR_CARRIER_SPOT = "status_bar_carrier_spot";
 
         /**
          * Width of the gesture anywhere trigger.

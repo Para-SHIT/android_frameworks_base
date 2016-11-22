@@ -47,34 +47,6 @@
         android:paddingEnd="8dp"
         android:orientation="horizontal"
         >
-        
-        <LinearLayout android:id="@+id/status_bar_greeting_label_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            >
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-            <TextView
-                android:id="@+id/status_bar_greeting_label"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:gravity="center_vertical"
-                android:textAppearance="@style/TextAppearance.StatusBar.Greeting"
-                android:textColor="#ffffff" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1" />
-
-        </LinearLayout>
 
         <com.android.systemui.statusbar.AlphaOptimizedFrameLayout
             android:id="@+id/notification_icon_area"
@@ -95,10 +67,21 @@
                     android:id="@+id/left_temasek_logo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingEnd="1dip"
+                    android:paddingEnd="4dip"
                     android:src="@drawable/ic_status_bar_logo"
                     android:scaleType="center"
                     android:visibility="gone"
+                    />
+
+                <com.android.systemui.statusbar.widget.CarrierLabel
+                    android:id="@+id/left_statusbar_carrier_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:paddingEnd="4dip"
+                    android:textAppearance="@style/TextAppearance.StatusBar.CarrierLabel"
+                    android:visibility="gone"
+                    android:singleLine="true"
                     />
 
                 <TextView
@@ -107,20 +90,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
                     android:singleLine="true"
-                    android:paddingEnd="6dip"
+                    android:paddingEnd="3dip"
                     android:gravity="center"
                     android:visibility="gone"
-                    />
-
-                <com.android.systemui.statusbar.widget.CarrierLabel
-                    android:id="@+id/statusbar_carrier_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:ellipsize="end"
-                    android:textAppearance="@style/TextAppearance.StatusBar.CarrierLabel"
-                    android:visibility="gone"
-                    android:gravity="center"
-                    android:singleLine="true"
                     />
 
                 <TextView
@@ -128,11 +100,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:singleLine="true"
-                    android:gravity="right|center_vertical"
+                    android:gravity="center"
                     android:textAppearance="@style/TextAppearance.StatusBar.WeatherTemp"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="4dp"
                     android:visibility="gone"
-                    android:paddingStart="4dp"
-                    android:paddingEnd="4dp" />
+                    />
 
                 <com.android.systemui.statusbar.StatusBarIconView android:id="@+id/moreIcon"
                     android:layout_width="@dimen/status_bar_icon_size"
@@ -159,7 +132,7 @@
                 android:id="@+id/before_icons_temasek_logo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingEnd="2dip"
+                android:paddingEnd="4dip"
                 android:src="@drawable/ic_status_bar_logo"
                 android:scaleType="center"
                 android:visibility="gone"
@@ -180,9 +153,9 @@
                 android:singleLine="true"
                 android:gravity="right|center_vertical"
                 android:textAppearance="@style/TextAppearance.StatusBar.WeatherTemp"
-                android:visibility="gone"
                 android:paddingStart="2dp"
-                android:paddingEnd="4dp" />
+                android:paddingEnd="4dp"
+                android:visibility="gone" />
 
             <include layout="@layout/system_icons" />
 
@@ -191,7 +164,7 @@
                android:layout_height="wrap_content"
                android:layout_gravity="center_vertical"
                android:layout_marginStart="@dimen/header_battery_margin_keyguard"
-               android:textColor="#ffffff"
+               android:textColor="@color/status_bar_battery_level_text_color"
                android:textSize="@dimen/battery_level_text_size" />
 
             <com.android.systemui.DockBatteryLevelTextView android:id="@+id/dock_battery_level_text"
@@ -199,7 +172,7 @@
                android:layout_height="wrap_content"
                android:layout_gravity="center_vertical"
                android:layout_marginStart="@dimen/header_battery_margin_keyguard"
-               android:textColor="#ffffff"
+               android:textColor="@color/status_bar_battery_level_text_color"
                android:textSize="@dimen/battery_level_text_size"
                android:visibility="gone" />
 
@@ -224,6 +197,17 @@
                 android:visibility="gone"
                 />
 
+            <com.android.systemui.statusbar.widget.CarrierLabel
+                android:id="@+id/statusbar_carrier_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textAppearance="@style/TextAppearance.StatusBar.CarrierLabel"
+                android:paddingStart="7dp"
+                android:visibility="gone"
+                android:singleLine="true"
+                />
+
         </com.android.keyguard.AlphaOptimizedLinearLayout>
     </LinearLayout>
 
@@ -239,7 +223,7 @@
             android:id="@+id/center_temasek_logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingEnd="2dip"
+            android:paddingEnd="4dip"
             android:src="@drawable/ic_status_bar_logo"
             android:scaleType="center"
             android:visibility="gone"
@@ -269,4 +253,33 @@
         android:layout_height="1dp"
         android:visibility="gone"
         systemui:viewLocation="1" />
+
+    <com.android.keyguard.AlphaOptimizedLinearLayout
+            android:id="@+id/status_bar_greeting_label_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            >
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/status_bar_greeting_label"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_vertical"
+                android:textAppearance="@style/TextAppearance.StatusBar.Greeting"
+                android:textColor="#ffffff" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+    </com.android.keyguard.AlphaOptimizedLinearLayout>
+
 </com.android.systemui.statusbar.phone.PhoneStatusBarView>

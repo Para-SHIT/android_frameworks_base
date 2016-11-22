@@ -475,9 +475,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     //Blur stuff
     private int mBlurScale;
     private int mBlurRadius;
-    private boolean mTranslucentQuickSettings;
     private boolean mBlurredStatusBarExpandedEnabled;
-    private boolean mTranslucentRecents;
+    private boolean mBlurredRecentsEnabled;
 
     private LinearLayout mGreetingLabelLayout;
     private TextView mGreetingLabel;
@@ -707,9 +706,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.STATUS_BAR_CUSTOM_HEADER_TEXT_SHADOW_COLOR),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_POWER_MENU),
-                    false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_GREETING_SHOW_LABEL),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -789,9 +785,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.STATUS_BAR_WEATHER_FONT_STYLE))) {
                     updateTempView();
             } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_TEMASEK_LOGO_STYLE))
-                    || uri.equals(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_TEMASEK_LOGO_COLOR))) {
+                    Settings.System.STATUS_BAR_TEMASEK_LOGO_STYLE))) {
                     DontStressOnRecreate();
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.HEADS_UP_SNOOZE_TIME))) {
@@ -833,7 +827,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 updateGreetingLabelSettings();
             } else if (uri.equals(Settings.System.getUriFor(
                 Settings.System.RECENT_APPS_ENABLED_PREFERENCE_KEY))) {
-                mTranslucentRecents = Settings.System.getIntForUser(mContext.getContentResolver(),
+                mBlurredRecentsEnabled = Settings.System.getIntForUser(mContext.getContentResolver(),
                     Settings.System.RECENT_APPS_ENABLED_PREFERENCE_KEY,
                         0, UserHandle.USER_CURRENT) == 1;
                 RecentsActivity.startBlurTask();
@@ -995,7 +989,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.BLUR_RADIUS_PREFERENCE_KEY, 5);
             mBlurredStatusBarExpandedEnabled = Settings.System.getIntForUser(resolver,
                     Settings.System.STATUS_BAR_EXPANDED_ENABLED_PREFERENCE_KEY, 0, UserHandle.USER_CURRENT) == 1;
-            mTranslucentRecents = Settings.System.getIntForUser(resolver,
+            mBlurredRecentsEnabled = Settings.System.getIntForUser(resolver,
                     Settings.System.RECENT_APPS_ENABLED_PREFERENCE_KEY, 0, UserHandle.USER_CURRENT) == 1;
         }
     }
@@ -5483,11 +5477,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         ThemeConfig newTheme = newConfig != null ? newConfig.themeConfig : null;
         final boolean updateStatusBar = shouldUpdateStatusbar(mCurrentTheme, newTheme);
         final boolean updateNavBar = shouldUpdateNavbar(mCurrentTheme, newTheme);
+        SettingsObserver observer = new SettingsObserver(mHandler);
         if (newTheme != null) mCurrentTheme = (ThemeConfig) newTheme.clone();
         if (updateStatusBar) {
             DontStressOnRecreate();
             attachPieContainer(isPieEnabled());
-
+            observer.update();
         } else {
             loadDimens();
         }
