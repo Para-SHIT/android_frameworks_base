@@ -64,7 +64,7 @@ public class NetworkTraffic extends TextView {
         decimalFormat.setMaximumFractionDigits(1);
     }
 
-    private final Handler mHandler;
+    private Handler mHandler;
     private int mState = 0;
     private boolean mAttached;
     private long totalRxBytes;

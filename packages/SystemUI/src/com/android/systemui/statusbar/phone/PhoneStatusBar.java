@@ -73,7 +73,6 @@ import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.PorterDuff;
-import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -96,22 +95,21 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.IPowerManager;
 import android.os.Message;
+import android.os.Messenger;
 import android.os.PowerManager;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.os.UserHandle;
-import android.os.Message;
-import android.os.Messenger;
 import android.provider.Settings;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.NotificationListenerService.RankingMap;
 import android.service.notification.StatusBarNotification;
 import android.telephony.TelephonyManager;
 import android.text.SpannableString;
-import android.text.style.RelativeSizeSpan;
 import android.text.TextUtils;
+import android.text.style.RelativeSizeSpan;
 import android.util.ArraySet;
 import android.util.DisplayMetrics;
 import android.util.EventLog;
@@ -203,7 +201,6 @@ import com.android.systemui.statusbar.SpeedBumpView;
 import com.android.systemui.statusbar.StatusBarIconView;
 import com.android.systemui.statusbar.StatusBarState;
 import com.android.systemui.statusbar.VisualizerView;
-import com.android.systemui.statusbar.phone.BarBackgroundUpdater;
 import com.android.systemui.statusbar.phone.UnlockMethodCache.OnUnlockMethodChangedListener;
 import com.android.systemui.statusbar.policy.AccessibilityController;
 import com.android.systemui.statusbar.policy.BatteryController;
@@ -501,8 +498,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     // Temasek logo
     private boolean mTemasekLogo;
     private int mTemasekLogoColor;
-    private ImageView temasekLogo;
     private int mTemasekLogoStyle;
+    private ImageView mTemasekLogoLeft;
+    private ImageView mTemasekLogoCenter;
+    private ImageView mTemasekLogoRight;
+    private ImageView mTemasekLogoBeforeIcons;
 
     private boolean mShowCarrierInPanel = false;
 
@@ -643,6 +643,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.System.NOTIFICATION_DRAWER_CLEAR_ALL_ICON_COLOR),
                     false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.ENABLE_TASK_MANAGER),
+                    false, this, UserHandle.USER_ALL);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.USE_SLIM_RECENTS), false, this,
                     UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
@@ -757,18 +760,22 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                             mContext.getContentResolver(),
                             Settings.System.QS_COLOR_SWITCH,
                             0, UserHandle.USER_CURRENT) == 1;
-                    DontStressOnRecreate();
+                    recreateStatusBar();
+                    updateRowStates();
+                    updateSpeedbump();
+                    updateClearAll();
+                    updateEmptyShadeView();
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.PIE_CONTROLS))) {
                     attachPieContainer(isPieEnabled());
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.USE_SLIM_RECENTS))) {
-                    updateRecents();
+                updateRecents();
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.RECENT_CARD_BG_COLOR))
                     || uri.equals(Settings.System.getUriFor(
                     Settings.System.RECENT_CARD_TEXT_COLOR))) {
-                    rebuildRecentsScreen();
+                rebuildRecentsScreen();
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.LOCKSCREEN_BOTTOM_ICONS_COLOR))) {
                 setBottomIconsColors();
@@ -784,9 +791,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     || uri.equals(Settings.System.getUriFor(
                     Settings.System.STATUS_BAR_WEATHER_FONT_STYLE))) {
                     updateTempView();
-            } else if (uri.equals(Settings.System.getUriFor(
-                    Settings.System.STATUS_BAR_TEMASEK_LOGO_STYLE))) {
-                    DontStressOnRecreate();
             } else if (uri.equals(Settings.System.getUriFor(
                     Settings.System.HEADS_UP_SNOOZE_TIME))) {
                 final int snoozeTime = Settings.System.getIntForUser(
@@ -915,15 +919,15 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mQSCSwitch = Settings.System.getIntForUser(resolver,
                     Settings.System.QS_COLOR_SWITCH, 0, mCurrentUserId) == 1;
 
-            mBlurLockRadius = Settings.System.getInt(mContext.getContentResolver(),
+            mBlurLockRadius = Settings.System.getInt(resolver,
                     Settings.System.LOCKSCREEN_BLUR_RADIUS, 14);
 
-            mWeatherTempStyle = Settings.System.getIntForUser(
-                    resolver, Settings.System.STATUS_BAR_WEATHER_TEMP_STYLE, 0,
+            mWeatherTempStyle = Settings.System.getIntForUser(resolver,
+                    Settings.System.STATUS_BAR_WEATHER_TEMP_STYLE, 0,
                     UserHandle.USER_CURRENT);
 
             mWeatherTempColor = Settings.System.getIntForUser(resolver,
-                    Settings.System.STATUS_BAR_WEATHER_COLOR, 0xffffffff, mCurrentUserId);
+                    Settings.System.STATUS_BAR_WEATHER_COLOR, 0xFFFFFFFF, mCurrentUserId);
 
             mWeatherTempSize = Settings.System.getIntForUser(resolver,
                     Settings.System.STATUS_BAR_WEATHER_SIZE, 14, mCurrentUserId);
@@ -931,28 +935,23 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mWeatherTempFontStyle = Settings.System.getIntForUser(resolver,
                     Settings.System.STATUS_BAR_WEATHER_FONT_STYLE, FONT_NORMAL, mCurrentUserId);
 
-            mWeatherTempState = Settings.System.getIntForUser(
-                    resolver, Settings.System.STATUS_BAR_SHOW_WEATHER_TEMP, 0,
+            mWeatherTempState = Settings.System.getIntForUser(resolver,
+                    Settings.System.STATUS_BAR_SHOW_WEATHER_TEMP, 0,
                     UserHandle.USER_CURRENT);
 
             updateTempView();
 
-            mTemasekLogoStyle = Settings.System.getIntForUser(resolver,
-                    Settings.System.STATUS_BAR_TEMASEK_LOGO_STYLE, 0,
-                    UserHandle.USER_CURRENT);
             mTemasekLogo = Settings.System.getIntForUser(resolver,
                     Settings.System.STATUS_BAR_TEMASEK_LOGO, 0, mCurrentUserId) == 1;
             mTemasekLogoColor = Settings.System.getIntForUser(resolver,
                     Settings.System.STATUS_BAR_TEMASEK_LOGO_COLOR, 0xffffffff, mCurrentUserId);
-            if (mTemasekLogoStyle == 0) {
-                temasekLogo = (ImageView) mStatusBarView.findViewById(R.id.left_temasek_logo);
-            } else if (mTemasekLogoStyle == 1) {
-                temasekLogo = (ImageView) mStatusBarView.findViewById(R.id.center_temasek_logo);
-            } else if (mTemasekLogoStyle == 2) {
-                temasekLogo = (ImageView) mStatusBarView.findViewById(R.id.temasek_logo);
-            } else if (mTemasekLogoStyle == 3) {
-                temasekLogo = (ImageView) mStatusBarView.findViewById(R.id.before_icons_temasek_logo);
-            } 
+            mTemasekLogoStyle = Settings.System.getIntForUser(resolver,
+                    Settings.System.STATUS_BAR_TEMASEK_LOGO_STYLE, 0,
+                    UserHandle.USER_CURRENT);
+            mTemasekLogoLeft = (ImageView) mStatusBarView.findViewById(R.id.left_temasek_logo);
+            mTemasekLogoCenter = (ImageView) mStatusBarView.findViewById(R.id.center_temasek_logo);
+            mTemasekLogoRight = (ImageView) mStatusBarView.findViewById(R.id.temasek_logo);
+            mTemasekLogoBeforeIcons = (ImageView) mStatusBarView.findViewById(R.id.before_icons_temasek_logo);
             showTemasekLogo(mTemasekLogo, mTemasekLogoColor, mTemasekLogoStyle);
 
             if (mQSPanel != null) {
@@ -1773,27 +1772,23 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         if (mShowCarrierInPanel) {
             mCarrierLabel.setVisibility(mCarrierLabelVisible ? View.VISIBLE : View.INVISIBLE);
         }
-        if (mWeatherController == null) {
-            mWeatherController = new WeatherControllerImpl(mContext);
-        }
 
-        mWeatherTempStyle = Settings.System.getIntForUser(
-                mContext.getContentResolver(), Settings.System.STATUS_BAR_WEATHER_TEMP_STYLE, 0,
+        mWeatherTempStyle = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_WEATHER_TEMP_STYLE, 0,
                 UserHandle.USER_CURRENT);
         if (mWeatherTempStyle == 0) {
             mWeatherTempView = (TextView) mStatusBarView.findViewById(R.id.weather_temp);
         } else {
             mWeatherTempView = (TextView) mStatusBarView.findViewById(R.id.left_weather_temp);
         }
-
         mWeatherTempColor = Settings.System.getIntForUser(mContext.getContentResolver(),
-                    Settings.System.STATUS_BAR_WEATHER_COLOR, 0xffffffff, mCurrentUserId);
+                Settings.System.STATUS_BAR_WEATHER_COLOR, 0xFFFFFFFF, mCurrentUserId);
         mWeatherTempFontStyle = Settings.System.getIntForUser(mContext.getContentResolver(),
-                    Settings.System.STATUS_BAR_WEATHER_FONT_STYLE, FONT_NORMAL, mCurrentUserId);
+                Settings.System.STATUS_BAR_WEATHER_FONT_STYLE, FONT_NORMAL, mCurrentUserId);
         mWeatherTempSize = Settings.System.getIntForUser(mContext.getContentResolver(),
-                    Settings.System.STATUS_BAR_WEATHER_SIZE, 14, mCurrentUserId);
-        mWeatherTempState = Settings.System.getIntForUser(
-                mContext.getContentResolver(), Settings.System.STATUS_BAR_SHOW_WEATHER_TEMP, 0,
+                Settings.System.STATUS_BAR_WEATHER_SIZE, 14, mCurrentUserId);
+        mWeatherTempState = Settings.System.getIntForUser(mContext.getContentResolver(),
+                Settings.System.STATUS_BAR_SHOW_WEATHER_TEMP, 0,
                 UserHandle.USER_CURRENT);
         if (mWeatherController == null) {
             mWeatherController = new WeatherControllerImpl(mContext);
@@ -1806,24 +1801,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             }
         });
         updateWeatherTextState(mWeatherController.getWeatherInfo().temp, mWeatherTempColor, mWeatherTempSize, mWeatherTempFontStyle);
-
-        mTemasekLogoStyle = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.STATUS_BAR_TEMASEK_LOGO_STYLE, 0,
-                UserHandle.USER_CURRENT);
-        if (mTemasekLogoStyle == 0) {
-            temasekLogo = (ImageView) mStatusBarView.findViewById(R.id.left_temasek_logo);
-        } else if (mTemasekLogoStyle == 1) {
-            temasekLogo = (ImageView) mStatusBarView.findViewById(R.id.center_temasek_logo);
-        } else if (mTemasekLogoStyle == 2) {
-            temasekLogo = (ImageView) mStatusBarView.findViewById(R.id.temasek_logo);
-        } else if (mTemasekLogoStyle == 3) {
-            temasekLogo = (ImageView) mStatusBarView.findViewById(R.id.before_icons_temasek_logo);
-        }
-        mTemasekLogo = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.STATUS_BAR_TEMASEK_LOGO, 0, mCurrentUserId) == 1;
-        mTemasekLogoColor = Settings.System.getIntForUser(mContext.getContentResolver(),
-                Settings.System.STATUS_BAR_TEMASEK_LOGO_COLOR, 0xffffffff, mCurrentUserId);
-        showTemasekLogo(mTemasekLogo, mTemasekLogoColor, mTemasekLogoStyle);
 
         mKeyguardBottomArea.setPhoneStatusBar(this);
         if (mAccessibilityController == null) {
@@ -1993,15 +1970,22 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
                     @Override
                     public void run() {
-                        if (mOverrideIconColor != 0 && mClockView != null && mWeatherTempView != null && mGreetingLabel != null && temasekLogo != null) {
+                        if (mOverrideIconColor != 0 && mClockView != null && mWeatherTempView != null && mGreetingLabel != null && mTemasekLogoLeft != null
+                                && mTemasekLogoCenter != null && mTemasekLogoRight != null && mTemasekLogoRight != null && mTemasekLogoBeforeIcons != null) {
                             mClockView.setTextColor(mOverrideIconColor);
                             mWeatherTempView.setTextColor(mOverrideIconColor);
                             mGreetingLabel.setTextColor(mOverrideIconColor);
-                            temasekLogo.setColorFilter(mOverrideIconColor, Mode.SRC_IN);
+                            mTemasekLogoLeft.setColorFilter(mOverrideIconColor, PorterDuff.Mode.SRC_IN);
+                            mTemasekLogoCenter.setColorFilter(mOverrideIconColor, PorterDuff.Mode.SRC_IN);
+                            mTemasekLogoRight.setColorFilter(mOverrideIconColor, PorterDuff.Mode.SRC_IN);
+                            mTemasekLogoBeforeIcons.setColorFilter(mOverrideIconColor, PorterDuff.Mode.SRC_IN);
                             mClockView.invalidate();
                             mWeatherTempView.invalidate();
                             mGreetingLabel.invalidate();
-                            temasekLogo.invalidate();
+                            mTemasekLogoLeft.invalidate();
+                            mTemasekLogoCenter.invalidate();
+                            mTemasekLogoRight.invalidate();
+                            mTemasekLogoBeforeIcons.invalidate();
                         }
                     }
 
@@ -3279,7 +3263,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             backdropBitmap = mBlurredImage;
             // might still be null
         }
-        
+
         // apply user lockscreen image
         if (mMediaMetadata == null && backdropBitmap == null) {
             WallpaperManager wm = (WallpaperManager)
@@ -5183,32 +5167,47 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
     };
 
-    public void showTemasekLogo(boolean show , int color , int style) {
+    public void showTemasekLogo(boolean show, int color, int style) {
         if (mStatusBarView == null) return;
-
         if (!show) {
-            temasekLogo.setVisibility(View.GONE);
+            mTemasekLogoLeft.setVisibility(View.GONE);
+            mTemasekLogoCenter.setVisibility(View.GONE);
+            mTemasekLogoRight.setVisibility(View.GONE);
+            mTemasekLogoBeforeIcons.setVisibility(View.GONE);
             return;
         }
         if (!BarBackgroundUpdater.mStatusEnabled) {
-            temasekLogo.setColorFilter(color, Mode.SRC_IN);
+            mTemasekLogoLeft.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+            mTemasekLogoCenter.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+            mTemasekLogoRight.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+            mTemasekLogoBeforeIcons.setColorFilter(color, PorterDuff.Mode.SRC_IN);
         } else {
-            temasekLogo.setColorFilter(mOverrideIconColor, Mode.SRC_IN);
+            mTemasekLogoLeft.setColorFilter(mOverrideIconColor, PorterDuff.Mode.SRC_IN);
+            mTemasekLogoCenter.setColorFilter(mOverrideIconColor, PorterDuff.Mode.SRC_IN);
+            mTemasekLogoRight.setColorFilter(mOverrideIconColor, PorterDuff.Mode.SRC_IN);
+            mTemasekLogoBeforeIcons.setColorFilter(mOverrideIconColor, PorterDuff.Mode.SRC_IN);
         }
         if (style == 0) {
-            temasekLogo.setVisibility(View.GONE);
-        temasekLogo = (ImageView) mStatusBarView.findViewById(R.id.left_temasek_logo);
+            mTemasekLogoLeft.setVisibility(View.VISIBLE);
+            mTemasekLogoCenter.setVisibility(View.GONE);
+            mTemasekLogoRight.setVisibility(View.GONE);
+            mTemasekLogoBeforeIcons.setVisibility(View.GONE);
         } else if (style == 1) {
-            temasekLogo.setVisibility(View.GONE);        
-        temasekLogo = (ImageView) mStatusBarView.findViewById(R.id.center_temasek_logo);
+            mTemasekLogoLeft.setVisibility(View.GONE);
+            mTemasekLogoCenter.setVisibility(View.VISIBLE);
+            mTemasekLogoRight.setVisibility(View.GONE);
+            mTemasekLogoBeforeIcons.setVisibility(View.GONE);
         } else if (style == 2) {
-            temasekLogo.setVisibility(View.GONE);
-        temasekLogo = (ImageView) mStatusBarView.findViewById(R.id.temasek_logo);
+            mTemasekLogoLeft.setVisibility(View.GONE);
+            mTemasekLogoCenter.setVisibility(View.GONE);
+            mTemasekLogoRight.setVisibility(View.VISIBLE);
+            mTemasekLogoBeforeIcons.setVisibility(View.GONE);
         } else if (style == 3) {
-            temasekLogo.setVisibility(View.GONE);
-        temasekLogo = (ImageView) mStatusBarView.findViewById(R.id.before_icons_temasek_logo);
+            mTemasekLogoLeft.setVisibility(View.GONE);
+            mTemasekLogoCenter.setVisibility(View.GONE);
+            mTemasekLogoRight.setVisibility(View.GONE);
+            mTemasekLogoBeforeIcons.setVisibility(View.VISIBLE);
         }
-        temasekLogo.setVisibility(View.VISIBLE);
     }
 
     private void resetUserExpandedStates() {
@@ -5480,7 +5479,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         SettingsObserver observer = new SettingsObserver(mHandler);
         if (newTheme != null) mCurrentTheme = (ThemeConfig) newTheme.clone();
         if (updateStatusBar) {
-            DontStressOnRecreate();
+            recreateStatusBar();
             attachPieContainer(isPieEnabled());
             observer.update();
         } else {
@@ -5497,7 +5496,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         int uiThemeMode = res.getConfiguration().uiThemeMode;
         if (uiThemeMode != mCurrUiThemeMode) {
             mCurrUiThemeMode = uiThemeMode;
-            DontStressOnRecreate();
+            recreateStatusBar();
+            updateRowStates();
+            updateSpeedbump();
+            updateClearAll();
+            updateEmptyShadeView();
         } else {
             loadDimens();
         }
@@ -5520,19 +5523,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             updateSearchPanel();
             checkBarModes();
         }
-    }
-
-    private void DontStressOnRecreate() {
-        recreateStatusBar();
-        updateRowStates();
-        updateSpeedbump();
-        checkBarModes();
-        updateClearAll();
-        updateEmptyShadeView();
-        mStackScroller.setAnimationsEnabled(true);
-        mNotificationPanel.setTouchDisabled(false);
-        updateVisibleToUser();
-
     }
 
     /**

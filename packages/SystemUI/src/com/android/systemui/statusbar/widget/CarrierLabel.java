@@ -51,9 +51,7 @@ public class CarrierLabel extends TextView {
     private int mCarrierFontSize = 14;
     private int mOverrideIconColor = 0;
 
-    protected int mCarrierColor = getResources().getColor(R.color.kg_carrier_text);
-
-    public final Handler mHandler;
+    private Handler mHandler;
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -192,7 +190,7 @@ public class CarrierLabel extends TextView {
         ContentResolver resolver = mContext.getContentResolver();
 
         int defaultColor = getResources().getColor(R.color.status_bar_clock_color);
-        mCarrierColor = Settings.System.getInt(resolver,
+        int mCarrierColor = Settings.System.getInt(resolver,
                 Settings.System.STATUS_BAR_CARRIER_COLOR, defaultColor);
 
         if (mCarrierColor == Integer.MIN_VALUE) {
