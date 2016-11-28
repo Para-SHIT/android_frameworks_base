@@ -18,4 +18,7 @@
     <!-- QS scroller -->
     <dimen name="qs_scroller_margin">12dp</dimen>
     <dimen name="qs_scroller_min_tile_gap">4dp</dimen>
+
+    <!-- QS Tile Height Without Label -->
+    <dimen name="qs_tile_height_wo_label">48dp</dimen>
 </resources>

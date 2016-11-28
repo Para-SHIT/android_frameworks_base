@@ -335,6 +335,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             Settings.Secure.QS_COLUMNS_LANDSCAPE;
     private static final String QS_QUICKBAR_SCROLL_ENABLED =
             "system:" + Settings.System.QS_QUICKBAR_SCROLL_ENABLED;
+    private static final String QS_TILE_TITLE_VISIBILITY =
+            "system:" + Settings.System.QS_TILE_TITLE_VISIBILITY;
 
     static {
         boolean onlyCoreApps;
@@ -811,7 +813,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 QS_ROWS_LANDSCAPE,
                 QS_COLUMNS_PORTRAIT,
                 QS_COLUMNS_LANDSCAPE,
-                QS_QUICKBAR_SCROLL_ENABLED);
+                QS_QUICKBAR_SCROLL_ENABLED,
+                QS_TILE_TITLE_VISIBILITY);
 
         // Lastly, call to the icon policy to install/update all the icons.
         mIconPolicy = new PhoneStatusBarPolicy(mContext, mIconController, mCastController,
@@ -5536,6 +5539,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 if (mHeader != null) {
                     mHeader.updateSettings();
                 }
+                updateResources();
+                break;
+            case QS_TILE_TITLE_VISIBILITY:
                 updateResources();
                 break;
             default:

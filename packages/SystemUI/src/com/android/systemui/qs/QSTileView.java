@@ -99,4 +99,12 @@ public class QSTileView extends QSTileBaseView {
         mLabel.setEnabled(!state.disabledByPolicy);
         mPadLock.setVisibility(state.disabledByPolicy ? View.VISIBLE : View.GONE);
     }
+
+    public void setLabelVisibility(boolean visible) {
+        if (visible) {
+            mLabel.setVisibility(View.VISIBLE);
+        } else {
+            mLabel.setVisibility(View.GONE);
+        }
+    }
 }
