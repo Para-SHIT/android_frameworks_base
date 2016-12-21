@@ -34,15 +34,16 @@ import android.provider.Settings;
 import android.util.ArraySet;
 import android.util.AttributeSet;
 import android.view.AppTransitionAnimationSpec;
+import android.view.Gravity;
 import android.view.IAppTransitionAnimationSpecsFuture;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewDebug;
-import android.view.ViewOutlineProvider;
 import android.view.ViewPropertyAnimator;
 import android.view.WindowInsets;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -80,6 +81,7 @@ import com.android.systemui.recents.model.TaskStack;
 import com.android.systemui.recents.views.RecentsTransitionHelper.AnimationSpecComposer;
 import com.android.systemui.stackdivider.WindowManagerProxy;
 import com.android.systemui.statusbar.FlingAnimationUtils;
+import com.android.systemui.tuner.TunerService;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -90,7 +92,7 @@ import java.util.List;
  * This view is the the top level layout that contains TaskStacks (which are laid out according
  * to their SpaceNode bounds.
  */
-public class RecentsView extends FrameLayout {
+public class RecentsView extends FrameLayout implements TunerService.Tunable {
 
     private static final String TAG = "RecentsView";
 
@@ -121,11 +123,21 @@ public class RecentsView extends FrameLayout {
     private RecentsViewTouchHandler mTouchHandler;
     private final FlingAnimationUtils mFlingAnimationUtils;
 
-    TextView mMemText;
-    ProgressBar mMemBar;
-
+    private boolean mShowClearAllRecents;
+    private boolean mShowMemDisplay;
+    private View mFloatingButton;
+    private View mClearRecents;
+    private int mClearRecentsLocation;
+    private TextView mMemText;
+    private ProgressBar mMemBar;
     private ActivityManager mAm;
-    private int mTotalMem;
+
+    private static final String SHOW_CLEAR_ALL_RECENTS =
+            "system:" + Settings.System.SHOW_CLEAR_ALL_RECENTS;
+    private static final String RECENTS_CLEAR_ALL_LOCATION =
+            "system:" + Settings.System.RECENTS_CLEAR_ALL_LOCATION;
+    private static final String SYSTEMUI_RECENTS_MEM_DISPLAY =
+            "system:" + Settings.System.SYSTEMUI_RECENTS_MEM_DISPLAY;
 
     public RecentsView(Context context) {
         this(context, null);
@@ -307,6 +319,9 @@ public class RecentsView extends FrameLayout {
         if (RecentsDebugFlags.Static.EnableStackActionButton) {
             mStackActionButton.bringToFront();
         }
+        if (mFloatingButton != null) {
+            mFloatingButton.setVisibility(View.GONE);
+        }
         setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -325,6 +340,9 @@ public class RecentsView extends FrameLayout {
         if (RecentsDebugFlags.Static.EnableStackActionButton) {
             mStackActionButton.bringToFront();
         }
+        if (mFloatingButton != null && mShowClearAllRecents) {
+            mFloatingButton.setVisibility(View.VISIBLE);
+        }
         setOnClickListener(null);
     }
 
@@ -332,16 +350,53 @@ public class RecentsView extends FrameLayout {
     protected void onAttachedToWindow() {
         EventBus.getDefault().register(this, RecentsActivity.EVENT_BUS_PRIORITY + 1);
         EventBus.getDefault().register(mTouchHandler, RecentsActivity.EVENT_BUS_PRIORITY + 2);
-        super.onAttachedToWindow();
         mMemText = (TextView) ((View)getParent()).findViewById(R.id.recents_memory_text);
         mMemBar = (ProgressBar) ((View)getParent()).findViewById(R.id.recents_memory_bar);
+        mClearRecents = (ImageButton) ((View)getParent()).findViewById(R.id.clear_recents);
+        mFloatingButton = ((View)getParent()).findViewById(R.id.floating_action_button);
+        mClearRecents.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                EventBus.getDefault().send(new DismissAllTaskViewsEvent());
+                updateMemoryStatus();
+            }
+        });
+        mClearRecents.setVisibility(View.VISIBLE);
+        TunerService.get(mContext).addTunable(this,
+                SHOW_CLEAR_ALL_RECENTS,
+                RECENTS_CLEAR_ALL_LOCATION,
+                SYSTEMUI_RECENTS_MEM_DISPLAY);
+        super.onAttachedToWindow();
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        TunerService.get(mContext).removeTunable(this);
         EventBus.getDefault().unregister(this);
         EventBus.getDefault().unregister(mTouchHandler);
+    }
+
+    @Override
+    public void onTuningChanged(String key, String newValue) {
+       switch (key) {
+            case SHOW_CLEAR_ALL_RECENTS:
+                mShowClearAllRecents =
+                        newValue != null && Integer.parseInt(newValue) == 1;
+                showClearAllRecents();
+                break;
+            case RECENTS_CLEAR_ALL_LOCATION:
+                mClearRecentsLocation =
+                        newValue == null ? 4 : Integer.parseInt(newValue);
+                setClearRecentsLocation();
+                break;
+            case SYSTEMUI_RECENTS_MEM_DISPLAY:
+                mShowMemDisplay =
+                        newValue != null && Integer.parseInt(newValue) == 1;
+                setClearRecentsLocation();
+                showMemDisplay();
+            default:
+                break;
+        }
     }
 
     /**
@@ -354,7 +409,7 @@ public class RecentsView extends FrameLayout {
 
         if (mTaskStackView.getVisibility() != GONE) {
             mTaskStackView.measure(widthMeasureSpec, heightMeasureSpec);
-            showMemDisplay();
+            updateMemoryStatus();
         }
 
         // Measure the empty view to the full size of the screen
@@ -374,40 +429,70 @@ public class RecentsView extends FrameLayout {
         setMeasuredDimension(width, height);
     }
 
-    private boolean showMemDisplay() {
-        boolean enableMemDisplay = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.SYSTEMUI_RECENTS_MEM_DISPLAY, 0) == 1;
-
-        if (!enableMemDisplay) {
-            mMemText.setVisibility(View.GONE);
-            mMemBar.setVisibility(View.GONE);
-            return false;
+    private void showClearAllRecents() {
+        if (mShowClearAllRecents) {
+            mFloatingButton.setVisibility(View.VISIBLE);
+        } else {
+            mFloatingButton.setVisibility(View.GONE);
         }
-        mMemText.setVisibility(View.VISIBLE);
-        mMemBar.setVisibility(View.VISIBLE);
-
-        updateMemoryStatus();
-        return true;
     }
 
-    private void updateMemoryStatus() {
-        if (mMemText.getVisibility() == View.GONE
-                || mMemBar.getVisibility() == View.GONE) return;
+    private void setClearRecentsLocation() {
+        if (mFloatingButton == null)
+            return;
+
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)
+            mFloatingButton.getLayoutParams();
+        params.topMargin = 2 * (mContext.getResources().
+            getDimensionPixelSize(com.android.internal.R.dimen.status_bar_height));
+
+        switch (mClearRecentsLocation) {
+            case 0:
+                params.gravity = Gravity.TOP | Gravity.RIGHT;
+                break;
+            case 1:
+                if (mShowMemDisplay)
+                    params.topMargin = 3 * (mContext.getResources().
+                         getDimensionPixelSize(com.android.internal.R.dimen.status_bar_height));
+                params.gravity = Gravity.TOP | Gravity.LEFT;
+                break;
+            case 2:
+                params.gravity = Gravity.TOP | Gravity.CENTER;
+                break;
+            case 3:
+            default:
+                params.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+                break;
+            case 4:
+                params.gravity = Gravity.BOTTOM | Gravity.LEFT;
+                break;
+            case 5:
+                params.gravity = Gravity.BOTTOM | Gravity.CENTER;
+                break;
+        }
+        mFloatingButton.setLayoutParams(params);
+    }
+
+    private void showMemDisplay() {
+        if (mShowMemDisplay) {
+            mMemText.setVisibility(View.VISIBLE);
+            mMemBar.setVisibility(View.VISIBLE);
+        } else {
+            mMemText.setVisibility(View.GONE);
+            mMemBar.setVisibility(View.GONE);
+        }
+    }
+
+    public void updateMemoryStatus() {
+        if (!mShowMemDisplay) return;
 
         MemoryInfo memInfo = new MemoryInfo();
         mAm.getMemoryInfo(memInfo);
         int available = (int)(memInfo.availMem / 1048576L);
-        int max = (int)(getTotalMemory() / 1048576L);
+        int max = (int)(memInfo.totalMem / 1048576L);
         mMemText.setText(String.format(getResources().getString(R.string.recents_free_ram), available));
         mMemBar.setMax(max);
         mMemBar.setProgress(available);
-    }
-
-    public long getTotalMemory() {
-        MemoryInfo memInfo = new MemoryInfo();
-        mAm.getMemoryInfo(memInfo);
-        long totalMem = memInfo.totalMem;
-        return totalMem;
     }
 
     /**
@@ -709,7 +794,9 @@ public class RecentsView extends FrameLayout {
         if (!RecentsDebugFlags.Static.EnableStackActionButton) {
             return;
         }
-
+        if (mFloatingButton != null && mShowClearAllRecents) {
+            return;
+        }
         final ReferenceCountedTrigger postAnimationTrigger = new ReferenceCountedTrigger();
         if (mStackActionButton.getVisibility() == View.INVISIBLE) {
             mStackActionButton.setVisibility(View.VISIBLE);
