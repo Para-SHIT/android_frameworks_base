@@ -55,4 +55,7 @@
 
     <!-- Custom Header options -->
     <string name="daylight_header_default">Default</string>
+
+    <!-- Recents memory bar -->
+    <string name="recents_free_ram">FREE RAM: %1$d MB</string>
 </resources>
