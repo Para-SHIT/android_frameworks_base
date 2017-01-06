@@ -155,6 +155,7 @@ import com.android.systemui.doze.DozeLog;
 import com.android.systemui.keyguard.KeyguardViewMediator;
 import com.android.systemui.navigation.NavigationController;
 import com.android.systemui.navigation.Navigator;
+import com.android.systemui.parashit.omnistyle.StatusBarHeaderMachine;
 import com.android.systemui.qs.QSContainer;
 import com.android.systemui.qs.QSPanel;
 import com.android.systemui.recents.ScreenPinningRequest;
@@ -337,6 +338,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             "system:" + Settings.System.QS_QUICKBAR_SCROLL_ENABLED;
     private static final String QS_TILE_TITLE_VISIBILITY =
             "system:" + Settings.System.QS_TILE_TITLE_VISIBILITY;
+    private static final String STATUS_BAR_CUSTOM_HEADER =
+            "system:" + Settings.System.STATUS_BAR_CUSTOM_HEADER;
+    private static final String STATUS_BAR_CUSTOM_HEADER_SHADOW =
+            "system:" + Settings.System.STATUS_BAR_CUSTOM_HEADER_SHADOW;
 
     static {
         boolean onlyCoreApps;
@@ -469,6 +474,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     // last value sent to window manager
     private int mLastDispatchedSystemUiVisibility = ~View.SYSTEM_UI_FLAG_VISIBLE;
+
+    private StatusBarHeaderMachine mStatusBarHeaderMachine;
 
     DisplayMetrics mDisplayMetrics = new DisplayMetrics();
 
@@ -814,7 +821,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 QS_COLUMNS_PORTRAIT,
                 QS_COLUMNS_LANDSCAPE,
                 QS_QUICKBAR_SCROLL_ENABLED,
-                QS_TILE_TITLE_VISIBILITY);
+                QS_TILE_TITLE_VISIBILITY,
+                STATUS_BAR_CUSTOM_HEADER,
+                STATUS_BAR_CUSTOM_HEADER_SHADOW);
 
         // Lastly, call to the icon policy to install/update all the icons.
         mIconPolicy = new PhoneStatusBarPolicy(mContext, mIconController, mCastController,
@@ -1052,6 +1061,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
         mWeatherController = new WeatherControllerImpl(mContext);
 
+        mStatusBarHeaderMachine = new StatusBarHeaderMachine(mContext);
+
         // Set up the quick settings tile panel
         AutoReinflateContainer container = (AutoReinflateContainer) mStatusBarWindow.findViewById(
                 R.id.qs_auto_reinflate_container);
@@ -1074,6 +1085,13 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     mQSPanel.setBrightnessMirror(mBrightnessMirrorController);
                     mKeyguardStatusBar.setQSPanel(mQSPanel);
                     mHeader = qsContainer.getHeader();
+
+                    // on dpi changes the header is recreated so we need
+                    // to add the new one again as addObserver
+                    // the old one will be removed in the same step
+                    mStatusBarHeaderMachine.addObserver((QuickStatusBarHeader) mHeader);
+                    mStatusBarHeaderMachine.updateEnablement();
+
                     initSignalCluster(mHeader);
                     mHeader.setActivityStarter(PhoneStatusBar.this);
                 }
@@ -3963,6 +3981,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mLockscreenWallpaper.setCurrentUser(newUserId);
         mScrimController.setCurrentUser(newUserId);
         updateMediaMetaData(true, false);
+        mStatusBarHeaderMachine.updateEnablement();
     }
 
     private void setControllerUsers() {
@@ -5543,6 +5562,12 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 break;
             case QS_TILE_TITLE_VISIBILITY:
                 updateResources();
+                break;
+            case STATUS_BAR_CUSTOM_HEADER:
+            case STATUS_BAR_CUSTOM_HEADER_SHADOW:
+                if (mHeader != null) {
+                    mHeader.updateSettings();
+                }
                 break;
             default:
                 break;

@@ -52,4 +52,7 @@
     <!-- ParaSHIT Tile -->
     <string name="quick_shit_label">ParaSHIT</string>
     <string name="quick_shit_toast">Am A ParaSHIT</string>
+
+    <!-- Custom Header options -->
+    <string name="daylight_header_default">Default</string>
 </resources>
