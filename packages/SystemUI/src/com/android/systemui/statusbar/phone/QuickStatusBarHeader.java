@@ -33,6 +33,7 @@ import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -107,6 +108,7 @@ public class QuickStatusBarHeader extends BaseStatusBarHeader implements
     private float mDateTimeTranslation;
     private SparseBooleanArray mRoamingsBySubId = new SparseBooleanArray();
     private boolean mIsRoaming;
+    private HorizontalScrollView mQuickQsPanelScroller;
 
     public QuickStatusBarHeader(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -138,6 +140,8 @@ public class QuickStatusBarHeader extends BaseStatusBarHeader implements
         mExpandIndicator = (ExpandableIndicator) findViewById(R.id.expand_indicator);
 
         mHeaderQsPanel = (QuickQSPanel) findViewById(R.id.quick_qs_panel);
+        mQuickQsPanelScroller = (HorizontalScrollView) findViewById(R.id.quick_qs_panel_scroll);
+        mQuickQsPanelScroller.setHorizontalScrollBarEnabled(false);
 
         mSettingsButton = (SettingsButton) findViewById(R.id.settings_button);
         mSettingsContainer = findViewById(R.id.settings_button_container);
@@ -473,5 +477,10 @@ public class QuickStatusBarHeader extends BaseStatusBarHeader implements
         if (mQsPanel != null) {
             mQsPanel.updateSettings();
         }
+    }
+
+    @Override
+    public void onClosingFinished() {
+        mQuickQsPanelScroller.scrollTo(0, 0);
     }
 }
