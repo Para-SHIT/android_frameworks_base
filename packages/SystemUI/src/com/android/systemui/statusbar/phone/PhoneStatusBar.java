@@ -329,8 +329,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             Settings.Secure.QS_ROWS_PORTRAIT;
     private static final String QS_ROWS_LANDSCAPE =
             Settings.Secure.QS_ROWS_LANDSCAPE;
-    private static final String QS_COLUMNS =
-            Settings.Secure.QS_COLUMNS;
+    private static final String QS_COLUMNS_PORTRAIT =
+            Settings.Secure.QS_COLUMNS_PORTRAIT;
+    private static final String QS_COLUMNS_LANDSCAPE =
+            Settings.Secure.QS_COLUMNS_LANDSCAPE;
 
     static {
         boolean onlyCoreApps;
@@ -805,7 +807,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 STATUS_BAR_BRIGHTNESS_CONTROL,
                 QS_ROWS_PORTRAIT,
                 QS_ROWS_LANDSCAPE,
-                QS_COLUMNS);
+                QS_COLUMNS_PORTRAIT,
+                QS_COLUMNS_LANDSCAPE);
 
         // Lastly, call to the icon policy to install/update all the icons.
         mIconPolicy = new PhoneStatusBarPolicy(mContext, mIconController, mCastController,
@@ -5518,7 +5521,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             case QS_ROWS_LANDSCAPE:
                 updateResources();
                 break;
-            case QS_COLUMNS:
+            case QS_COLUMNS_PORTRAIT:
+            case QS_COLUMNS_LANDSCAPE:
                 if (mHeader != null) {
                     mHeader.updateSettings();
                 }
