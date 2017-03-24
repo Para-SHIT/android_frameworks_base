@@ -14,16 +14,17 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <!-- If this is true, key chords can be used to take a region screenshot on the device. -->
-    <bool name="config_enableRegionScreenshotChord">true</bool>
+<resources>
+    <!-- Slim recent app screen animation -->
+    <style name="Animation" />
 
-    <!-- Quick settings tiles columns and rows config -->
-    <integer name="config_qs_num_rows_landscape_default">2</integer>
+    <style name="Animation.RecentScreen">
+        <item name="android:windowEnterAnimation">@anim/recent_screen_enter</item>
+        <item name="android:windowExitAnimation">@anim/recent_screen_exit</item>
+    </style>
 
-    <!-- The duration (in milliseconds) of recent app screen animation. -->
-    <integer name="config_recentDefaultDur">300</integer>
-
-    <!-- The duration (in milliseconds) of recent app screen exit animation. -->
-    <integer name="config_recentExitDur">450</integer>
+    <style name="Animation.RecentScreen.Left">
+        <item name="android:windowEnterAnimation">@anim/recent_screen_enter_left</item>
+        <item name="android:windowExitAnimation">@anim/recent_screen_exit_left</item>
+    </style>
 </resources>
