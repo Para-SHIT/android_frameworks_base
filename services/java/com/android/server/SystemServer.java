@@ -94,6 +94,7 @@ import com.android.server.pm.OtaDexoptService;
 import com.android.server.pm.PackageManagerService;
 import com.android.server.pm.ShortcutService;
 import com.android.server.pm.UserManagerService;
+import com.android.server.pocket.PocketBridgeService;
 import com.android.server.pocket.PocketService;
 import com.android.server.power.PowerManagerService;
 import com.android.server.power.ShutdownThread;
@@ -1273,6 +1274,11 @@ public final class SystemServer {
 
             Slog.i(TAG, "Starting PocketService");
             mSystemServiceManager.startService(PocketService.class);
+            if (!context.getResources().getString(
+                    com.android.internal.R.string.config_pocketBridgeSysfsInpocket).isEmpty()) {
+                Slog.i(TAG, "Starting PocketBridgeService");
+                mSystemServiceManager.startService(PocketBridgeService.class);
+            }
         }
 
         if (!disableNonCoreServices && !disableMediaProjection) {
