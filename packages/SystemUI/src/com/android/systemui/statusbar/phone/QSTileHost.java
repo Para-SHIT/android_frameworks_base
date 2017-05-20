@@ -465,13 +465,13 @@ public class QSTileHost implements QSTile.Host, Tunable {
         else if (tileSpec.equals("sync")) return new SyncTile(this);
         else if (tileSpec.equals("usb_tether")) return new UsbTetherTile(this);
         else if (tileSpec.equals("volume_panel")) return new VolumeTile(this);
-        else if (tileSpec.equals("navbar")) return new NavigationBarTile(this);
-        else if (tileSpec.equals("pulse")) return new PulseTile(this);
-        else if (tileSpec.equals("screenshot")) return new ScreenshotTile(this);
-        else if (tileSpec.equals("reboot")) return new RebootTile(this);
         else if (tileSpec.equals("music")) return new MusicTile(this);
-        else if (tileSpec.equals("sound")) return new SoundTile(this);
+        else if (tileSpec.equals("navbar")) return new NavigationBarTile(this);
         else if (tileSpec.equals("parashit")) return new ParaSHITTile(this);
+        else if (tileSpec.equals("pulse")) return new PulseTile(this);
+        else if (tileSpec.equals("reboot")) return new RebootTile(this);
+        else if (tileSpec.equals("screenshot")) return new ScreenshotTile(this);
+        else if (tileSpec.equals("sound")) return new SoundTile(this);
         // Intent tiles.
         else if (tileSpec.startsWith(IntentTile.PREFIX)) return IntentTile.create(this,tileSpec);
         else if (tileSpec.startsWith(CustomTile.PREFIX)) return CustomTile.create(this,tileSpec);
