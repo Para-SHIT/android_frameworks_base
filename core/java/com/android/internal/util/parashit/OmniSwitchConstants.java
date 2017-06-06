@@ -29,24 +29,14 @@ public class OmniSwitchConstants {
     public static final String APP_PACKAGE_NAME = "org.omnirom.omniswitch";
 
     /**
-     * Intent broadcast action for showing the omniswitch overlay
+     * Intent broadcast action for toggle the omniswitch overlay
      */
-    public static final String ACTION_SHOW_OVERLAY = APP_PACKAGE_NAME + ".ACTION_SHOW_OVERLAY";
-
-    /**
-     * Intent broadcast action for hiding the omniswitch overlay
-     */
-    public static final String ACTION_HIDE_OVERLAY = APP_PACKAGE_NAME + ".ACTION_HIDE_OVERLAY";
-
-    /**
-     * Intent broadcast action for toogle the omniswitch overlay
-     */
-    public static final String ACTION_TOGGLE_OVERLAY = APP_PACKAGE_NAME + ".ACTION_TOGGLE_OVERLAY";
+    private static final String ACTION_TOGGLE_OVERLAY = APP_PACKAGE_NAME + ".ACTION_TOGGLE_OVERLAY";
 
     /**
      * Intent broadcast action for restoring the home stack
      */
-    public static final String ACTION_RESTORE_HOME_STACK = APP_PACKAGE_NAME + ".ACTION_RESTORE_HOME_STACK";
+    private static final String ACTION_RESTORE_HOME_STACK = APP_PACKAGE_NAME + ".ACTION_RESTORE_HOME_STACK";
 
     /**
      * Intent for launching the omniswitch settings actvity
@@ -54,6 +44,9 @@ public class OmniSwitchConstants {
     public static Intent INTENT_LAUNCH_APP = new Intent(Intent.ACTION_MAIN)
             .setClassName(APP_PACKAGE_NAME, APP_PACKAGE_NAME + ".SettingsActivity");
 
+    /**
+     * @hide
+     */
     public static void toggleOmniSwitchRecents(Context context, UserHandle user) {
         final Intent showIntent = new Intent(OmniSwitchConstants.ACTION_TOGGLE_OVERLAY);
         context.sendBroadcastAsUser(showIntent, user);
