@@ -92,6 +92,10 @@ public class BluetoothTile extends QSTile<QSTile.BooleanState>  {
             if (!mController.canConfigBluetooth()) {
                 mHost.startActivityDismissingKeyguard(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
             } else {
+                if (!mState.value) {
+                    mState.value = true;
+                    mController.setBluetoothEnabled(true);
+                }
                 showDetail(true);
             }
         } else {
@@ -105,7 +109,7 @@ public class BluetoothTile extends QSTile<QSTile.BooleanState>  {
         if (easyToggle) {
             final boolean isEnabled = (Boolean)mState.value;
             MetricsLogger.action(mContext, getMetricsCategory(), !isEnabled);
-               mController.setBluetoothEnabled(!isEnabled);
+            mController.setBluetoothEnabled(!isEnabled);
         } else {
             if (!mController.canConfigBluetooth()) {
                 mHost.startActivityDismissingKeyguard(new Intent(Settings.ACTION_BLUETOOTH_SETTINGS));
