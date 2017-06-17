@@ -74,7 +74,6 @@ public class NavigationBarView extends LinearLayout implements TunerService.Tuna
 
     boolean mVertical;
     boolean mScreenOn;
-    boolean mLeftInLandscape;
     private int mCurrentRotation = -1;
 
     boolean mShowMenu;
@@ -554,11 +553,6 @@ public class NavigationBarView extends LinearLayout implements TunerService.Tuna
         updateCurrentView();
     }
 
-    public void setLeftInLandscape(boolean leftInLandscape) {
-        mLeftInLandscape = leftInLandscape;
-        mDeadZone.setStartFromRight(leftInLandscape);
-    }
-
     public boolean needsReorient(int rotation) {
         return mCurrentRotation != rotation;
     }
@@ -570,7 +564,7 @@ public class NavigationBarView extends LinearLayout implements TunerService.Tuna
         }
         mCurrentView = mRotatedViews[rot];
         mCurrentView.setVisibility(View.VISIBLE);
-        mNavigationInflaterView.setAlternativeOrder(rot == Surface.ROTATION_90 || rot == Surface.ROTATION_270);
+        mNavigationInflaterView.setAlternativeOrder(rot == Surface.ROTATION_90);
         for (int i = 0; i < mButtonDisatchers.size(); i++) {
             mButtonDisatchers.valueAt(i).setCurrentView(mCurrentView);
         }
@@ -592,7 +586,6 @@ public class NavigationBarView extends LinearLayout implements TunerService.Tuna
         getImeSwitchButton().setOnClickListener(mImeSwitcherClickListener);
 
         mDeadZone = (DeadZone) mCurrentView.findViewById(R.id.deadzone);
-        mDeadZone.setStartFromRight(mLeftInLandscape);
 
         // force the low profile & disabled states into compliance
         mBarTransitions.init();
