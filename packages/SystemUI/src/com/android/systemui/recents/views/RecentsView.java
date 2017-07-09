@@ -641,6 +641,29 @@ public class RecentsView extends FrameLayout implements TunerService.Tunable {
                     .setInterpolator(Interpolators.ALPHA_OUT)
                     .start();
         }
+
+        // Temporarily hide the memory bar without changing visibility
+        if (mMemBar != null && mShowMemDisplay) {
+            mMemBar.animate()
+                    .alpha(0f)
+                    .setDuration(HIDE_STACK_ACTION_BUTTON_DURATION)
+                    .setInterpolator(Interpolators.ALPHA_OUT)
+                    .start();
+        }
+
+        // Temporarily hide the memory text without changing visibility
+        if (mMemText != null && mShowMemDisplay) {
+            mMemText.animate()
+                    .alpha(0f)
+                    .setDuration(HIDE_STACK_ACTION_BUTTON_DURATION)
+                    .setInterpolator(Interpolators.ALPHA_OUT)
+                    .start();
+        }
+
+        // Temporarily hide the floating action button without changing visibility
+        if (mFloatingButton != null && mShowClearAllRecents) {
+            endFABanimation();
+        }
     }
 
     public final void onBusEvent(DragDropTargetChangedEvent event) {
@@ -728,6 +751,29 @@ public class RecentsView extends FrameLayout implements TunerService.Tunable {
                     .setDuration(SHOW_STACK_ACTION_BUTTON_DURATION)
                     .setInterpolator(Interpolators.ALPHA_IN)
                     .start();
+        }
+
+        // Show the memory bar without changing visibility
+        if (mMemBar != null && mShowMemDisplay) {
+            mMemBar.animate()
+                    .alpha(1f)
+                    .setDuration(SHOW_STACK_ACTION_BUTTON_DURATION)
+                    .setInterpolator(Interpolators.ALPHA_IN)
+                    .start();
+        }
+
+        // Show the memory text without changing visibility
+        if (mMemText != null && mShowMemDisplay) {
+            mMemText.animate()
+                    .alpha(1f)
+                    .setDuration(SHOW_STACK_ACTION_BUTTON_DURATION)
+                    .setInterpolator(Interpolators.ALPHA_IN)
+                    .start();
+        }
+
+        // Show the floating action button without changing visibility
+        if (mFloatingButton != null && mShowClearAllRecents) {
+            startFABanimation();
         }
     }
 
