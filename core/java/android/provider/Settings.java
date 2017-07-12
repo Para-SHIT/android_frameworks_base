@@ -7287,6 +7287,13 @@ public final class Settings {
         public static final String KILL_APP_LONGPRESS_TIMEOUT = "kill_app_longpress_timeout";
 
         /**
+         * Indicates whether 3 finger screenshot is enabled.
+         *
+         * @hide
+         */
+        public static final String THREE_FINGER_SCREENSHOT_ENABLED = "three_finger_screenshot_enabled";
+
+        /**
          * This are the settings to be backed up.
          *
          * NOTE: Settings are backed up and restored in the order they appear
