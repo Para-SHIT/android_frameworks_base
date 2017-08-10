@@ -4062,6 +4062,13 @@ public final class Settings {
         public static final String ANBI_ENABLED = "anbi_enabled";
 
         /**
+         * Whether to allow adding/removing qs tiles with a tap
+         *
+         * @hide
+         */
+        public static final String QUICK_TILE_ADD = "quick_tile_add";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
