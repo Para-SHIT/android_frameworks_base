@@ -132,9 +132,7 @@ import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.internal.statusbar.NotificationVisibility;
 import com.android.internal.statusbar.StatusBarIcon;
-import com.android.internal.utils.du.ActionHandler;
 import com.android.internal.utils.du.DUPackageMonitor;
-import com.android.internal.utils.du.DUSystemReceiver;
 import com.android.keyguard.KeyguardHostView.OnDismissAction;
 import com.android.keyguard.KeyguardUpdateMonitor;
 import com.android.keyguard.KeyguardUpdateMonitorCallback;
@@ -553,18 +551,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 mAssistManager.onConfigurationChanged();
             }
             mNotificationPanel.setQsScrimEnabled(!isVertical);
-        }
-    };
-
-    private DUSystemReceiver mDUReceiver = new DUSystemReceiver() {
-        @Override
-        protected void onSecureReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (TextUtils.equals(ActionHandler.INTENT_TOGGLE_FLASHLIGHT, action)) {
-                if (mFlashlightController.isAvailable()) {
-                    mFlashlightController.setFlashlight(!mFlashlightController.isEnabled());
-                }
-            }
         }
     };
 
@@ -1231,11 +1217,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         context.registerReceiverAsUser(mDemoReceiver, UserHandle.ALL, demoFilter,
                 android.Manifest.permission.DUMP, null);
 
-        // flashlight action target for toggle
-        IntentFilter flashlightFilter = new IntentFilter();
-        flashlightFilter.addAction(ActionHandler.INTENT_TOGGLE_FLASHLIGHT);
-        context.registerReceiver(mDUReceiver, flashlightFilter);
-
         // listen for USER_SETUP_COMPLETE setting (per-user)
         resetUserSetupObserver();
 
@@ -1751,6 +1732,14 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     public void leftInLandscapeChanged(boolean isLeft) {
         super.leftInLandscapeChanged(isLeft);
         mNavigationController.leftInLandscapeChanged(isLeft);
+    }
+
+    @Override
+    public void toggleFlashlight() {
+        super.toggleFlashlight();
+        if (mFlashlightController.isAvailable()) {
+            mFlashlightController.setFlashlight(!mFlashlightController.isEnabled());
+        }
     }
 
     @Override
@@ -4409,7 +4398,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
         mContext.unregisterReceiver(mBroadcastReceiver);
         mContext.unregisterReceiver(mDemoReceiver);
-        mContext.unregisterReceiver(mDUReceiver);
         mAssistManager.destroy();
 
         final SignalClusterView signalCluster =
