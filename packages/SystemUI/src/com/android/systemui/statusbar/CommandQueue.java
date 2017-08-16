@@ -17,6 +17,7 @@
 package com.android.systemui.statusbar;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
@@ -79,7 +80,9 @@ public class CommandQueue extends IStatusBar.Stub {
     private static final int MSG_HANDLE_SYSNAV_KEY             = 33 << MSG_SHIFT;
     private static final int MSG_SCREEN_PINNING_STATE_CHANGED  = 34 << MSG_SHIFT;
     private static final int MSG_LEFT_IN_LANDSCAPE_STATE_CHANGED = 35 << MSG_SHIFT;
-    private static final int MSG_TOGGLE_FLASHLIGHT = 36 << MSG_SHIFT;
+    private static final int MSG_TOGGLE_FLASHLIGHT             = 36 << MSG_SHIFT;
+    private static final int MSG_TOGGLE_NAVIGATION_EDITOR      = 37 << MSG_SHIFT;
+    private static final int MSG_DISPATCH_NAVIGATION_EDITOR_RESULTS = 38 << MSG_SHIFT;
 
     public static final int FLAG_EXCLUDE_NONE = 0;
     public static final int FLAG_EXCLUDE_SEARCH_PANEL = 1 << 0;
@@ -139,10 +142,28 @@ public class CommandQueue extends IStatusBar.Stub {
         void screenPinningStateChanged(boolean enabled);
         void leftInLandscapeChanged(boolean isLeft);
         void toggleFlashlight();
+        void toggleNavigationEditor();
+        void dispatchNavigationEditorResults(Intent intent);
     }
 
     public CommandQueue(Callbacks callbacks) {
         mCallbacks = callbacks;
+    }
+
+    public void dispatchNavigationEditorResults(Intent intent) {
+        synchronized (mLock) {
+            // don't coalesce these
+            // this command can't come in fast enough to make a difference
+            // but for the sake of principle...
+            mHandler.obtainMessage(MSG_DISPATCH_NAVIGATION_EDITOR_RESULTS, intent).sendToTarget();
+        }
+    }
+
+    public void toggleNavigationEditor() {
+        synchronized(mLock) {
+            mHandler.removeMessages(MSG_TOGGLE_NAVIGATION_EDITOR);
+            mHandler.sendEmptyMessage(MSG_TOGGLE_NAVIGATION_EDITOR);
+        }
     }
 
     public void toggleFlashlight() {
@@ -554,6 +575,13 @@ public class CommandQueue extends IStatusBar.Stub {
                     break;
                 case MSG_TOGGLE_FLASHLIGHT:
                     mCallbacks.toggleFlashlight();
+                    break;
+                case MSG_TOGGLE_NAVIGATION_EDITOR:
+                    mCallbacks.toggleNavigationEditor();
+                    break;
+                case MSG_DISPATCH_NAVIGATION_EDITOR_RESULTS:
+                    Intent intent = (Intent) msg.obj;
+                    mCallbacks.dispatchNavigationEditorResults(intent);
                     break;
             }
         }
