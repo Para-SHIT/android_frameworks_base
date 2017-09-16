@@ -24,10 +24,6 @@
   <string name="delete_screenshot_toast">Tangkapan layar dihapus</string>
   <!-- Quick Settings Tile -->
   <string name="quick_settings_navigation_bar">Bar navigasi</string>
-  <string name="accessibility_quick_settings_pulse_off">Pulse mati</string>
-  <string name="accessibility_quick_settings_pulse_on">Pulse hidup</string>
-  <string name="accessibility_quick_settings_pulse_changed_off">Pulse dimatikan</string>
-  <string name="accessibility_quick_settings_pulse_changed_on">Pulse dihidupkan</string>
   <string name="quick_settings_screenshot_label">Tangkapan layar</string>
   <string name="quick_settings_region_screenshot_label">Tangkapan layar sebagian</string>
   <string name="quick_settings_reboot_label">Mulai ulang</string>
@@ -44,4 +40,10 @@
   <string name="recents_free_ram">RAM BEBAS: %1$d MB</string>
   <!-- statusbar items tuner -->
   <string name="statusbar_icons_blacklist">Ikon status bar</string>
+  <!-- Kill button in notification guts -->
+  <string name="force_stop_dlg_title">Paksa berhenti?</string>
+  <string name="force_stop_dlg_text">Jika Anda memaksa menghentikan aplikasi, itu mungkin perilaku tak pantas.</string>
+  <string name="dlg_ok">Oke</string>
+  <string name="dlg_cancel">Batal</string>
+  <string name="kill">Tutup App</string>
 </resources>
