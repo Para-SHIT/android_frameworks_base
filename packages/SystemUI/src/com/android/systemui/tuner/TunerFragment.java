@@ -40,11 +40,8 @@ import com.android.systemui.R;
 public class TunerFragment extends PreferenceFragment {
 
     private static final String TAG = "TunerFragment";
-    private static final String TAG_TUNER = "tuner";
 
     private static final String KEY_BATTERY_PCT = "battery_pct";
-    private static final String KEY_NAV_BAR = "nav_bar";
-    private static final String KEY_STATUS_BAR = "status_bar";
 
     public static final String SETTING_SEEN_TUNER_WARNING = "seen_tuner_warning";
 
@@ -69,12 +66,6 @@ public class TunerFragment extends PreferenceFragment {
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.tuner_prefs);
 
-        String extra = getActivity().getIntent().getStringExtra(TAG_TUNER);
-        if (extra == null) {
-            getPreferenceScreen().removePreference(findPreference(KEY_NAV_BAR));
-            getPreferenceScreen().removePreference(findPreference(KEY_STATUS_BAR));
-        }
-
         /**
          * OHAI
         if (Settings.Secure.getInt(getContext().getContentResolver(), SETTING_SEEN_TUNER_WARNING,
@@ -90,7 +81,7 @@ public class TunerFragment extends PreferenceFragment {
     @Override
     public void onResume() {
         super.onResume();
-        getActivity().setTitle(R.string.statusbar_icons_blacklist);
+        getActivity().setTitle(R.string.system_ui_tuner);
 
         MetricsLogger.visibility(getContext(), MetricsEvent.TUNER, true);
     }

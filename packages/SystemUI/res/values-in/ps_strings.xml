@@ -38,8 +38,6 @@
   <string name="daylight_header_default">Standar</string>
   <!-- Recents memory bar -->
   <string name="recents_free_ram">RAM BEBAS: %1$d MB</string>
-  <!-- statusbar items tuner -->
-  <string name="statusbar_icons_blacklist">Ikon status bar</string>
   <!-- Kill button in notification guts -->
   <string name="force_stop_dlg_title">Paksa berhenti?</string>
   <string name="force_stop_dlg_text">Jika Anda memaksa menghentikan aplikasi, itu mungkin perilaku tak pantas.</string>

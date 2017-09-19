@@ -54,9 +54,6 @@
     <!-- Recents memory bar -->
     <string name="recents_free_ram">FREE RAM: %1$d MB</string>
 
-    <!-- statusbar items tuner -->
-    <string name="statusbar_icons_blacklist">Status bar icons</string>
-
     <!-- Kill button in notification guts -->
     <string name="force_stop_dlg_title">Force stop?</string>
     <string name="force_stop_dlg_text">If you force stop an app, it may misbehave.</string>

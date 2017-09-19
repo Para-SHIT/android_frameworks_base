@@ -22,7 +22,6 @@ import android.support.v14.preference.PreferenceFragment;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceScreen;
 import android.util.Log;
-import android.view.MenuItem;
 
 import com.android.settingslib.drawer.SettingsDrawerActivity;
 import com.android.systemui.R;
@@ -45,6 +44,8 @@ public class TunerActivity extends SettingsDrawerActivity implements
                 fragment = new NavBarTuner();
             } else if ("com.android.settings.action.POWER_NOTIF_CONTROLS".equals(action)) {
                 fragment = new PowerNotificationControlsFragment();
+            } else if ("com.android.settings.action.STATUS_BAR_TUNER".equals(action)) {
+                fragment = new StatusBarTuner();
             } else {
                 fragment = new TunerFragment();
             }
@@ -59,15 +60,6 @@ public class TunerActivity extends SettingsDrawerActivity implements
         if (!getFragmentManager().popBackStackImmediate()) {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            onBackPressed();
-            return true;
-        }
-        return false;
     }
 
     @Override
@@ -87,33 +79,26 @@ public class TunerActivity extends SettingsDrawerActivity implements
         }
     }
 
-    private boolean startPreferenceScreen(PreferenceFragment caller, String key, boolean backStack) {
+    @Override
+    public boolean onPreferenceStartScreen(PreferenceFragment caller, PreferenceScreen pref) {
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         SubSettingsFragment fragment = new SubSettingsFragment();
         final Bundle b = new Bundle(1);
-        b.putString(PreferenceFragment.ARG_PREFERENCE_ROOT, key);
+        b.putString(PreferenceFragment.ARG_PREFERENCE_ROOT, pref.getKey());
         fragment.setArguments(b);
         fragment.setTargetFragment(caller, 0);
         transaction.replace(R.id.content_frame, fragment);
-        if (backStack) {
-            transaction.addToBackStack("PreferenceFragment");
-        }
+        transaction.addToBackStack("PreferenceFragment");
         transaction.commit();
 
         return true;
     }
 
-    @Override
-    public boolean onPreferenceStartScreen(PreferenceFragment caller, PreferenceScreen pref) {
-        return startPreferenceScreen(caller, pref.getKey(), true);
-    }
-
     public static class SubSettingsFragment extends PreferenceFragment {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-            PreferenceScreen p = (PreferenceScreen) ((PreferenceFragment) getTargetFragment())
-                    .getPreferenceScreen().findPreference(rootKey);
-            setPreferenceScreen(p);
+            setPreferenceScreen((PreferenceScreen) ((PreferenceFragment) getTargetFragment())
+                    .getPreferenceScreen().findPreference(rootKey));
         }
     }
 }
