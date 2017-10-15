@@ -132,6 +132,7 @@ import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.internal.statusbar.NotificationVisibility;
 import com.android.internal.statusbar.StatusBarIcon;
+import com.android.internal.utils.du.DUActionUtils;
 import com.android.internal.utils.du.DUPackageMonitor;
 import com.android.keyguard.KeyguardHostView.OnDismissAction;
 import com.android.keyguard.KeyguardUpdateMonitor;
@@ -375,6 +376,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             "system:" + Settings.System.BLUR_LIGHT_COLOR_PREFERENCE_KEY;
     private static final String BLUR_MIXED_COLOR_PREFERENCE_KEY =
             "system:" + Settings.System.BLUR_MIXED_COLOR_PREFERENCE_KEY;
+    private static final String NAVIGATION_BAR_VISIBLE =
+            Settings.Secure.NAVIGATION_BAR_VISIBLE;
 
     static {
         boolean onlyCoreApps;
@@ -857,6 +860,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 SCREEN_BRIGHTNESS_MODE,
                 STATUS_BAR_BRIGHTNESS_CONTROL,
                 LOCKSCREEN_MEDIA_METADATA,
+                SYSTEMUI_BURNIN_PROTECTION,
                 QS_ROWS_PORTRAIT,
                 QS_ROWS_LANDSCAPE,
                 QS_COLUMNS_PORTRAIT,
@@ -877,7 +881,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 RECENT_APPS_RADIUS_PREFERENCE_KEY,
                 BLUR_DARK_COLOR_PREFERENCE_KEY,
                 BLUR_LIGHT_COLOR_PREFERENCE_KEY,
-                BLUR_MIXED_COLOR_PREFERENCE_KEY);
+                BLUR_MIXED_COLOR_PREFERENCE_KEY,
+                NAVIGATION_BAR_VISIBLE);
 
         // Lastly, call to the icon policy to install/update all the icons.
         mIconPolicy = new PhoneStatusBarPolicy(mContext, mIconController, mCastController,
@@ -5714,7 +5719,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                         mBurnInProtectionController.stopShiftTimer(true);
                     }
                 }
-                setNavbarEnabled();
                 break;
             case QS_ROWS_PORTRAIT:
             case QS_ROWS_LANDSCAPE:
@@ -5809,15 +5813,21 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                         newValue == null ? Color.GRAY : Integer.parseInt(newValue);
                 setBlurSettings();
                 break;
+            case NAVIGATION_BAR_VISIBLE:
+                if (newValue == null) {
+                    mNavbarVisible = DUActionUtils.hasNavbarByDefault(mContext);
+                    break;
+                }
+                mNavbarVisible = Integer.parseInt(newValue) == 1;
+                setNavbarProtection();
+                break;
             default:
                 break;
         }
     }
 
-    private void setNavbarEnabled() {
-        mNavbarVisible = Settings.Secure.getIntForUser(mContext.getContentResolver(),
-                Settings.Secure.NAVIGATION_BAR_VISIBLE, 0, UserHandle.USER_CURRENT) == 1;
-        if (mBurnInProtectionController != null) {
+    private void setNavbarProtection() {
+        if (mNavigationController != null && mBurnInProtectionController != null) {
             mNavigationController.setBarView(mBurnInProtectionController, mNavbarVisible);
         }
     }
