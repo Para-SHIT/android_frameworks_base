@@ -30,10 +30,6 @@
   <string name="quick_settings_music_label">Musik</string>
   <string name="quick_settings_music_play">Putar</string>
   <string name="quick_settings_music_pause">Jeda</string>
-  <string name="quick_settings_sound_label">Suara</string>
-  <string name="quick_settings_sound_ring">Dering</string>
-  <string name="quick_settings_sound_vibrate">Getar</string>
-  <string name="quick_settings_sound_silent">Senyap</string>
   <!-- Custom Header options -->
   <string name="daylight_header_default">Standar</string>
   <!-- Recents memory bar -->
