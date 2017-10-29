@@ -36,6 +36,6 @@
     <dimen name="burnin_protection_horizontal_shift">3dp</dimen>
     <dimen name="burnin_protection_vertical_shift">1dp</dimen>
 
-    <dimen name="net_traffic_single_text_size">12dp</dimen>
-    <dimen name="net_traffic_multi_text_size">8dp</dimen>
+    <dimen name="net_traffic_single_text_size">11dp</dimen>
+    <dimen name="net_traffic_multi_text_size">7dp</dimen>
 </resources>
