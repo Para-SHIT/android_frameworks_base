@@ -717,7 +717,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     int mForcingShowNavBarLayer;
 
     // User defined bar visibility, regardless of factory configuration
-    boolean mNavbarVisible = false;
+    int mNavbarVisible = -1;
 
     // States of keyguard dismiss.
     private static final int DISMISS_KEYGUARD_NONE = 0; // Keyguard not being dismissed.
@@ -2380,7 +2380,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     private void updateKeyAssignments() {
         int activeHardwareKeys = mDeviceHardwareKeys;
 
-        if (mNavbarVisible) {
+        if (mNavbarVisible == 1) {
             activeHardwareKeys = 0;
         }
         final boolean hasMenu = (activeHardwareKeys & KEY_MASK_MENU) != 0;
@@ -2642,14 +2642,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 updateWakeGestureListenerLp();
             }
 
-            boolean doShowNavbar = Settings.Secure.getIntForUser(resolver,
+            int doShowNavbar = Settings.Secure.getIntForUser(resolver,
                     Settings.Secure.NAVIGATION_BAR_VISIBLE,
                     DUActionUtils.hasNavbarByDefault(mContext) ? 1 : 0,
-                    UserHandle.USER_CURRENT) == 1;
+                    UserHandle.USER_CURRENT);
             if (doShowNavbar != mNavbarVisible) {
                 mNavbarVisible = doShowNavbar;
                 if (mCMHardware.isSupported(CMHardwareManager.FEATURE_KEY_DISABLE)) {
-                    mCMHardware.set(CMHardwareManager.FEATURE_KEY_DISABLE, mNavbarVisible);
+                    mCMHardware.set(CMHardwareManager.FEATURE_KEY_DISABLE, mNavbarVisible == 1);
                 }
             }
 
@@ -9215,7 +9215,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // Navigation bar visibility is dynamically configured in settings now
     @Override
     public boolean hasNavigationBar() {
-        return mNavbarVisible;
+        return mNavbarVisible == 1;
     }
 
     @Override
