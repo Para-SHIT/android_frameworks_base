@@ -47,12 +47,13 @@ import com.android.systemui.SystemUIFactory;
 import com.android.systemui.statusbar.NotificationData;
 import com.android.systemui.statusbar.SignalClusterView;
 import com.android.systemui.statusbar.StatusBarIconView;
-import com.android.systemui.statusbar.policy.NetworkTraffic;
 import com.android.systemui.tuner.TunerService;
 import com.android.systemui.tuner.TunerService.Tunable;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+
+import org.cyanogenmod.internal.statusbar.NetworkTraffic;
 
 /**
  * Controls everything regarding the icons in the status bar and on Keyguard, including, but not
@@ -552,7 +553,8 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
                 isInArea(mTintArea, mBatteryMeterView) ? mDarkIntensity : 0);
         mClockController.setTextColor(mTintArea, mIconTint);
         mBatteryLevelView.setTextColor(getTint(mTintArea, mBatteryLevelView, mIconTint));
-        mNetworkTraffic.setDarkIntensity(mDarkIntensity);
+        mNetworkTraffic.setDarkIntensity(mDarkIntensity,
+                mLightModeIconColorSingleTone, mDarkModeIconColorSingleTone);
     }
 
     public void appTransitionPending() {
